@@ -1,0 +1,61 @@
+﻿@using Onboarding.Data.Enums
+@model Onboarding.ViewModels.MeetingViewModel
+@{
+    ViewData["Title"] = "Zaplanuj Spotkanie";
+}
+
+<div class="container-custom">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="main-title">Zaplanuj spotkanie</h1>
+        <div class="header-buttons">
+            <a href="/Calendar/Index" class="btn btn-secondary">Wróć do kalendarza</a>
+        </div>
+    </header>
+
+    <section class="mt-4 card-custom">
+        <form asp-action="CreateMeeting" method="post">
+            <input type="hidden" asp-for="Type" />
+
+            <div class="mb-3">
+                <label for="SelectedUsersIds" class="form-label">Uczestnicy spotkania</label>
+
+                @if (Model.Type == MeetingType.BuddyCheckIn)
+                {
+                    <select name="SelectedUsersIds" class="form-select" required>
+                        <option value="">-- wybierz pracownika --</option>
+                        @foreach (var user in Model.AllUsers)
+                        {
+                            <option value="@user.Value">@user.Text</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="SelectedUsersIds"
+                            asp-items="Model.AllUsers"
+                            class="form-select"
+                            multiple
+                            required></select>
+                    <div class="form-text text-muted">Przytrzymaj CTRL/⌘, aby zaznaczyć wiele osób</div>
+                }
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Start" class="form-label">Data i godzina rozpoczęcia</label>
+                <input asp-for="Start" type="datetime-local" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="End" class="form-label">Data i godzina zakończenia</label>
+                <input asp-for="End" type="datetime-local" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label">Tytuł spotkania</label>
+                <input asp-for="Title" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Zaplanuj spotkanie</button>
+        </form>
+    </section>
+</div>

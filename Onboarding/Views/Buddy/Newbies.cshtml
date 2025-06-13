@@ -1,0 +1,190 @@
+﻿@model List<Onboarding.Models.User>
+@{
+    ViewData["Title"] = "Podgląd nowych";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="bi bi-people-fill me-2"></i>Podgląd nowych
+                </h2>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Powrót
+                </a>
+            </div>
+            <hr class="mb-4">
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="mb-0">
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" name="searchTerm" class="form-control" placeholder="Wyszukaj po email, imieniu lub nazwisku..." value="@ViewData["SearchTerm"]">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i> Szukaj
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0 ps-4">
+                                <i class="bi bi-envelope me-2 text-primary"></i>Email
+                            </th>
+                            <th class="border-0">
+                                <i class="bi bi-person me-2 text-primary"></i>Imię
+                            </th>
+                            <th class="border-0">
+                                <i class="bi bi-person-vcard me-2 text-primary"></i>Nazwisko
+                            </th>
+                            <th class="border-0">
+                                <i class="bi bi-book me-2 text-primary"></i>Kursy
+                            </th>
+                            <th class="border-0 text-center">
+                                <i class="bi bi-gear me-2 text-primary"></i>Akcje
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var user in Model)
+                            {
+                                <tr class="align-middle">
+                                    <td class="ps-4">@user.Email</td>
+                                    <td>@user.Name</td>
+                                    <td>@user.Surname</td>
+                                    <td>
+                                        @if (user.UserCourses != null && user.UserCourses.Any())
+                                        {
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach (var userCourse in user.UserCourses)
+                                                {
+                                                    <li>
+                                                        <i class="bi bi-book me-1"></i>
+                                                        @userCourse.Course.Name
+                                                        <span class="text-muted">
+                                                            (Mentor: @(userCourse.Course.Mentor != null ? $"{userCourse.Course.Mentor.Name} {userCourse.Course.Mentor.Surname}" : "Brak mentora"))
+                                                        </span>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Brak kursów</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            @if (user.UserCourses != null && user.UserCourses.Any())
+                                            {
+                                                foreach (var userCourse in user.UserCourses)
+                                                {
+                                                    if (userCourse.Course.Mentor != null)
+                                                    {
+                                                        <form asp-controller="Buddy" asp-action="SendFeedbackToMentor" method="post" class="d-inline">
+                                                            <input type="hidden" name="newbieId" value="@user.Id" />
+                                                            <input type="hidden" name="courseId" value="@userCourse.Course.Id" />
+                                                            <div class="input-group mb-2">
+                                                                <textarea name="feedbackContent" class="form-control form-control-sm" placeholder="Wpisz feedback dla mentora (@userCourse.Course.Name)..." rows="2" required></textarea>
+                                                                <button type="submit" class="btn btn-sm btn-success">
+                                                                    <i class="bi bi-send me-1"></i>Wyślij
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-4">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        Nie znaleziono użytkowników @if (!string.IsNullOrEmpty((string)ViewData["SearchTerm"]))
+                                        {
+                                            <span>dla wyszukiwania "@ViewData["SearchTerm"]"</span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <span class="ms-3 text-muted">
+            <i class="bi bi-people me-1"></i> Liczba nowych: @Model.Count
+        </span>
+    </div>
+</div>
+
+<style>
+    .table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .card {
+        border-radius: 0.5rem;
+        border: none;
+        overflow: hidden;
+    }
+
+    .btn-group .btn {
+        border-radius: 0.25rem;
+        margin: 0 0.15rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .input-group .form-control-sm {
+        font-size: 0.875rem;
+    }
+
+    .input-group .btn-sm {
+        padding: 0.25rem 0.5rem;
+    }
+
+    textarea.form-control-sm {
+        resize: vertical;
+        min-height: 2.5rem;
+    }
+</style>

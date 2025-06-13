@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Buddy Panel";
+}
+
+<div class="container-custom">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="main-title">Panel Buddyego</h1>
+        <div class="header-buttons">
+            <a href="/Home" class="btn btn-secondary btn-custom">
+                <i class="bi bi-house-door"></i> Wróć na stronę główną
+            </a>
+            <a href="/User/MyAccount" class="btn btn-secondary btn-custom">
+                <i class="bi bi-person"></i> Moje konto
+            </a>
+        </div>
+    </header>
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card-custom p-3">
+                <h5 class="control-label mb-3">Akcje Buddyego</h5>
+                <div class="action-buttons">
+                    <a href="/Buddy/Newbies" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-people"></i> Podgląd nowych
+                    </a>
+                    <a href="/Buddy/TaskStatus" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-check-circle"></i> Postęp Nowych
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card-custom p-3 mb-4">
+                <h2 class="role-description mb-3">Przegląd panelu Buddyego</h2>
+                <p class="role-description">
+                    Witaj w panelu Buddyego! Tutaj możesz mieć wgląd w prowadzonych "nowych", oraz ich progress w taskach.
+                    Użyj menu po lewej stronie, aby nawigować między sekcjami.
+                </p>
+            </div>
+
+            <div class="card-custom p-3">
+                <h3 class="role-description mb-3">Statystyki</h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card-custom p-3 text-center">
+                            <i class="bi bi-people" style="font-size: 2em; color: var(--primary-color);"></i>
+                            <h5 class="mt-2">Użytkownicy</h5>
+                            <p class="fw-bold mb-0">Brak danych</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-custom p-3 text-center">
+                            <i class="bi bi-bell" style="font-size: 2em; color: var(--primary-color);"></i>
+                            <h5 class="mt-2">Nowe zgłoszenia</h5>
+                            <p class="fw-bold mb-0">Brak danych</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

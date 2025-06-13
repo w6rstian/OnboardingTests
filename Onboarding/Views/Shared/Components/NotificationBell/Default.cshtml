@@ -1,0 +1,10 @@
+﻿@model int
+
+<div id="notification-bell" style="cursor: pointer; position: relative;">
+    <i class="fa fa-bell"></i>
+    @if (Model > 0)
+    {
+        <span class="badge bg-danger text-white" style="position: absolute; top: -15px; right: -15px;">@Model</span>
+    }
+</div>
+<div id="notifications-dropdown" style="display: none;"></div>

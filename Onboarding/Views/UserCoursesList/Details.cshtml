@@ -1,0 +1,304 @@
+﻿@model Onboarding.Models.Course
+
+@{
+    ViewData["Title"] = "Szczegóły kursu";
+  
+    var userResults = ViewBag.UserTestResults as List<Onboarding.Models.UserTestResult>;
+
+}
+
+<style>
+    .course-details-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .course-header {
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .details-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+    .detail-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #3498db;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+
+    .detail-content {
+        flex-grow: 1;
+    }
+
+    .detail-label {
+        color: #7f8c8d;
+        font-size: 0.9em;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        color: #2c3e50;
+        font-size: 1.1em;
+        font-weight: 500;
+    }
+
+    .participants-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .participants-list li {
+            padding: 8px 15px;
+            background-color: #ecf0f1;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+    .task-link {
+        color: #2980b9;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+        .task-link:hover {
+            color: #3498db;
+            text-decoration: underline;
+        }
+
+    .btn-custom {
+        padding: 8px 20px;
+        border-radius: 20px;
+        transition: transform 0.2s;
+    }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+        }
+
+    .section-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    }
+
+    .section-title {
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+
+    .accordion-button {
+        background-color: #3498db;
+        color: white;
+    }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #2980b9;
+            color: white;
+        }
+
+    .accordion-body {
+        background-color: #f8f9fa;
+    }
+
+    .task-links-list {
+        list-style: none;
+        padding-left: 0;
+    }
+
+        .task-links-list li {
+            margin: 5px 0;
+        }
+</style>
+
+<div class="course-details-container">
+    <h2 class="course-header">Szczegóły kursu</h2>
+
+    @if (Model.Image != null)
+{
+    <div class="detail-item">
+        <div class="detail-content d-flex justify-content-center">
+            <img src="@Url.Action("GetCourseImage", "Courses", new { id = Model.Id })"
+                 alt="Obraz kursu"
+                 style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);" />
+        </div>
+    </div>
+}
+
+
+    <div class="details-card">
+        <div class="detail-item">
+            <div class="detail-icon">
+                <i class="bi bi-hash"></i> <!-- Ikona ID -->
+            </div>
+            <div class="detail-content">
+                <div class="detail-label">ID kursu</div>
+                <div class="detail-value">@Model.Id</div>
+            </div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-icon">
+                <i class="bi bi-book"></i> <!-- Ikona nazwy -->
+            </div>
+            <div class="detail-content">
+                <div class="detail-label">Nazwa kursu</div>
+                <div class="detail-value">@Model.Name</div>
+            </div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-icon">
+                <i class="bi bi-people"></i> <!-- Ikona uczestników -->
+            </div>
+            <div class="detail-content">
+                <div class="detail-label">Uczestnicy</div>
+                <div class="detail-value">
+                    <ul class="participants-list">
+                        @foreach (var userCourse in Model.UserCourses)
+                        {
+                            <li>@userCourse.User.Name @userCourse.User.Surname</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="section-title">Zadania w kursie</h3>
+    <div class="section-card">
+        @if (Model.Tasks.Any())
+        {
+            <div class="accordion" id="tasksAccordion">
+                @foreach (var task in Model.Tasks)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading_@task.Id">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@task.Id" aria-expanded="false" aria-controls="collapse_@task.Id">
+                                @task.Title (ID: @task.Id)
+                            </button>
+                        </h2>
+                        <div id="collapse_@task.Id" class="accordion-collapse collapse" aria-labelledby="heading_@task.Id" data-bs-parent="#tasksAccordion">
+                            <div class="accordion-body">
+                                <p><strong>Opis:</strong> @task.Description</p>
+                                <p><strong>Mentor:</strong> @(task.Mentor != null ? task.Mentor.Name + " " + task.Mentor.Surname : "Brak")</p>
+                                
+                                @if (task.Links.Any())
+                                {
+                                    <p><strong>Linki:</strong></p>
+                                    <ul class="task-links-list">
+                                        @foreach (var link in task.Links)
+                                        {
+                                            <li>
+                                                <a href="@link.LinkUrl" target="_blank" class="task-link">@link.Name</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                <a asp-controller="Tasks" asp-action="Execute" asp-route-taskId="@task.Id" class="btn btn-primary btn-custom">
+                                    Wyślij do oceny
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Brak zadań w kursie.</p>
+        }
+    </div>
+
+    <h3 class="section-title">Testy w kursie</h3>
+    <div class="section-card">
+        @if (Model.Tests.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nazwa testu</th>
+                        <th>Wynik</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var test in Model.Tests)
+                    {
+                        <tr>
+                            <td>@test.Id</td>
+                            <td>@test.Name</td>
+                            <td>
+                                @{
+                                    var result = userResults?.FirstOrDefault(r => r.TestId == test.Id);
+                                    if (result != null)
+                                    {
+                                        var totalQuestions = test.Questions?.Count ?? 0;
+                                        <text>@result.CorrectAnswers / @totalQuestions</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Nie rozwiązano</text>
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @{
+                                    
+                                    if (result != null)
+                                    {
+                                        <button class="btn btn-secondary btn-custom" disabled>Test ukończony</button>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="Tests" asp-action="Execute" asp-route-id="@test.Id" class="btn btn-primary btn-custom">
+                                            Rozpocznij test
+                                        </a>
+                                    }
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="text-muted">Brak testów w kursie.</p>
+        }
+    </div>
+
+    <a asp-action="Index" class="btn btn-secondary btn-custom">Powrót do listy</a>
+</div>

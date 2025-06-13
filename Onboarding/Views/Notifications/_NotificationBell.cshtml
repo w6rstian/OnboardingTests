@@ -1,0 +1,11 @@
+﻿@model int
+@if (Model > 0)
+{
+    <span class="notification-bell" onclick="showNotifications()">
+        🔔 <span class="badge">@Model</span>
+    </span>
+}
+else
+{
+    <span class="notification-bell" onclick="showNotifications()">🔔</span>
+}

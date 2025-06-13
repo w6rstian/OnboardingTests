@@ -1,0 +1,42 @@
+﻿@model Onboarding.Models.Task
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<div class="container-custom">
+    <h1 class="header-custom">Usuń zadanie</h1>
+
+    <h3 class="text-muted mb-4">Czy na pewno chcesz usunąć to zadanie?</h3>
+
+    <div class="card-custom mb-4">
+        <div class="d-flex align-items-start">
+            <div class="card-icon">
+                <i class="bi bi-list-task"></i>
+            </div>
+            <div class="w-100">
+                <h5 class="control-label mb-1">@Html.DisplayNameFor(model => model.Title)</h5>
+                <p class="fw-bold mb-2">@Html.DisplayFor(model => model.Title)</p>
+
+                <h5 class="control-label mb-1">@Html.DisplayNameFor(model => model.Description)</h5>
+                <p class="mb-2">@Html.DisplayFor(model => model.Description)</p>
+
+                <h5 class="control-label mb-1">@Html.DisplayNameFor(model => model.Course)</h5>
+                <p class="mb-2">@Html.DisplayFor(model => model.Course.Name)</p>
+
+                <h5 class="control-label mb-1">@Html.DisplayNameFor(model => model.Mentor)</h5>
+                <p class="mb-0">@Html.DisplayFor(model => model.Mentor.Name) @Html.DisplayFor(model => model.Mentor.Surname)</p>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group d-flex justify-content-center align-items-center gap-3">
+            <input type="submit" value="Usuń" class="btn btn-danger btn-custom" />
+            <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+                <i class="bi bi-arrow-left me-1"></i> Powrót do listy
+            </a>
+        </div>
+    </form>
+</div>

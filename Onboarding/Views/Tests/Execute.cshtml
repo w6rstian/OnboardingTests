@@ -1,0 +1,54 @@
+﻿@model Onboarding.ViewModels.TestViewModel
+@{
+    ViewData["Title"] = "Wykonaj test";
+}
+
+<div class="container-custom">
+    <h1 class="main-title">Wykonaj test: @Model.Name</h1>
+
+    <form asp-action="Execute" asp-route-id="@Model.TestId" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="TestId" value="@Model.TestId" />
+        <input type="hidden" name="CourseId" value="@Model.CourseId" />
+
+        <div class="card-custom">
+            <h4 class="header-custom">Pytania</h4>
+            <hr />
+            @for (int i = 0; i < Model.Questions.Count; i++)
+            {
+                var q = Model.Questions[i];
+                var questionNumber = i + 1;
+                <div class="card-custom mb-3">
+                    <p><strong>@(questionNumber). @q.Description</strong></p>
+                    <input type="hidden" name="Answers[@i].QuestionId" value="@q.Id" />
+                    <ul class="list-unstyled">
+                        @foreach (var opt in new[] { "A", "B", "C", "D" })
+                        {
+                            string answerText = opt switch
+                            {
+                                "A" => q.AnswerA,
+                                "B" => q.AnswerB,
+                                "C" => q.AnswerC,
+                                "D" => q.AnswerD,
+                                _ => ""
+                            };
+                            var inputId = $"ans_{i}_{opt}";
+                            <li class="mb-2">
+                                <input type="radio" name="Answers[@i].SelectedAnswer"
+                                       id="@inputId" value="@opt" class="form-check-input me-1" />
+                                <label for="@inputId" class="form-check-label">
+                                    <span class="badge bg-primary">@opt</span> @answerText
+                                </label>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+
+        <div class="header-buttons">
+            <button type="submit" class="btn btn-success">Zakończ test</button>
+            <a asp-action="Details" asp-route-id="@Model.TestId" class="btn btn-secondary">Anuluj</a>
+        </div>
+    </form>
+</div>

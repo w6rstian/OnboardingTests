@@ -1,0 +1,426 @@
+﻿@model StatisticReportViewModel
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        $(function () {
+            $('#roleSelect').change(function () {
+                var role = $(this).val();
+                if (!role) {
+                    $('#userList').empty();
+                    return;
+                }
+                $.getJSON('@Url.Action("GetUsersByRole")', { role: role }, function (users) {
+                    if (users.length === 0) {
+                        $('#userList').html('<p class="text-muted">Brak użytkowników o wybranej roli.</p>');
+                        return;
+                    }
+                    var html = '<ul class="list-group">';
+                    $.each(users, function (i, user) {
+                        html += `<li class="list-group-item user-item" style="cursor:pointer;" data-role="${role}" data-userid="${user.id}">
+                                    ${user.name || user.login}
+                                    <div class="userDetails mt-2" style="display:none;"></div>
+                                 </li>`;
+                    });
+                    html += '</ul>';
+                    $('#userList').html(html);
+                });
+            });
+
+            $('#userList').on('click', '.user-item', function () {
+                var $detailsDiv = $(this).children('.userDetails');
+                if ($detailsDiv.is(':visible')) {
+                    $detailsDiv.slideUp();
+                    return;
+                }
+
+                $('.userDetails').slideUp();
+
+                var role = $(this).data('role');
+                var userId = $(this).data('userid');
+                $detailsDiv.html('<div class="text-muted">Ładowanie...</div>').slideDown();
+
+                $.getJSON('@Url.Action("GetDetailsByRoleUser")', { role: role, userId: userId }, function (details) {
+                    if (!details || details.length === 0) {
+                        $detailsDiv.html('<p class="text-muted">Brak szczegółów do wyświetlenia.</p>');
+                        return;
+                    }
+
+                    var titleMap = {
+                        "Mentor": "Taski:",
+                        "Manager": "Kursy:",
+                        "Nowy": "Przypisane kursy:",
+                        "Buddy": "Podopieczni:"
+                    };
+                    var header = titleMap[role] || "Szczegóły:";
+
+                    var html = `<h6>${header}</h6><ul class="list-group">`;
+                    $.each(details, function (i, item) {
+                        if (item.title && item.id) {
+                            html += `<li class="list-group-item"><a href="/Tasks/Details/${item.id}">${item.title}</a></li>`;
+                        } else if (role === "Manager" && item.name && item.id) {
+                            html += `<li class="list-group-item"><a href="/Courses/Details/${item.id}">${item.name}</a></li>`;
+                        } else if (item.name) {
+                            html += `<li class="list-group-item">${item.name}</li>`;
+                        } else {
+                            html += `<li class="list-group-item">${item.name || item.login || item.title || ''}</li>`;
+                        }
+                    });
+                    html += '</ul>';
+                    $detailsDiv.html(html);
+                });
+            });
+
+            $('.course-header').click(function () {
+                var $container = $(this).siblings('.taskListContainer');
+                var courseId = $(this).data('courseid');
+
+                if ($container.is(':visible')) {
+                    $container.slideUp();
+                    return;
+                }
+
+                $('.taskListContainer').not($container).slideUp();
+
+                $container.html('<div class="text-muted">Ładowanie...</div>').slideDown();
+
+                $.getJSON('@Url.Action("GetCourseTasks")', { courseId: courseId }, function (tasks) {
+                    if (!tasks || tasks.length === 0) {
+                        $container.html('<p class="text-muted">Brak zadań</p>');
+                        return;
+                    }
+
+                    var html = '<h6>Zadania:</h6><ul class="list-group mb-3">';
+                    $.each(tasks, function (i, task) {
+                        html += `<li class="list-group-item">
+                                    <a href="/Tasks/Details/${task.id}">${task.title}</a>
+                                    <span class="badge bg-primary float-end">Mentor: ${task.mentorName}</span>
+                                 </li>`;
+                    });
+                    html += '</ul>';
+
+                    $.getJSON('@Url.Action("GetNewUsersByCourse")', { courseId: courseId }, function (newUsers) {
+                        if (newUsers && newUsers.length > 0) {
+                            html += '<h6>Nowi użytkownicy przypisani do kursu:</h6><ul class="list-group">';
+                            $.each(newUsers, function (i, nu) {
+                                html += `<li class="list-group-item">${nu.userName}</li>`;
+                            });
+                            html += '</ul>';
+                        } else {
+                            html += '<p class="text-muted">Brak nowych użytkowników przypisanych do kursu.</p>';
+                        }
+                        $container.html(html);
+                    });
+                });
+            });
+
+            function initCharts() {
+                var roles = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Roles));
+                var userCounts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.UserCountsByRole.Values));
+
+                var ctxUsersByRole = document.getElementById('usersByRoleChart').getContext('2d');
+                new Chart(ctxUsersByRole, {
+                    type: 'pie',
+                    data: {
+                        labels: roles,
+                        datasets: [{
+                            label: 'Liczba użytkowników',
+                            data: userCounts,
+                            backgroundColor: [
+                                'rgba(27, 110, 194, 0.7)',
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 206, 86, 0.7)',
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(153, 102, 255, 0.7)',
+                                'rgba(255, 99, 132, 0.7)'
+                            ],
+                            borderColor: 'rgba(255, 255, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { enabled: true }
+                        }
+                    }
+                });
+
+                var userCourseCounts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                Model.Courses.Select(c => c.TaskCount).ToList()
+            ));
+                var courseNames = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                Model.Courses.Select(c => c.Name).ToList()
+            ));
+
+                var ctxUsersPerCourse = document.getElementById('usersPerCourseChart').getContext('2d');
+                new Chart(ctxUsersPerCourse, {
+                    type: 'pie',
+                    data: {
+                        labels: courseNames,
+                        datasets: [{
+                            label: 'Ilość zadań w kursie',
+                            data: userCourseCounts,
+                            backgroundColor: [
+                                'rgba(27, 110, 194, 0.7)',
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 206, 86, 0.7)',
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(153, 102, 255, 0.7)',
+                                'rgba(255, 99, 132, 0.7)',
+                                'rgba(255, 159, 64, 0.7)'
+                            ],
+                            borderColor: 'rgba(255, 255, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { enabled: true }
+                        }
+                    }
+                });
+            }
+
+            initCharts();
+        });
+                $('.show-new-user-report').click(function () {
+            var userId = $(this).data('userid');
+            if (!userId) return;
+
+            $.getJSON('@Url.Action("GetNewUserDetails", "StatisticReport")', { userId: userId }, function (data) {
+                if (!data) return;
+
+                // Ustaw nagłówki
+                $('#reportUserName').text(data.userName);
+                $('#reportBuddyName').text(data.buddyName);
+                $('#reportHeader').text('Raport użytkownika: ' + data.userName);
+
+                // Wypełnij tabelę kursów
+                var coursesHtml = '';
+                if (data.courses && data.courses.length > 0) {
+                    $.each(data.courses, function (i, c) {
+                        coursesHtml += '<tr><td>' + c.courseName + '</td></tr>';
+                    });
+                } else {
+                    coursesHtml = '<tr><td class="text-muted">Brak przypisanych kursów.</td></tr>';
+                }
+                $('#reportCoursesTable tbody').html(coursesHtml);
+
+                // Wypełnij tabelę zadań
+                var tasksHtml = '';
+                if (data.tasks && data.tasks.length > 0) {
+                    $.each(data.tasks, function (i, t) {
+                        var gradeText = t.grade ? t.grade : '-';
+                        tasksHtml += '<tr>' +
+                            '<td>' + t.taskTitle + '</td>' +
+                            '<td>' + t.status + '</td>' +
+                            '<td>' + gradeText + '</td>' +
+                            '</tr>';
+                    });
+                } else {
+                    tasksHtml = '<tr><td colspan="3" class="text-muted">Brak zadań.</td></tr>';
+                }
+                $('#reportTasksTable tbody').html(tasksHtml);
+
+                // Wypełnij tabelę wyników testów
+                var testsHtml = '';
+                if (data.testResults && data.testResults.length > 0) {
+                    $.each(data.testResults, function (i, tr) {
+                        testsHtml += '<tr>' +
+                            '<td>' + tr.testName + '</td>' +
+                            '<td>' + tr.correctAnswers + '</td>' +
+                            '</tr>';
+                    });
+                } else {
+                    testsHtml = '<tr><td colspan="2" class="text-muted">Brak wyników testów.</td></tr>';
+                }
+                $('#reportTestsTable tbody').html(testsHtml);
+
+                // Pokaż kontener z raportem
+                $('#newUserReport').slideDown();
+            });
+        });
+    </script>
+}
+
+<div class="container my-4">
+
+    <h2 class="mb-4">Sekcja 1: Statystyki użytkowników</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p class="lead">Łącznie użytkowników: <strong>@Model.UserCountsByRole.Values.Sum()</strong></p>
+
+            <label for="roleSelect" class="form-label">Wybierz rolę użytkowników:</label>
+            <select id="roleSelect" class="form-select mb-3" aria-label="Wybierz rolę">
+                <option value="">-- Wybierz rolę --</option>
+                @foreach (var role in Model.Roles)
+                {
+                    <option value="@role">@role (@Model.UserCountsByRole[role])</option>
+                }
+            </select>
+
+            <div id="userList" class="mb-3"></div>
+        </div>
+
+        <div class="d-flex justify-content-center mb-4">
+            <div style="max-width:600px; width: 100%;">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Liczba użytkowników wg ról</h5>
+                        <canvas id="usersByRoleChart" style="max-width: 100%; height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mb-4">Sekcja 2: Kursy i zadania</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p class="lead">Łącznie kursów: <strong>@Model.Courses.Count</strong></p>
+
+            <ul class="list-group">
+                @foreach (var course in Model.Courses)
+                {
+                    <li class="list-group-item flex-column">
+                        <div class="d-flex justify-content-between align-items-center course-header" style="cursor:pointer;" data-courseid="@course.Id">
+                            <div>
+                                <strong>@course.Name</strong>
+                            </div>
+                            <div>
+                                Ilość zadań: <span class="badge bg-secondary me-3">@course.TaskCount</span>
+                                Manager: <span class="text-primary">@course.ManagerName</span>
+                            </div>
+                        </div>
+                        <div class="taskListContainer mt-3" style="display:none;"></div>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            <div style="max-width:600px; width: 100%;">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Ilość zadań w kursach</h5>
+                        <canvas id="usersPerCourseChart" style="max-width: 100%; height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <h2>Użytkownicy o roli "Nowy"</h2>
+
+            @* Jeśli masz właściwość Model.NewUsers, to wypełniamy tabelę *@
+            @if (Model.NewUsers != null && Model.NewUsers.Any())
+            {
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Imię i nazwisko</th>
+                            <th>Login</th>
+                            <th>Akcja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var newUser in Model.NewUsers)
+                        {
+                            <tr>
+                                <td>@($"{newUser.Name} {newUser.Surname}")</td>
+                                <td>@newUser.UserName</td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-sm btn-primary show-new-user-report"
+                                            data-userid="@newUser.Id">
+                                        Pokaż raport
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">Brak nowych użytkowników.</p>
+            }
+        </div>
+    </div>
+
+    <!-- === Kontener: szczegółowy raport dla wybranego "Nowego" użytkownika === -->
+    <div id="newUserReport" class="row mt-4" style="display:none;">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h3 id="reportHeader">Raport użytkownika</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Imię i nazwisko + Buddy -->
+                    <div class="mb-4">
+                        <p><strong>Użytkownik:</strong> <span id="reportUserName"></span></p>
+                        <p><strong>Buddy:</strong> <span id="reportBuddyName"></span></p>
+                    </div>
+
+                    <!-- Tabela: Kursy przypisane -->
+                    <div class="mb-4">
+                        <h5>Kursy przypisane:</h5>
+                        <table class="table table-sm table-striped" id="reportCoursesTable">
+                            <thead>
+                                <tr>
+                                    <th>Nazwa kursu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- wypełniamy AJAX-em -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tabela: Postęp w zadaniach -->
+                    <div class="mb-4">
+                        <h5>Postęp w zadaniach:</h5>
+                        <table class="table table-sm table-striped" id="reportTasksTable">
+                            <thead>
+                                <tr>
+                                    <th>Tytuł zadania</th>
+                                    <th>Status</th>
+                                    <th>Feedback / Ocena</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- wypełniamy AJAX-em -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tabela: Wyniki testów -->
+                    <div class="mb-4">
+                        <h5>Wyniki testów:</h5>
+                        <table class="table table-sm table-striped" id="reportTestsTable">
+                            <thead>
+                                <tr>
+                                    <th>Nazwa testu</th>
+                                    <th>Poprawne odpowiedzi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- wypełniamy AJAX-em -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div> <!-- koniec .card-body -->
+            </div> <!-- koniec .card -->
+        </div> <!-- koniec .col -->
+    </div>
+
+</div>

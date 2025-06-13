@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Onboarding.Models.Test>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container-custom">
+    <h1 class="header-custom text-center">Testy</h1>
+
+    <p class="text-center mb-4">
+        <a asp-action="Create" class="btn btn-primary btn-custom">
+            <i class="bi bi-plus-circle"></i> Utwórz nowy test
+        </a>
+    </p>
+
+    @if (Model.Any())
+    {
+        <div class="tests-list">
+            @foreach (var item in Model)
+            {
+                <div class="card-custom mb-3">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="d-flex align-items-start">
+                            <div class="card-icon">
+                                <i class="bi bi-file-earmark-text"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-2">@item.Name</h5>
+                                <p class="text-muted mb-2">
+                                    <strong>Kurs:</strong> @(item.Course?.Name ?? "Brak kursu")
+                                </p>
+                                <div>
+                                    <strong>Pytania:</strong>
+                                    @if (item.Questions != null && item.Questions.Any())
+                                    {
+                                        <ul class="list-unstyled mt-1">
+                                            @foreach (var question in item.Questions)
+                                            {
+                                                <li>@question.Description</li>
+                                            }
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Brak pytań</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning me-1">
+                                <i class="bi bi-pencil me-1"></i> Edytuj
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info me-1">
+                                <i class="bi bi-eye me-1"></i> Szczegóły
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger me-1">
+                                <i class="bi bi-trash me-1"></i> Usuń
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-data">
+            <i class="bi bi-emoji-frown" style="font-size: 2em;"></i>
+            <p>Brak testów do wyświetlenia.</p>
+        </div>
+    }
+</div>

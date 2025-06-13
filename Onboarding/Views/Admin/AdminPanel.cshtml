@@ -1,0 +1,89 @@
+﻿@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<div class="container-custom">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="main-title">Panel Administratora</h1>
+        <div class="header-buttons">
+            <a href="/Home" class="btn btn-secondary btn-custom">
+                <i class="bi bi-house-door"></i> Wróć na stronę główną
+            </a>
+            <a href="/User/MyAccount" class="btn btn-secondary btn-custom">
+                <i class="bi bi-person"></i> Moje konto
+            </a>
+        </div>
+    </header>
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card-custom p-3">
+                <h5 class="control-label mb-3">Akcje administracyjne</h5>
+                <div class="action-buttons">
+                    <a href="/Admin/ManageUsers" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-people"></i> Zarządzaj użytkownikami
+                    </a>
+                    <a href="/HR/CreateEmployee" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-person-plus"></i> Dodaj pracownika
+                    </a>
+                    <a href="/Onboarding/Create" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-book"></i> Dodaj kurs
+                    </a>
+                    <a href="/Tasks/Create" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-list-task"></i> Dodaj task
+                    </a>
+                    <a href="/Admin/ManageRoles" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-shield-lock"></i> Zarządzaj rolami
+                    </a>
+                    <a href="/StatisticReport/Index" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-bar-chart"></i> Raporty i statystyki
+                    </a>
+                    <a href="/Admin/SystemSettings" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-gear"></i> Ustawienia systemu
+                    </a>
+                    <a href="/UserCourses/Create" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-person-lines-fill"></i> Przypisz do kursu
+                    </a>
+                    <a href="/Tests/Index" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-file-earmark-text"></i> Testy w kursie
+                    </a>
+                    <a href="/Buddy/TaskStatus" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-check-circle"></i> Postęp Nowego
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card-custom p-3 mb-4">
+                <h2 class="role-description mb-3">Przegląd panelu administracyjnego</h2>
+                <p class="role-description">
+                    Witaj w panelu administracyjnym! Tutaj możesz zarządzać użytkownikami, przydzielać role, przeglądać raporty oraz konfigurować ustawienia systemowe.
+                    Użyj menu po lewej stronie, aby nawigować między sekcjami.
+                </p>
+            </div>
+
+            <div class="card-custom p-3">
+                <h3 class="role-description mb-3">Statystyki</h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card-custom p-3 text-center">
+                            <i class="bi bi-people" style="font-size: 2em; color: var(--primary-color);"></i>
+                            <h5 class="mt-2">Użytkownicy</h5>
+                            <p class="fw-bold mb-0">Brak danych</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-custom p-3 text-center">
+                            <i class="bi bi-bell" style="font-size: 2em; color: var(--primary-color);"></i>
+                            <h5 class="mt-2">Nowe zgłoszenia</h5>
+                            <p class="fw-bold mb-0">Brak danych</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

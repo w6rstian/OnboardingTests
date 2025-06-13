@@ -1,0 +1,47 @@
+﻿@model Onboarding.Models.UserTask
+
+@{
+    ViewData["Title"] = "Wystaw ocenę";
+}
+
+<div class="container-custom">
+    <h1 class="header-custom">Wystaw ocenę</h1>
+
+    <div class="card-custom p-4">
+        <div class="mb-3">
+            <p class="mb-1"><strong>Użytkownik:</strong> @ViewBag.UserName</p>
+            <p class="mb-0"><strong>Zadanie:</strong> @ViewBag.TaskTitle</p>
+        </div>
+        <div class="mb-4">
+            <label class="form-label"><strong>Treść przesłana do oceny:</strong></label>
+            <div class="p-3 border rounded bg-light" style="white-space: pre-wrap;">
+                @Html.Raw(Model.Container ?? "<em>Brak przesłanej treści.</em>")
+            </div>
+        </div>
+
+        <form asp-action="Grade" method="post">
+            <input type="hidden" name="userTaskId" value="@Model.UserTaskId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-group with-icon">
+                <label for="grade" class="control-label">Ocena</label>
+                <i class="bi bi-star form-icon"></i>
+                <input type="text" name="grade" class="form-control" placeholder="Wprowadź ocenę (np. 1-5)" required />
+                <span asp-validation-for="Grade" class="text-danger"></span>
+            </div>
+
+            <div class="form-group d-flex justify-content-center align-items-center gap-3 mt-4">
+                <button type="submit" class="btn btn-primary btn-custom">
+                    <i class="bi bi-check-circle me-1"></i> Zapisz
+                </button>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Powrót
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

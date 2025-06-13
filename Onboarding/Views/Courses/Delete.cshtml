@@ -1,0 +1,31 @@
+﻿@model Onboarding.Models.Course
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<div class="container-custom">
+    <h1 class="header-custom">Usuń kurs</h1>
+
+    <h3 class="text-muted mb-4">Czy na pewno chcesz usunąć ten kurs?</h3>
+
+    <div class="card-custom mb-4">
+        <div class="d-flex align-items-center">
+            <div class="card-icon">
+                <i class="bi bi-book"></i>
+            </div>
+            <div>
+                <h5 class="control-label mb-1">@Html.DisplayNameFor(model => model.Name)</h5>
+                <p class="fw-bold mb-0">@Html.DisplayFor(model => model.Name)</p>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <input type="submit" value="Usuń" class="btn btn-danger btn-custom" />
+            <a asp-action="Index" class="link-custom ms-3">Powrót do listy</a>
+        </div>
+    </form>
+</div>

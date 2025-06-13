@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Logowanie";
+}
+<head>
+    <link rel="stylesheet" href="~/css/colors.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body style="background-color: var(--bg-color);">
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Left Column - Information -->
+        <div class="col-md-6">
+            <div class="d-flex flex-column justify-content-start">
+                <h1>Witamy na Platformie Onboardingowej</h1>
+                <p class="lead">Platforma onboardingowa ma na celu uproszczenie i optymalizację procesu wdrażania nowych pracowników w firmie. Dzięki zastosowaniu strukturyzowanego systemu wsparcia, platforma umożliwia płynne i efektywne przyjęcie nowo zatrudnionych do firmy, przyspieszając ich adaptację oraz poprawiając ich efektywność już na wczesnym etapie zatrudnienia.</p>
+                <h5>Dołącz do nas i ułatw sobie proces dołączenia do firmy!</h5>
+            </div>
+        </div>
+
+        <!-- Right Column - Login Form -->
+        <div class="col-md-6">
+            <div class="login-container d-flex flex-column justify-content-start">
+                    <partial name="_LoginPartial" />
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>

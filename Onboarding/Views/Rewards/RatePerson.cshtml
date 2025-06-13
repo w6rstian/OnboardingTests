@@ -1,0 +1,34 @@
+﻿@model Onboarding.Models.Reward
+
+@{
+    ViewData["Title"] = $"Oceń {ViewBag.PersonType}";
+}
+
+<h2>Oceń @ViewBag.PersonType: @ViewBag.PersonName</h2>
+<p>Średnia ocena @ViewBag.PersonType: <strong>@String.Format("{0:N2}", ViewBag.AverageRating)</strong></p>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="Receiver" />
+
+    <div class="form-group">
+        <label>Ocena (od 1 do 5):</label>
+        <input type="number" asp-for="Rating" min="1" max="5" class="form-control" required />
+        <span asp-validation-for="Rating" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Komentarz:</label>
+        <textarea asp-for="Feedback" class="form-control" required></textarea>
+        <span asp-validation-for="Feedback" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Wyślij ocenę</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

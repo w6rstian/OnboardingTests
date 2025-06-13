@@ -1,0 +1,73 @@
+﻿@model Onboarding.Models.Task
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="container-custom">
+    <h1 class="header-custom">Edytuj zadanie</h1>
+
+    <div class="card-custom p-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group with-icon">
+                <label asp-for="Title" class="control-label">Tytuł</label>
+                <i class="bi bi-pencil form-icon"></i>
+                <input asp-for="Title" class="form-control" placeholder="Wprowadź tytuł zadania" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group with-icon mt-3">
+                <label asp-for="Description" class="control-label">Opis</label>
+                <i class="bi bi-text-paragraph form-icon"></i>
+                <input asp-for="Description" class="form-control" placeholder="Wprowadź opis zadania" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <label asp-for="CourseId" class="control-label">Kurs</label>
+                <select asp-for="CourseId" class="form-control" asp-items="ViewBag.CourseId">
+                    <option value="">Wybierz kurs</option>
+                </select>
+                <span asp-validation-for="CourseId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <label asp-for="MentorId" class="control-label">Mentor</label>
+                <select asp-for="MentorId" class="form-control" asp-items="ViewBag.MentorId">
+                    <option value="">Wybierz mentora</option>
+                </select>
+                <span asp-validation-for="MentorId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group with-icon mt-3">
+                <label class="control-label">Treść artykułu</label>
+                <i class="bi bi-file-text form-icon"></i>
+                <input type="text" name="ArticleContent" class="form-control" value="@ViewBag.ArticleContent" placeholder="Dodaj treść artykułu (opcjonalne)" />
+                <span class="text-muted">Opcjonalne: Dodaj powiązany artykuł do tego zadania.</span>
+            </div>
+
+            <div class="form-group with-icon mt-3">
+                <label class="control-label">Linki</label>
+                <i class="bi bi-link-45deg form-icon"></i>
+                <input type="text" name="Links" class="form-control" value="@ViewBag.Links" placeholder="Dodaj linki oddzielone spacją (opcjonalne)" />
+                <span class="text-muted">Opcjonalne: Dodaj linki do tego zadania, oddzielone spacjami.</span>
+            </div>
+
+            <div class="form-group d-flex justify-content-center align-items-center gap-3 mt-4">
+                <input type="submit" value="Zapisz" class="btn btn-primary btn-custom" />
+                <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+                    <i class="bi bi-arrow-left me-1"></i> Powrót do listy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

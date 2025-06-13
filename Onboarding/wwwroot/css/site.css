@@ -1,0 +1,291 @@
+﻿@import url('colors.css');
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Kontener główny */
+.container-custom {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Nagłówki */
+.header-custom {
+    color: var(--primary-color);
+    font-size: 28px;
+    font-weight: bold;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.main-title {
+    font-size: 36px;
+    color: var(--secondary-color);
+    font-weight: bold;
+}
+
+/* Karty */
+.card-custom {
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-icon {
+    width: 50px;
+    height: 50px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: var(--bg-light);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    position: relative;
+    width: 100%;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.header-buttons a {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.header-buttons a:hover {
+    background-color: var(--hover-primary);
+}
+
+/* Formularze */
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label,
+.control-label {
+    text-align: left;
+    display: block;
+    font-size: 16px;
+    color: var(--text-color);
+    margin-bottom: 5px;
+}
+
+.form-control {
+    font-size: 16px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.form-group.with-icon .form-control {
+    padding-left: 35px;
+}
+
+.form-icon {
+    position: absolute;
+    left: 10px;
+    top: 38px;
+    color: var(--text-color);
+    font-size: 1.2em;
+}
+
+.text-danger {
+    font-size: 0.85em;
+    margin-top: 5px;
+    color: #dc3545; /* Standardowy kolor Bootstrap dla błędów */
+}
+
+.text-muted {
+    font-size: 0.85em;
+    margin-top: 5px;
+    display: block;
+    color: #606770;
+}
+
+/* Przyciski */
+.btn, .btn-custom {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-custom:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--hover-primary);
+}
+
+.btn-secondary, .btn-success {
+    background-color: var(--secondary-color);
+    color: var(--white);
+    border: none;
+}
+
+.btn-secondary:hover, .btn-success:hover {
+    background-color: var(--hover-secondary);
+}
+
+/* Linki */
+.link-custom {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.link-custom:hover {
+    color: var(--hover-primary);
+    text-decoration: underline;
+}
+
+/* Akordeon */
+.accordion-button {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--hover-primary);
+    color: var(--white);
+}
+
+.accordion-body {
+    background-color: var(--bg-light);
+}
+
+/* Lista bez punktorów */
+.list-unstyled {
+    list-style: none;
+    padding-left: 0;
+}
+
+.list-unstyled li {
+    margin: 5px 0;
+}
+
+/* Tabele */
+.table-custom {
+    background-color: #fff;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table-custom th {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+}
+
+.table-custom td {
+    vertical-align: middle;
+}
+
+/* Tekst informacyjny (np. brak danych) */
+.no-data {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 1.1em;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Dodatkowe elementy */
+.divider {
+    color: #606770;
+    text-align: center;
+    margin: 20px 0;
+}
+
+h5 {
+    color: var(--text-color);
+    font-weight: normal;
+}
+
+#notifications-dropdown {
+    position: absolute;
+    top: 80%;
+    right: 0;
+    max-height: 75vh;
+    width: 20vw;
+    min-width: 300px;
+    overflow-y: auto;
+    overflow-wrap: break-word;
+    background: white;
+    border: 1px solid rgb(204, 204, 204);
+    padding: 10px 0;
+    z-index: 1000;
+}
+
+#notifications-dropdown hr:first-of-type {
+    display: none;
+}
+
+#notifications-dropdown .unread {
+    color: #000;
+    width: 300px;
+    background-color: #DDD;
+    padding: 10px;
+    font-weight: 400;
+}
+
+#notifications-dropdown .read {
+    color: #555;
+    width: 300px;
+    padding: 0 10px;
+}

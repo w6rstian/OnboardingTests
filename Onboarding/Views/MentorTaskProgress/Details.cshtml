@@ -1,0 +1,53 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Szczegóły taska";
+}
+
+<div class="container-custom">
+    <h1 class="header-custom">Postęp uczestników - @ViewBag.TaskTitle</h1>
+
+    @if (Model.Any())
+    {
+        <div class="participants-list">
+            @foreach (var item in Model)
+            {
+                <div class="card-custom mb-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon">
+                                <i class="bi bi-person"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1">@item.User.Name @item.User.Surname</h5>
+                                <p class="text-muted mb-1">
+                                    <strong>Status:</strong> @item.Status
+                                </p>
+                                
+                            </div>
+                        </div>
+                        <a asp-action="Grade"
+                           asp-route-userId="@item.User.Id"
+                           asp-route-taskId="@ViewContext.RouteData.Values["id"]"
+                           class="btn btn-primary btn-custom btn-sm">
+                            <i class="bi bi-check-circle me-1"></i> Wystaw ocenę
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-data text-center">
+            <i class="bi bi-emoji-frown" style="font-size: 2.5em; color: var(--text-color);"></i>
+            <p class="mt-2">Brak uczestników dla tego zadania.</p>
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+            <i class="bi bi-arrow-left me-1"></i> Powrót do listy tasków
+        </a>
+    </div>
+</div>

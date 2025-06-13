@@ -1,0 +1,51 @@
+﻿@model Onboarding.Models.UserCourse
+
+@{
+    ViewData["Title"] = "Dodaj użytkownika do kursu";
+}
+
+<div class="container-custom">
+    <h1 class="main-title">Dodaj użytkownika do kursu</h1>
+
+    <div class="card-custom">
+        <h4 class="header-custom">Nowy zapis</h4>
+        <hr />
+
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Użytkownik -->
+            <div class="form-group position-relative">
+                <label asp-for="UserId" class="control-label">Użytkownik</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                </div>
+            </div>
+
+            <!-- Kurs -->
+            <div class="form-group position-relative mt-3">
+                <label asp-for="CourseId" class="control-label">Kurs</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-book"></i></span>
+                    <select asp-for="CourseId" class="form-control" asp-items="ViewBag.CourseId"></select>
+                </div>
+            </div>
+
+            <!-- Przyciski -->
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary btn-custom">Przypisz</button>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Powrót
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

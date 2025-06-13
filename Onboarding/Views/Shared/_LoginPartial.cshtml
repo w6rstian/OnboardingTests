@@ -1,0 +1,64 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Onboarding.Models
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <span id="manage" class="nav-link text-dark fs-5 fw-bold">
+                Hello, <span class="text-primary">@UserManager.GetUserName(User)</span>!
+            </span>
+        </li>
+        @if(User.IsInRole("Admin"))
+        {
+            <li class="nav-item">
+                <a class="btn btn-primary btn-block mt-3 nav-link" id="main-page" asp-area="" asp-controller="Admin" asp-action="AdminPanel">Przejdź do panelu</a>
+            </li>
+        }
+        @if(User.IsInRole("Buddy"))
+        {
+            <li class="nav-item">
+                <a class="btn btn-primary btn-block mt-3 nav-link" id="main-page" asp-area="" asp-controller="Buddy" asp-action="BuddyPanel">Przejdź do panelu</a>
+            </li>
+        }
+        @if(User.IsInRole("Mentor"))
+        {
+            <li class="nav-item">
+                <a class="btn btn-primary btn-block mt-3 nav-link" id="main-page" asp-area="" asp-controller="Mentor" asp-action="MentorPanel">Przejdź do panelu</a>
+            </li>
+        }
+        @if (User.IsInRole("Manager"))
+        {
+            <li class="nav-item">
+                <a class="btn btn-primary btn-block mt-3 nav-link" id="main-page" asp-area="" asp-controller="Manager" asp-action="ManagerPanel">Przejdź do panelu</a>
+            </li>
+        }
+        @if (User.IsInRole("Nowy"))
+        {
+            <li class="nav-item">
+                <a class="btn btn-primary btn-block mt-3 nav-link" id="main-page" asp-area="" asp-controller="User" asp-action="UserPanel">Przejdź do panelu</a>
+            </li>
+        }
+        @if (User.IsInRole("HR"))
+        {
+            <li class="nav-item">
+                <a class="btn btn-primary btn-block mt-3 nav-link" id="main-page" asp-area="" asp-controller="HR" asp-action="HRPanel">Przejdź do panelu</a>
+            </li>
+        }
+        
+
+}
+else
+{
+        <li class="nav-item">
+            <a class="btn btn-primary btn-block mt-3 fs-5 nav-link" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+        <li class="nav-item">
+            <a class="btn btn-primary btn-block mt-3 fs-5 nav-link" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+
+}
+</ul>

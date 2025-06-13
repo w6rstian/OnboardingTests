@@ -1,0 +1,126 @@
+﻿@{
+    ViewData["Title"] = "Tworzenie Kursu Onboardingowego";
+}
+<head>
+    <link rel="stylesheet" href="~/css/colors.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body style="background-color: var(--bg-color);">
+
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Tworzenie Kursu Onboardingowego</h2>
+        <form>
+            <!-- Informacje o kursie -->
+            <div class="mb-3">
+                <label for="course-name" class="form-label">Nazwa kursu</label>
+                <input type="text" class="form-control" id="course-name" placeholder="Wprowadź nazwę kursu">
+            </div>
+            <div class="mb-3">
+                <label for="course-description" class="form-label">Opis kursu</label>
+                <textarea class="form-control" id="course-description" rows="3" placeholder="Wprowadź krótki opis kursu"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="assigned-department" class="form-label">Dział</label>
+                <select class="form-control" id="assigned-department">
+                    <option value="" disabled selected>Rozwiń aby wybrać dział</option>
+                    <option value="IT">IT</option>
+                    <option value="HR">HR</option>
+                    <option value="Księgowość">Księgowość</option>
+                    <option value="Marketing">Marketing</option>
+                </select>
+            </div>
+
+            <!-- Zadania w kursie -->
+            <h4 class="mt-4">Dodaj zadania</h4>
+            <div id="tasks-container">
+                <div class="task-item mb-4">
+                    <div class="mb-3">
+                        <label for="task-title-1" class="form-label">Nazwa zadania</label>
+                        <input type="text" class="form-control" id="task-title-1" placeholder="Wprowadź nazwę zadania">
+                    </div>
+                    <div class="mb-3">
+                        <label for="task-description-1" class="form-label">Opis zadania</label>
+                        <textarea class="form-control" id="task-description-1" rows="2" placeholder="Wprowadź opis zadania"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="task-resources-1" class="form-label">Materiały pomocnicze</label>
+                        <input type="text" class="form-control" id="task-resources-1" placeholder="Wprowadź link do materiałów">
+                    </div>
+                    <div class="mb-3">
+                        <label for="task-deadline-1" class="form-label">Termin realizacji</label>
+                        <input type="date" class="form-control" id="task-deadline-1">
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="add-task-btn" class="btn btn-secondary mb-3">Dodaj kolejne zadanie</button>
+
+            <!-- Materiały pomocnicze -->
+            <h4 class="mt-4">Materiały zapoznawcze</h4>
+            <div id="resources-container">
+                <div class="resource-item mb-4">
+                    <div class="mb-3">
+                        <label for="resource-title-1" class="form-label">Tytuł materiału</label>
+                        <input type="text" class="form-control" id="resource-title-1" placeholder="Wprowadź tytuł materiału">
+                    </div>
+                    <div class="mb-3">
+                        <label for="resource-link-1" class="form-label">Link do materiału</label>
+                        <input type="text" class="form-control" id="resource-link-1" placeholder="Wprowadź link do materiału">
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="add-resource-btn" class="btn btn-secondary mb-3">Dodaj kolejny materiał</button>
+
+            <!-- Przyciski akcji -->
+            <div class="d-flex justify-content-end mt-4">
+                <button type="reset" class="btn btn-danger me-2">Wyczyść</button>
+                <button type="submit" class="btn btn-primary">Utwórz kurs</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Dodawanie dynamicznych elementów formularza
+        let taskCount = 1;
+        let resourceCount = 1;
+
+        document.getElementById('add-task-btn').addEventListener('click', () => {
+            taskCount++;
+            const taskTemplate = `
+                <div class="task-item mb-4">
+                    <div class="mb-3">
+                        <label for="task-title-${taskCount}" class="form-label">Nazwa zadania</label>
+                        <input type="text" class="form-control" id="task-title-${taskCount}" placeholder="Wprowadź nazwę zadania">
+                    </div>
+                    <div class="mb-3">
+                        <label for="task-description-${taskCount}" class="form-label">Opis zadania</label>
+                        <textarea class="form-control" id="task-description-${taskCount}" rows="2" placeholder="Wprowadź opis zadania"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="task-resources-${taskCount}" class="form-label">Materiały pomocnicze</label>
+                        <input type="text" class="form-control" id="task-resources-${taskCount}" placeholder="Wprowadź link do materiałów">
+                    </div>
+                    <div class="mb-3">
+                        <label for="task-deadline-${taskCount}" class="form-label">Termin realizacji</label>
+                        <input type="date" class="form-control" id="task-deadline-${taskCount}">
+                    </div>
+                </div>`;
+            document.getElementById('tasks-container').insertAdjacentHTML('beforeend', taskTemplate);
+        });
+
+        document.getElementById('add-resource-btn').addEventListener('click', () => {
+            resourceCount++;
+            const resourceTemplate = `
+                <div class="resource-item mb-4">
+                    <div class="mb-3">
+                        <label for="resource-title-${resourceCount}" class="form-label">Tytuł materiału</label>
+                        <input type="text" class="form-control" id="resource-title-${resourceCount}" placeholder="Wprowadź tytuł materiału">
+                    </div>
+                    <div class="mb-3">
+                        <label for="resource-link-${resourceCount}" class="form-label">Link do materiału</label>
+                        <input type="text" class="form-control" id="resource-link-${resourceCount}" placeholder="Wprowadź link do materiału">
+                    </div>
+                </div>`;
+            document.getElementById('resources-container').insertAdjacentHTML('beforeend', resourceTemplate);
+        });
+    </script>
+</body>

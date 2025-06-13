@@ -1,0 +1,88 @@
+﻿@model IEnumerable<Onboarding.Models.User>
+
+@{
+    ViewBag.Title = "User List";
+}
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h2 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 2em;
+    }
+
+    #userListContainer {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    #userList {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        #userList li {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            transition: background-color 0.3s ease;
+        }
+
+            #userList li:last-child {
+                border-bottom: none;
+            }
+
+            #userList li:hover {
+                background-color: #f9f9f9;
+            }
+
+            #userList li a {
+                text-decoration: none;
+                color: #007bff;
+                font-size: 1.1em;
+                display: block;
+            }
+
+                #userList li a:hover {
+                    color: #0056b3;
+                    text-decoration: underline;
+                }
+
+    .userName {
+        font-weight: bold;
+    }
+
+    .userStatus {
+        color: #888;
+        font-size: 0.9em;
+        margin-left: 10px;
+    }
+</style>
+
+<h2>User List</h2>
+
+<div id="userListContainer">
+    <ul id="userList">
+        @foreach (var user in Model)
+        {
+            <li>
+                <a href="@Url.Action("Index", "Chat", new { receiverId = user.Id })">
+                    <span class="userName">@user.UserName</span>
+                    <span class="userStatus">(Online)</span>
+                </a>
+            </li>
+        }
+    </ul>
+</div>

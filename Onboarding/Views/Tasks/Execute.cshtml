@@ -1,0 +1,97 @@
+﻿@model UserTask
+
+@{
+    ViewData["Title"] = "Wykonaj zadanie";
+}
+
+<style>
+    .task-execute-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .task-header {
+        border-bottom: 2px solid #3498db;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        color: #2c3e50;
+    }
+
+    .task-status {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #2980b9;
+        margin-top: 20px;
+        margin-bottom: 30px;
+    }
+
+    .textarea-container {
+        margin-bottom: 20px;
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+    }
+
+    .btn-submit {
+        padding: 10px 25px;
+        font-weight: bold;
+    }
+
+    .btn-back {
+        margin-top: 20px;
+    }
+</style>
+
+<div class="task-execute-container">
+    <h2 class="task-header">Zadanie ID: @Model.Task.Id - "@Model.Task.Title"</h2>
+
+    <p><strong>Opis zadania:</strong> @Model.Task.Description</p>
+
+    <div class="task-status">
+        Status zadania: @Model.Status
+    </div>
+
+    @if (Model.Grade != "brak")
+    {
+        <div class="mb-3" style="font-size: 1.1em; color: #27ae60;">
+            <strong>Ocena:</strong> @Model.Grade
+        </div>
+    }
+    else
+    {
+        <div class="mb-3 text-muted" style="font-size: 1.1em;">
+            <em>Ocena jeszcze nie została wystawiona.</em>
+        </div>
+    }
+
+
+    <form asp-action="Execute" asp-controller="Tasks" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="UserTaskId" />
+
+        <div class="form-group textarea-container">
+            <label for="Container">Treść do oceny:</label>
+            <textarea asp-for="Container" class="form-control" placeholder="Wpisz swoją odpowiedź tutaj..."></textarea>
+            <span asp-validation-for="Container" class="text-danger"></span>
+        </div>
+
+        @if (Model.Status == Onboarding.Data.Enums.StatusTask.Graded)
+        {
+            <a href="@Url.Action("RateMentor", "Rewards", new { mentorId = Model.Task.MentorId, taskId = Model.TaskId })" class="btn btn-success">Oceń mentora</a>
+
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary mt-3">Wyślij do oceny</button>
+        }
+    </form>
+
+    <a asp-action="Details" asp-controller="UserCoursesList" asp-route-id="@Model.Task.CourseId" class="btn btn-secondary btn-back btn-custom">
+        Powrót do kursu
+    </a>
+</div>

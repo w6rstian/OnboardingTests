@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Onboarding.Models.Course>
+
+@{
+    ViewData["Title"] = "MyCourses";
+}
+
+<div class="container-custom">
+    <h1 class="header-custom">Lista kursów</h1>
+
+    <div class="form-group d-flex justify-content-center align-items-center gap-3">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-custom">
+            <i class="bi bi-arrow-left me-1"></i> Powrót
+        </a>
+        <a href="\Manager\ManagerPanel" class="btn btn-outline-secondary btn-custom">
+            <i class="bi bi-house"></i> Manager Panel
+        </a>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="courses-list">
+            @foreach (var item in Model)
+            {
+                <div class="card-custom">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon">
+                                <i class="bi bi-book"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">@Html.DisplayFor(modelItem => item.Name)</div>
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <a asp-controller="Courses" a asp-action="Edit" asp-route-id="@item.Id" class="link-custom me-2">Edytuj</a>
+                            <a asp-controller="Courses" a asp-action="Details" asp-route-id="@item.Id" class="link-custom me-2">Szczegóły</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-data">
+            <i class="bi bi-emoji-frown" style="font-size: 2em;"></i>
+            <p>Brak kursów do wyświetlenia.</p>
+        </div>
+    }
+</div>

@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "User Panel";
+}
+
+<div class="container-custom">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="main-title">Panel Nowego</h1>
+        <div class="header-buttons">
+            <a href="/Home" class="btn btn-secondary btn-custom">
+                <i class="bi bi-house-door"></i> Wróć na stronę główną
+            </a>
+            <a href="/User/MyAccount" class="btn btn-secondary btn-custom">
+                <i class="bi bi-person"></i> Moje konto
+            </a>
+        </div>
+    </header>
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card-custom p-3">
+                <h5 class="control-label mb-3">Akcje Nowego</h5>
+                <div class="action-buttons">
+                    <a href="/UserCoursesList" class="btn btn-primary btn-custom d-block mb-2">
+                        <i class="bi bi-people"></i> Kursy
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card-custom p-3 mb-4">
+                <h2 class="role-description mb-3">Przegląd panelu Nowego</h2>
+                <p class="role-description">
+                    Witaj w panelu Nowego! Tutaj jest twoje centrum działania w całym procesie onboardingu.
+                    Użyj menu po lewej stronie, aby nawigować między sekcjami.
+                </p>
+            </div>
+
+            <div class="card-custom p-3 mb-4">
+                <h2 class="role-description mb-3">Role w procesie onboardingu</h2>
+                <p class="role-description">
+                    <div>
+                        <p><strong>Buddy</strong> - osoba przydzielona do nowego pracownika, nie zajmuje się procesem onboardingu nowego, jest wsparciem mentalnym i “starszym bratem” dla nowego pracownika.</p>
+                        <p><strong>Mentor</strong> - osoba nadzorująca bezpośrednio realizację konkretnego taska, ewentualnie pomagająca w ich realizacji na koniec ocenia wykonanie taska i daje feedback do managera.</p>
+                        <p><strong>Manager</strong> - osoba zajmująca się tworzeniem kursów i zadań do nich przypisanych, sprawująca główny nadzór nad przebiegiem onboardingu.</p>
+                        <p><strong>Nowy</strong> - nowy pracownik, który jeszcze nie przeszedł kursu onboardingowego i musi go zaliczyć, zanim zostanie pełnoprawnym pracownikiem firmy.</p>
+                        <p><strong>HR</strong> - osoby pracujące w tym dziale zajmują się tworzeniem kont nowych użytkowników, przydzielaniem ich do specjalizacji np: IT/KSIEGOWOSC, przypisują nowym dodatkowo ‘buddyego’.</p>
+                        <p><strong>Kurs</strong> - zbiór materiałów i tasków stworzonych przez managera danego działu mający na celu zapoznanie nowego z zasadami/praktykami w firmie/danym dziale.</p>
+                        <p><strong>Nagroda</strong> - ocena mentora/buddiego przez nowego pracownika.</p>
+                    </div>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+

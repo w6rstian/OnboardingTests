@@ -1,0 +1,119 @@
+﻿@model Onboarding.Models.Test
+
+@{
+    ViewData["Title"] = "Edytuj test";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="container mt-5">
+    <div class="card shadow-lg rounded-3 border-0 p-4">
+        <h4 class="fw-bold text-primary">Edytuj test</h4>
+        <hr />
+
+        <form asp-action="Edit" method="post">
+            @Html.HiddenFor(model => model.Id)
+
+            <div class="form-group">
+                <label for="Name">Nazwa</label>
+                <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required />
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="CourseId">Kurs</label>
+                <select class="form-control" id="CourseId" name="CourseId">
+                    <option value="">Wybierz kurs</option>
+                    @foreach (var course in ViewBag.CourseId as SelectList)
+                    {
+                        <option value="@course.Value">@course.Text</option>
+
+                    }
+                </select>
+            </div>
+
+            <hr />
+            <h5 class="mt-4">Pytania</h5>
+            <div id="questions-container">
+                @for (var i = 0; i < Model.Questions.Count; i++)
+                {
+                    <div class="card p-3 my-3 shadow-sm rounded-3">
+                        <h6>Pytanie @(i + 1)</h6>
+                        <div class="form-group">
+                            <label>Treść pytania</label>
+                            <input type="text" name="Questions[@i].Description" class="form-control" value="@Model.Questions[i].Description" required />
+                        </div>
+                        <div class="form-group mt-2">
+                            <label>Odpowiedź A</label>
+                            <input type="text" name="Questions[@i].AnswerA" class="form-control" value="@Model.Questions[i].AnswerA" required />
+                        </div>
+                        <div class="form-group mt-2">
+                            <label>Odpowiedź B</label>
+                            <input type="text" name="Questions[@i].AnswerB" class="form-control" value="@Model.Questions[i].AnswerB" required />
+                        </div>
+                        <div class="form-group mt-2">
+                            <label>Odpowiedź C</label>
+                            <input type="text" name="Questions[@i].AnswerC" class="form-control" value="@Model.Questions[i].AnswerC" required />
+                        </div>
+                        <div class="form-group mt-2">
+                            <label>Odpowiedź D</label>
+                            <input type="text" name="Questions[@i].AnswerD" class="form-control" value="@Model.Questions[i].AnswerD" required />
+                        </div>
+                        <div class="form-group mt-2">
+                            <label>Poprawna odpowiedź</label>
+                            <input type="text" name="Questions[@i].CorrectAnswer" class="form-control" value="@Model.Questions[i].CorrectAnswer" required />
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <button type="button" class="btn btn-outline-primary mt-3" onclick="addQuestion()">Dodaj pytanie</button>
+
+            <div class="mt-4 d-flex justify-content-center gap-4">
+                <button type="submit" class="btn btn-primary btn-lg px-4">Zapisz zmiany</button>
+                <a asp-action="Index" class="btn btn-secondary btn-lg px-4">Anuluj</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let questionIndex = @Model.Questions.Count;
+
+        function addQuestion() {
+            const container = document.getElementById('questions-container');
+            const questionHtml = `
+                <div class="card p-3 my-3 shadow-sm rounded-3">
+                    <h6>Pytanie ${questionIndex + 1}</h6>
+                    <div class="form-group">
+                        <label>Treść pytania</label>
+                        <input type="text" name="Questions[${questionIndex}].Description" class="form-control" required />
+                    </div>
+                    <div class="form-group mt-2">
+                        <label>Odpowiedź A</label>
+                        <input type="text" name="Questions[${questionIndex}].AnswerA" class="form-control" required />
+                    </div>
+                    <div class="form-group mt-2">
+                        <label>Odpowiedź B</label>
+                        <input type="text" name="Questions[${questionIndex}].AnswerB" class="form-control" required />
+                    </div>
+                    <div class="form-group mt-2">
+                        <label>Odpowiedź C</label>
+                        <input type="text" name="Questions[${questionIndex}].AnswerC" class="form-control" required />
+                    </div>
+                    <div class="form-group mt-2">
+                        <label>Odpowiedź D</label>
+                        <input type="text" name="Questions[${questionIndex}].AnswerD" class="form-control" required />
+                    </div>
+                    <div class="form-group mt-2">
+                        <label>Poprawna odpowiedź</label>
+                        <input type="text" name="Questions[${questionIndex}].CorrectAnswer" class="form-control" required />
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', questionHtml);
+            questionIndex++;
+        }
+    </script>
+}

@@ -1,0 +1,107 @@
+﻿@model User
+
+@{
+    ViewData["Title"] = "Edycja danych";
+}
+
+<style>
+    .account-edit-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .account-header {
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .form-block {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: #34495e;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+
+    .btn-custom {
+        padding: 8px 20px;
+        border-radius: 20px;
+        transition: transform 0.2s;
+    }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+        }
+
+    .text-center {
+        text-align: center;
+    }
+</style>
+
+<div class="account-edit-container">
+    <h2 class="account-header">Edytuj dane użytkownika</h2>
+
+    <form asp-action="UserSettings" asp-controller="User" method="post">
+        <div class="form-block">
+            <div class="form-group mb-3">
+                <label for="name">Imię</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="surname">Nazwisko</label>
+                <input asp-for="Surname" class="form-control" />
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="phone">Telefon</label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="department">Dział</label>
+                <input asp-for="Department" class="form-control" />
+                <span asp-validation-for="Department" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="position">Stanowisko</label>
+                <input asp-for="Position" class="form-control" />
+                <span asp-validation-for="Position" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-success btn-custom">
+                <i class="bi bi-save"></i> Zapisz zmiany
+            </button>
+            <a asp-action="MyAccount" class="btn btn-outline-secondary btn-custom">
+                <i class="bi bi-x-circle"></i> Anuluj
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

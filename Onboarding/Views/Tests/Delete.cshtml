@@ -1,0 +1,56 @@
+﻿@model Onboarding.Models.Test
+
+@{
+    ViewData["Title"] = "Usuń test";
+}
+
+<div class="container mt-5">
+    <h1 class="text-danger text-center">Usuń test</h1>
+    <h3 class="text-center mb-4">Czy na pewno chcesz usunąć ten test z kursu: <strong>@Model.Course?.Name</strong>?</h3>
+
+    <div class="card shadow-lg rounded-3 border-0 p-4">
+        <h4 class="fw-bold text-primary">Szczegóły testu</h4>
+        <hr />
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <i class="bi bi-file-earmark-text" style="font-size: 4rem; color: #007bff;"></i>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <dl class="row">
+                    <dt class="col-sm-3 fw-bold text-start">Nazwa</dt>
+                    <dd class="col-sm-9 text-muted text-start">@Html.DisplayFor(model => model.Name)</dd>
+
+                    <dt class="col-sm-3 fw-bold text-start">Pytania</dt>
+                    <dd class="col-sm-9 text-start">
+                        @if (Model.Questions != null && Model.Questions.Any())
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var question in Model.Questions)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        @question.Description
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Brak pytań w tym teście</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-center gap-4">
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger btn-lg px-4">Usuń</button>
+        </form>
+        <a asp-action="Index" class="btn btn-secondary btn-lg px-4">Anuluj</a>
+    </div>
+</div>

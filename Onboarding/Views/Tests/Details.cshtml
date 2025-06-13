@@ -1,0 +1,51 @@
+﻿@model Onboarding.Models.Test
+
+@{
+    ViewData["Title"] = "Szczegóły Testu";
+}
+
+<div class="container-custom">
+    <h1 class="main-title">Szczegóły Testu</h1>
+
+    <div class="card-custom">
+        <h4 class="header-custom">Informacje o teście</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-3">
+                <strong>@Html.DisplayNameFor(model => model.Name)</strong>
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt class="col-sm-3">
+                <strong>@Html.DisplayNameFor(model => model.Course)</strong>
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Course.Name)
+            </dd>
+        </dl>
+    </div>
+
+    <div class="card-custom">
+        <h4 class="header-custom">Pytania</h4>
+        <hr />
+        @foreach (var question in Model.Questions)
+        {
+            <div class="card-custom">
+                <p><strong>@question.Description</strong></p>
+                <ul class="list-unstyled">
+                    <li><span class="badge bg-primary">A</span> @question.AnswerA</li>
+                    <li><span class="badge bg-primary">B</span> @question.AnswerB</li>
+                    <li><span class="badge bg-primary">C</span> @question.AnswerC</li>
+                    <li><span class="badge bg-primary">D</span> @question.AnswerD</li>
+                </ul>
+                <p class="text-success"><strong>Poprawna odpowiedź: @question.CorrectAnswer</strong></p>
+            </div>
+        }
+    </div>
+
+    <div class="header-buttons">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edytuj</a>
+        <a asp-action="Index" class="btn btn-secondary">Powrót</a>
+    </div>
+</div>

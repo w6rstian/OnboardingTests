@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Onboarding.Models.UserCourse>
+
+@{
+    ViewData["Title"] = "Lista użytkowników kursów";
+}
+
+<div class="container-custom">
+    <h1 class="main-title">Zapisani użytkownicy</h1>
+
+    <!-- Przycisk dodawania nowego wpisu -->
+    <div class="text-end mb-3">
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Dodaj nowego użytkownika
+        </a>
+    </div>
+
+    <!-- Tabela -->
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-user"></i> Użytkownik</th>
+                    <th><i class="fas fa-book"></i> Kurs</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.User.Name @item.User.Surname</td>
+                        <td>@item.Course.Name</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Edytuj
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                <i class="fas fa-info-circle"></i> Szczegóły
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Usuń
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+}

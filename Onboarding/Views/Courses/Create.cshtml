@@ -1,0 +1,40 @@
+﻿@model Onboarding.Models.Course
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="container-custom">
+    <h1 class="header-custom">Nowy kurs</h1>
+
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="form-group with-icon">
+                    <label asp-for="Name" class="control-label">Nazwa kursu</label>
+                    <i class="bi bi-book form-icon"></i>
+                    <input asp-for="Name" class="form-control" placeholder="Wprowadź nazwę kursu" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-group d-flex justify-content-center align-items-center gap-3">
+                    <input type="submit" value="Utwórz" class="btn btn-primary btn-custom" />
+                    <a asp-action="Index" class="btn btn-outline-primary btn-custom">
+                        <i class="bi bi-list-ul me-1"></i> Lista kursów
+                    </a>
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-custom">
+                        <i class="bi bi-arrow-left me-1"></i> Powrót
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

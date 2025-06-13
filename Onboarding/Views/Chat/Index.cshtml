@@ -1,0 +1,131 @@
+﻿@model IEnumerable<Onboarding.Models.Message>
+
+@{
+    ViewBag.Title = "Chat with " + ViewBag.ReceiverName;
+}
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h2 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    #chatContainer {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    #messagesList {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        max-height: 400px;
+        overflow-y: auto;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+    }
+
+        #messagesList li {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+
+            #messagesList li strong {
+                color: #007bff;
+            }
+
+    #messageForm {
+        display: flex;
+        margin-top: 20px;
+    }
+
+    #messageInput {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-right: 10px;
+        font-size: 16px;
+    }
+
+    #messageForm button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+        #messageForm button:hover {
+            background-color: #0056b3;
+        }
+</style>
+
+<h2>Chat with @ViewBag.ReceiverName</h2>
+
+<div id="chatContainer">
+    <ul id="messagesList">
+        @foreach (var message in Model)
+        {
+            <li>
+                <strong>@(message.SenderId == int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0") ? "You" : ViewBag.ReceiverName)</strong>: @message.Content
+                <span style="color: #888; font-size: 0.9em;">(@message.SentAt)</span>
+            </li>
+        }
+    </ul>
+
+    <div>
+        @using (Html.BeginForm("SendMessage", "Chat", FormMethod.Post, new { id = "messageForm" }))
+        {
+            <input type="hidden" name="receiverId" value="@ViewBag.ReceiverId" />
+            <input type="text" id="messageInput" name="content" placeholder="Enter your message..." required />
+            <button type="submit">Send</button>
+        }
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.15/signalr.min.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chatHub?receiverId=@ViewBag.ReceiverId")
+        .build();
+
+    connection.on("ReceiveMessage", function (messageContent, sentAt, senderId) {
+        const li = document.createElement("li");
+        const senderName = senderId == parseInt("@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value") ? "You" : "@ViewBag.ReceiverName";
+        li.innerHTML = `<strong>${senderName}</strong>: ${messageContent} <span style="color: #888; font-size: 0.9em;">(${sentAt})</span>`;
+        document.getElementById("messagesList").appendChild(li);
+        // Scroll to the bottom of the messages list
+        document.getElementById("messagesList").scrollTop = document.getElementById("messagesList").scrollHeight;
+    });
+
+    connection.start().catch(err => console.error(err.toString()));
+
+    document.getElementById("messageInput").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            const content = this.value;
+            connection.invoke("SendMessage", content, new Date().toLocaleString(), parseInt("@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value"), parseInt("@ViewBag.ReceiverId"))
+                .catch(err => console.error(err.toString()));
+
+            this.value = '';
+        }
+    });
+</script>

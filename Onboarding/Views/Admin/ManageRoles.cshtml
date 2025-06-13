@@ -1,0 +1,128 @@
+﻿@model List<Onboarding.ViewModels.ManageRolesViewModel>
+@{
+    ViewData["Title"] = "Zarządzanie Rolami";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Zarządzanie Rolami</h2>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Powrót
+                </a>
+            </div>
+            <hr class="mb-4">
+        </div>
+    </div>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="mb-0">
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" name="searchTerm" class="form-control" placeholder="Wyszukaj po email, imieniu lub nazwisku..." value="@ViewData["SearchTerm"]">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i> Szukaj
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @foreach (var userRoleModel in Model)
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-circle me-2"></i>
+                        @userRoleModel.User.Name @userRoleModel.User.Surname
+                    </h5>
+                    <span class="badge bg-primary">@string.Join(", ", userRoleModel.UserRoles)</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="user-details">
+                            <h6 class="text-muted mb-3">Dane użytkownika</h6>
+                            <div class="mb-2">
+                                <i class="bi bi-envelope me-2 text-primary"></i>
+                                <span>@userRoleModel.User.Email</span>
+                            </div>
+                            <div class="mb-2">
+                                <i class="bi bi-person-badge me-2 text-primary"></i>
+                                <span>ID: @userRoleModel.User.Id</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h6 class="text-muted mb-3">Przypisanie roli</h6>
+                        <form method="post" asp-action="UpdateRole" asp-controller="Admin">
+                            <input type="hidden" name="UserId" value="@userRoleModel.User.Id" />
+                            <div class="role-selection">
+                                @foreach (var role in userRoleModel.AvailableRoles)
+                                {
+                                    <div class="form-check custom-radio mb-2">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="SelectedRole"
+                                               value="@role"
+                                               id="role-@(userRoleModel.User.Id)-@role"
+                                        @(userRoleModel.UserRoles.Contains(role) ? "checked" : "") />
+                                        <label class="form-check-label" for="role-@(userRoleModel.User.Id)-@role">
+                                            @role
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check2-circle me-1"></i> Aktualizuj rolę
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .custom-radio .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    .card {
+        border-radius: 0.5rem;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    .card-header {
+        border-top-left-radius: 0.5rem !important;
+        border-top-right-radius: 0.5rem !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('input[name="SelectedRole"]').change(function() {
+                $(this).closest('.card').addClass('border-primary');
+                setTimeout(function() {
+                    $('.card').removeClass('border-primary');
+                }, 1000);
+            });
+        });
+    </script>
+}

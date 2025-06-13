@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36203.30
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Onboarding", "Onboarding\Onboarding.csproj", "{9C6A0CB1-191F-456E-834E-A3C70E9D12DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnboardingXUnitTests", "OnboardingXUnitTests\OnboardingXUnitTests.csproj", "{14E36591-E843-489A-99AD-EEA61A798FEC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C6A0CB1-191F-456E-834E-A3C70E9D12DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C6A0CB1-191F-456E-834E-A3C70E9D12DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C6A0CB1-191F-456E-834E-A3C70E9D12DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C6A0CB1-191F-456E-834E-A3C70E9D12DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14E36591-E843-489A-99AD-EEA61A798FEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14E36591-E843-489A-99AD-EEA61A798FEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14E36591-E843-489A-99AD-EEA61A798FEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14E36591-E843-489A-99AD-EEA61A798FEC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {77097CDA-2604-4B71-A9BB-CA6012319364}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,9 @@
+﻿/* colors.css */
+:root {
+    --primary-color: #007bff; /* Kolor główny przycisków (np. niebieski) */
+    --secondary-color: #28a745; /* Kolor pomocniczy przycisków (np. zielony) */
+    --hover-primary: #0056b3; /* Kolor tła przycisków na hover (ciemniejszy niebieski) */
+    --hover-secondary: #218838; /* Kolor tła przycisków na hover (ciemniejszy zielony) */
+    --white: #ffffff; /* Kolor tekstu biały */
+    --bg-color: #f0ede6;
+}

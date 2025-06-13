@@ -1,0 +1,112 @@
+﻿@using Onboarding.Data.Enums
+@model List<Onboarding.Models.UserTask>
+
+@{
+    ViewData["Title"] = "Postęp Nowego";
+}
+
+<div class="container-custom">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="main-title">Panel Buddy'ego</h1>
+        <div class="header-buttons">
+            <a href="/User/MainPage" class="btn btn-secondary">Wróć na stronę główną</a>
+            <a href="/User/MyAccount" class="btn btn-secondary">Moje konto</a>
+        </div>
+    </header>
+
+    <section>
+        <h2 class="header-custom">Postęp zadań nowych pracowników</h2>
+
+
+        @if (!Model.Any())
+        {
+            <p class="no-data">Nie masz przypisanych żadnych pracowników.</p>
+        }
+        else
+        {
+            var groupedByUser = Model.GroupBy(t => t.user?.Id);
+
+            @foreach (var group in groupedByUser)
+            {
+                var user = group.FirstOrDefault()?.user;
+                if (user == null) continue;
+
+                <div class="accordion mb-3" id="accordion-@user.Id">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading-@user.Id">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@user.Id" aria-expanded="false" aria-controls="collapse-@user.Id">
+                                @user.Name @user.Surname
+                            </button>
+                        </h2>
+                        <div id="collapse-@user.Id" class="accordion-collapse collapse" aria-labelledby="heading-@user.Id" data-bs-parent="#accordion-@user.Id">
+                            <div class="accordion-body">
+                                @{
+                                    var tasksGroupedByCourse = group
+                                    .Where(t => t.Task?.Course != null)
+                                    .GroupBy(t => t.Task.Course.Id);
+
+                                }
+
+                                @if (tasksGroupedByCourse.Any())
+                                {
+                                    @foreach (var courseGroup in tasksGroupedByCourse)
+                                    {
+                                        var firstTask = courseGroup.First();
+                                        var course = firstTask.Task.Course;
+
+                                        <div class="mb-4">
+                                            <h5 class="fw-bold">@course.Name</h5>
+                                            <ul class="list-group">
+                                                @foreach (var task in courseGroup)
+                                                {
+                                                    <li class="list-group-item">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <strong>@task.Task?.Title</strong>
+                                                                <div class="text-muted">@task.Task?.Description</div>
+
+                                                            </div>
+                                                            <div>
+                                                                @switch (task.Status)
+                                                                {
+                                                                    case StatusTask.New:
+                                                                        <span class="badge bg-primary">Nowe</span>
+                                                                        break;
+                                                                    case StatusTask.InProgress:
+                                                                        <span class="badge bg-warning text-dark">W trakcie</span>
+                                                                        break;
+                                                                    case StatusTask.Completed:
+                                                                        <span class="badge bg-success">Zakończone</span>
+                                                                        break;
+                                                                    case StatusTask.Canceled:
+                                                                        <span class="badge bg-danger">Anulowane</span>
+                                                                        break;
+                                                                    default:
+                                                                        <span class="badge bg-secondary">Nieznany</span>
+                                                                        break;
+                                                                }
+                                                            </div>
+                                                        </div>
+
+                                                        
+                                                    </li>
+                                                }
+                                            </ul>
+
+                                        </div>
+                                    }
+
+                                }
+                                else
+                                {
+                                    <p class="text-muted">Brak przypisanych kursów i zadań.</p>
+                                }
+                                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </section>
+</div>

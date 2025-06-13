@@ -1,0 +1,111 @@
+﻿@model Onboarding.Models.Test
+
+@{
+    ViewData["Title"] = "Create Test";
+}
+
+<div class="container-custom">
+    <h1 class="header-custom">Utwórz nowy test</h1>
+
+    <div class="card-custom p-4">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-group with-icon">
+                <label for="Name" class="control-label">Nazwa testu</label>
+                <i class="bi bi-file-earmark-text form-icon"></i>
+                <input type="text" class="form-control" id="Name" name="Name" value="@Model?.Name" placeholder="Wprowadź nazwę testu" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="CourseId" class="control-label">Kurs</label>
+                <select class="form-control" id="CourseId" name="CourseId" required>
+                    <option value="">Wybierz kurs</option>
+                    @foreach (var course in ViewBag.CourseId as SelectList)
+                    {
+                        <option value="@course.Value">@course.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="CourseId" class="text-danger"></span>
+            </div>
+
+            <h3 class="mt-4">Pytania</h3>
+            <div id="questions-container" class="mb-3">
+                <!-- Pytania będą dynamicznie dodawane tutaj -->
+            </div>
+
+            <button type="button" class="btn btn-primary btn-custom mb-3" onclick="addQuestion()">
+                <i class="bi bi-plus-circle me-1"></i> Dodaj pytanie
+            </button>
+
+            <div class="form-group d-flex justify-content-center align-items-center gap-3">
+                <button type="submit" class="btn btn-primary btn-custom">Utwórz test</button>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+                    <i class="bi bi-arrow-left me-1"></i> Powrót do listy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let questionIndex = 0;
+
+        function addQuestion() {
+            const container = document.getElementById("questions-container");
+            const questionHtml = `
+                <div class="card-custom question-group mb-3 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold">Pytanie ${questionIndex + 1}</h6>
+                        <button type="button" class="btn btn-danger btn-custom btn-sm" onclick="removeQuestion(this)">
+                            <i class="bi bi-trash me-1"></i> Usuń
+                        </button>
+                    </div>
+                    <div class="form-group with-icon">
+                        <label class="control-label">Treść pytania</label>
+                        <i class="bi bi-question-circle form-icon"></i>
+                        <input type="text" class="form-control" name="Questions[${questionIndex}].Description" placeholder="Wprowadź treść pytania" required />
+                    </div>
+                    <div class="form-group with-icon mt-2">
+                        <label class="control-label">Odpowiedź A</label>
+                        <i class="bi bi-a form-icon"></i>
+                        <input type="text" class="form-control" name="Questions[${questionIndex}].AnswerA" placeholder="Wprowadź odpowiedź A" required />
+                    </div>
+                    <div class="form-group with-icon mt-2">
+                        <label class="control-label">Odpowiedź B</label>
+                        <i class="bi bi-b form-icon"></i>
+                        <input type="text" class="form-control" name="Questions[${questionIndex}].AnswerB" placeholder="Wprowadź odpowiedź B" required />
+                    </div>
+                    <div class="form-group with-icon mt-2">
+                        <label class="control-label">Odpowiedź C</label>
+                        <i class="bi bi-c form-icon"></i>
+                        <input type="text" class="form-control" name="Questions[${questionIndex}].AnswerC" placeholder="Wprowadź odpowiedź C" required />
+                    </div>
+                    <div class="form-group with-icon mt-2">
+                        <label class="control-label">Odpowiedź D</label>
+                        <i class="bi bi-d form-icon"></i>
+                        <input type="text" class="form-control" name="Questions[${questionIndex}].AnswerD" placeholder="Wprowadź odpowiedź D" required />
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="control-label">Poprawna odpowiedź</label>
+                        <select class="form-control" name="Questions[${questionIndex}].CorrectAnswer">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML("beforeend", questionHtml);
+            questionIndex++;
+        }
+
+        function removeQuestion(button) {
+            button.closest(".question-group").remove();
+        }
+    </script>
+}

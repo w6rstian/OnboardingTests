@@ -1,0 +1,45 @@
+﻿@model User
+
+@{
+    ViewData["Title"] = "Tworzenie Konta Pracownika";
+}
+
+<div class="container-custom">
+    <h2 class="header-custom text-center">Tworzenie konta nowego pracownika</h2>
+
+    <form asp-action="CreateEmployee" asp-controller="HR" method="post">
+        <div class="form-group with-icon">
+            <label for="name" class="control-label">Imię</label>
+            <i class="bi bi-person form-icon"></i>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Wprowadź imię" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group with-icon">
+            <label for="lastname" class="control-label">Nazwisko</label>
+            <i class="bi bi-person-fill form-icon"></i>
+            <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Wprowadź nazwisko" />
+            <span asp-validation-for="Surname" class="text-danger"></span>
+        </div>
+
+        <div class="form-group with-icon">
+            <label for="email" class="control-label">Adres email</label>
+            <i class="bi bi-envelope form-icon"></i>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Wprowadź adres email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary btn-custom">Utwórz konto</button>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Powrót
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

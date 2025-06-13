@@ -1,0 +1,132 @@
+﻿@model Onboarding.ViewModels.EditUserViewModel
+@{
+    ViewData["Title"] = "Edytuj użytkownika";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="bi bi-person-gear me-2"></i>Edytuj użytkownika
+                        </h4>
+                        <span class="badge bg-primary">ID: @Model.Id</span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-envelope me-1 text-primary"></i>Email
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-at"></i>
+                                </span>
+                                <input asp-for="Email" class="form-control" placeholder="Wprowadź adres email" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="bi bi-person me-1 text-primary"></i>Imię
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-person-fill"></i>
+                                    </span>
+                                    <input asp-for="Name" class="form-control" placeholder="Wprowadź imię" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="bi bi-person-vcard me-1 text-primary"></i>Nazwisko
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-person-fill"></i>
+                                    </span>
+                                    <input asp-for="Surname" class="form-control" placeholder="Wprowadź nazwisko" />
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.AvailableBuddies.Any())
+                        {
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="bi bi-people me-1 text-primary"></i>Wybierz Buddiego
+                                </label>
+                                <select asp-for="BuddyId" class="form-select">
+                                    <option value="">Brak</option>
+                                    @foreach (var buddy in Model.AvailableBuddies)
+                                    {
+                                        <option value="@buddy.Id">@buddy.Name @buddy.Surname</option>
+                                    }
+                                </select>
+                            </div>
+                        }
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="ManageUsers" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>Powrót
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>Zapisz zmiany
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 text-muted">
+                <small>
+                    <i class="bi bi-info-circle me-1"></i>
+                    Wprowadzone zmiany zostaną zastosowane natychmiast po zapisaniu.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 0.5rem;
+        border: none;
+    }
+
+    .card-header {
+        border-top-left-radius: 0.5rem !important;
+        border-top-right-radius: 0.5rem !important;
+    }
+
+    .input-group-text {
+        border-right: none;
+    }
+
+    .form-control {
+        border-left: none;
+    }
+
+    .input-group:focus-within {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        border-radius: 0.25rem;
+    }
+
+        .input-group:focus-within .input-group-text,
+        .input-group:focus-within .form-control {
+            border-color: #86b7fe;
+        }
+
+    .form-control:focus {
+        box-shadow: none;
+    }
+</style>

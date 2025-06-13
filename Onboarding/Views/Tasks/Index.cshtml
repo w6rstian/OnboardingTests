@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Onboarding.Models.Task>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container-custom">
+    <h1 class="header-custom">Lista zadań</h1>
+
+    <p class="mb-4">
+        <a asp-action="Create" class="btn btn-primary btn-custom">
+            <i class="bi bi-plus-circle me-1"></i> Utwórz nowe zadanie
+        </a>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Powrót
+        </a>
+    </p>
+
+    @if (Model.Any())
+    {
+        <div class="tasks-list">
+            @foreach (var item in Model)
+            {
+                <div class="card-custom mb-3">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="d-flex align-items-start">
+                            <div class="card-icon">
+                                <i class="bi bi-list-task"></i>
+                            </div>
+                            <div class="w-100">
+                                <h5 class="fw-bold mb-2">@Html.DisplayFor(modelItem => item.Title)</h5>
+                                <p class="text-muted mb-2">
+                                    <strong>Opis:</strong> @Html.DisplayFor(modelItem => item.Description)
+                                </p>
+                                <p class="text-muted mb-2">
+                                    <strong>Kurs:</strong> @Html.DisplayFor(modelItem => item.Course.Name)
+                                </p>
+                                <p class="text-muted mb-2">
+                                    <strong>Mentor:</strong> @Html.DisplayFor(modelItem => item.Mentor.Name) @Html.DisplayFor(modelItem => item.Mentor.Surname)
+                                </p>
+                                <div class="mb-2">
+                                    <strong>Artykuły:</strong>
+                                    @if (item.Articles.Any())
+                                    {
+                                        <ul class="list-unstyled mt-1">
+                                            @foreach (var article in item.Articles)
+                                            {
+                                                <li>@article.Content</li>
+                                            }
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Brak artykułów</span>
+                                    }
+                                </div>
+                                <div>
+                                    <strong>Linki:</strong>
+                                    @if (item.Links.Any())
+                                    {
+                                        <ul class="list-unstyled mt-1">
+                                            @foreach (var link in item.Links)
+                                            {
+                                                <li>
+                                                    <a href="@link.LinkUrl" target="_blank" class="link-custom">@link.Name</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Brak linków</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm me-1">
+                                <i class="bi bi-pencil-square me-1"></i> Edytuj 
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm me-1">
+                                <i class="bi bi-info-circle me-1"></i> Szczegóły
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm"
+                               onclick="return confirm('Czy na pewno chcesz usunąć to zadanie?');">
+                                <i class="bi bi-trash me-1"></i> Usuń
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-data">
+            <i class="bi bi-emoji-frown" style="font-size: 2em;"></i>
+            <p>Brak zadań do wyświetlenia.</p>
+        </div>
+    }
+</div>

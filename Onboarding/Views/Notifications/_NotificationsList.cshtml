@@ -1,0 +1,16 @@
+﻿@model List<Notification>
+@if (Model.Any())
+{
+    foreach (var notification in Model)
+    {
+        <hr/>
+        <div class="notification-item @(notification.IsRead ? "read" : "unread")">
+            <p>@notification.Message</p>
+            <small style="display: block;">@notification.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+        </div>
+    }
+}
+else
+{
+    <p>No notifications available.</p>
+}
