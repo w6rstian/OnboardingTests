@@ -12,7 +12,7 @@ namespace Onboarding.Services
             var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
-            // Check if courses already exist
+            // Check if courses already existtt
             if (context.Courses.Any())
             {
                 return; // Database has already been seeded
