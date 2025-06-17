@@ -58,5 +58,20 @@ namespace Onboarding.Controllers
             }
             return Json(new { success = false });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            var notification = _context.Notifications.Find(id);
+            if (notification != null)
+            {
+                _context.Notifications.Remove(notification);
+                _context.SaveChanges();
+                return Ok();
+            }
+            return NotFound();
+        }
+
     }
 }
