@@ -1,4 +1,13 @@
 ﻿@model List<Notification>
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+
+@{
+    var token = AntiForgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+<input type="hidden" name="__RequestVerificationToken" value="@token" />
+
 @if (Model.Any())
 {
     foreach (var notification in Model)
@@ -6,7 +15,12 @@
         <hr/>
         <div class="notification-item @(notification.IsRead ? "read" : "unread")">
             <p>@notification.Message</p>
-            <small style="display: block;">@notification.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+            <div style="display:inline-flex; align-items: center; width: 100%; justify-content: space-between;">
+                <small style="display: block;">@notification.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+                <button class="delete-notification" data-id="@notification.Id" style="border: none; background: transparent; color: palevioletred;">
+                    <small>Usuń</small>
+                </button>
+            </div>
         </div>
     }
 }
