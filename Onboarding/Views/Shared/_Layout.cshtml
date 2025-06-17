@@ -150,6 +150,40 @@
                 }
             });
         });
+
+        $('#notifications-dropdown').on('click', '.delete-notification', function (e) {
+            e.preventDefault();
+            const button = $(this);
+            const id = button.data('id');
+
+            if (!confirm('Czy na pewno chcesz usunąć to powiadomienie?')) {
+                return;
+            }
+
+            $.ajax({
+                url: '/Notifications/Delete/' + id,
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function () {
+                    // odśwież listę powiadomień
+                    $.ajax({
+                        url: '/Notifications/GetNotifications',
+                        type: 'GET',
+                        success: function (data) {
+                            $('#notifications-dropdown').html(data).show();
+                        },
+                        error: function () {
+                            $('#notifications-dropdown').html('<p>Błąd podczas ładowania powiadomień.</p>').show();
+                        }
+                    });
+                },
+                error: function () {
+                    alert('Nie udało się usunąć powiadomienia.');
+                }
+            });
+        });
     </script>
 </body>
 </html>
