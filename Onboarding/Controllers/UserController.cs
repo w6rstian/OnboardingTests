@@ -71,7 +71,7 @@ namespace Onboarding.Controllers
 				await _emailSender.SendEmailAsync(email, "Confirm your email",
 					$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-				TempData["SuccessMessage"] = "Employee created successfully. A confirmation email has been sent.";
+				//TempData["SuccessMessage"] = "Employee created successfully. A confirmation email has been sent.";
 				return RedirectToAction("MyAccount");
 			}
 			foreach (var error in result.Errors)
