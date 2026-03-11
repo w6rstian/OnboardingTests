@@ -8,10 +8,11 @@ using Onboarding.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Onboarding.Hubs;
+using Onboarding.Interfaces;
 
 namespace Onboarding.Controllers
 {
-	public class ChatController : Controller
+	public class ChatController : Controller, IChatController
 	{
 		private readonly ApplicationDbContext _db;
 		private readonly IHubContext<ChatHub> _chatHub;

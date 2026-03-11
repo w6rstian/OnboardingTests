@@ -1,10 +1,11 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Onboarding.Models;
+using Onboarding.Interfaces;
 
 namespace Onboarding.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : Controller, IHomeController
     {
         private readonly ILogger<HomeController> _logger;
 

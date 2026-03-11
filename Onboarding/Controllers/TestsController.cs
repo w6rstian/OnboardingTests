@@ -11,9 +11,11 @@ using Onboarding.Data;
 using Onboarding.Models;
 using Onboarding.ViewModels;
 
+using Onboarding.Interfaces;
+
 namespace Onboarding.Controllers
 {
-    public class TestsController : Controller
+    public class TestsController : Controller, ITestsController
     {
         private readonly ApplicationDbContext _context;
 

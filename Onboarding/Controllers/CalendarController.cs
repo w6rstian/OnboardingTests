@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Onboarding.Data;
 using Onboarding.Data.Enums;
+using Onboarding.Interfaces;
 using Onboarding.Models;
 using Onboarding.ViewModels;
 
 namespace Onboarding.Controllers
 {
-    public class CalendarController : Controller
+    public class CalendarController : Controller, ICalendarController
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;

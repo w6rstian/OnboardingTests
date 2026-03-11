@@ -6,13 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Onboarding.Data;
 using Onboarding.Data.Enums;
 using Onboarding.Hubs;
+using Onboarding.Interfaces;
 using Onboarding.Models;
 using System.Security.Claims;
 
 namespace Onboarding.Controllers
 {
     [Authorize(Roles = "Admin,Buddy")]
-    public class BuddyController : Controller
+    public class BuddyController : Controller, IBuddyController
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;

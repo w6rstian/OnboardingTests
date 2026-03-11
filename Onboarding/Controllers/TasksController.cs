@@ -14,9 +14,11 @@ using Task = Onboarding.Models.Task;
 using System.Text.Json;
 using StatusTask = Onboarding.Data.Enums.StatusTask;
 using Newtonsoft.Json;
+using Onboarding.Interfaces;
+
 namespace Onboarding.Controllers
 {
-    public class TasksController : Controller
+    public class TasksController : Controller, ITasksController
     {
         private readonly ApplicationDbContext _context;
 

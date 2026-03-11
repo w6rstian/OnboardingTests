@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Onboarding.Data;
+using Onboarding.Interfaces;
 using Onboarding.Models;
 using Onboarding.Services;
 using Onboarding.ViewModels;
@@ -10,7 +11,7 @@ using Onboarding.ViewModels;
 namespace Onboarding.Controllers
 {
     [Authorize(Roles = "Admin,Buddy,Mentor,Manager,HR")]
-    public class AdminController : Controller
+    public class AdminController : Controller, IAdminController
     {
         private readonly ApplicationDbContext _context;
         private readonly RoleManager<IdentityRole<int>> _roleManager;

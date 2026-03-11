@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Onboarding.Data;
 using Onboarding.Models;
 
+using Onboarding.Interfaces;
+
 namespace Onboarding.Controllers
 {
-    public class QuestionsController : Controller
+    public class QuestionsController : Controller, IQuestionsController
     {
         private readonly ApplicationDbContext _context;
 

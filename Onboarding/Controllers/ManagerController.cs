@@ -6,9 +6,11 @@ using Onboarding.Data;
 using Onboarding.Hubs;
 using Onboarding.Models;
 
+using Onboarding.Interfaces;
+
 namespace Onboarding.Controllers
 {
-    public class ManagerController : Controller
+    public class ManagerController : Controller, IManagerController
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
