@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Onboarding.Data;
 using Onboarding.Interfaces;
+using System.Threading.Tasks;
 
 namespace Onboarding.Repositories
 {
@@ -17,12 +18,12 @@ namespace Onboarding.Repositories
 			_context = context;
 		}
 
-		async Task<bool> IUserRepository.UserExistsByLoginAsync(string login)
+		public async Task<bool> UserExistsByLoginAsync(string login)
 		{
 			return await _context.Users.AnyAsync(u => u.Login == login);
 		}
 
-		async Task<bool> IUserRepository.UserExistsByEmailAsync(string email)
+		public async Task<bool> UserExistsByEmailAsync(string email)
 		{
 			return await _context.Users.AnyAsync(u => u.Email == email);
 		}

@@ -1,18 +1,19 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Onboarding.Data;
 using Onboarding.Models;
+using Onboarding.Interfaces;
 using Task = Onboarding.Models.Task;
 
 namespace Onboarding.Services
 {
-    public class CourseTaskInitializer
+    public class CourseTaskInitializer : ICourseTaskInitializer
     {
-        public static async System.Threading.Tasks.Task SeedCoursesAndTasksAsync(IServiceProvider serviceProvider)
+        public async System.Threading.Tasks.Task SeedCoursesAndTasksAsync(IServiceProvider serviceProvider)
         {
             var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
-            // Check if courses already existtt
+            // Check if courses already exist
             if (context.Courses.Any())
             {
                 return; // Database has already been seeded
@@ -29,14 +30,20 @@ namespace Onboarding.Services
 
             // Create sample courses
             var courses = new List<Course>();
-			var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "BaseImageCourse.jpg");
-			var imageBytes = System.IO.File.ReadAllBytes(imagePath);
-			var course1 = new Course
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "BaseImageCourse.jpg");
+            
+            byte[] imageBytes = Array.Empty<byte>();
+            if (File.Exists(imagePath))
+            {
+                imageBytes = File.ReadAllBytes(imagePath);
+            }
+
+            var course1 = new Course
             {
                 Name = "Introduction to Programming",
-				Image = imageBytes,
-				ImageMimeType = "image/jpeg"
-			};
+                Image = imageBytes,
+                ImageMimeType = "image/jpeg"
+            };
 
             var task1 = new Task
             {
@@ -98,9 +105,9 @@ namespace Onboarding.Services
             var course2 = new Course
             {
                 Name = "Advanced C# Programming",
-				Image = imageBytes,
-				ImageMimeType = "image/jpeg"
-			};
+                Image = imageBytes,
+                ImageMimeType = "image/jpeg"
+            };
 
             var task3 = new Task
             {

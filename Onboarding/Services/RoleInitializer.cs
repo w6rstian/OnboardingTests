@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Onboarding.Models;
+using Onboarding.Interfaces;
+using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
 
 namespace Onboarding.Services
 {
-    public static class RoleInitializer
+    public class RoleInitializer : IRoleInitializer
     {
-        public static async System.Threading.Tasks.Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
+        public async System.Threading.Tasks.Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
