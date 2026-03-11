@@ -363,3 +363,9 @@ MigrationBackup/
 FodyWeavers.xsd
 /Migrations
 /Onboarding/Migrations
+
+# Test Coverage
+coveragereport/
+
+# Test results
+[Tt]est[Rr]esults/
