@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Security.Claims;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -128,7 +128,7 @@ namespace OnboardingXUnitTests.Controllers
         {
             // Arrange
             var testUser = new User { Id = 1 };
-            var identityError = IdentityResult.Failed(new IdentityError { Description = "B≥πd zapisu" });
+            var identityError = IdentityResult.Failed(new IdentityError { Description = "B≈ÇƒÖd zapisu" });
             A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(Task.FromResult(testUser));
             A.CallTo(() => _fakeUserManager.UpdateAsync(A<User>._)).Returns(identityError);
 
@@ -218,7 +218,7 @@ namespace OnboardingXUnitTests.Controllers
         {
             // Arrange
             var testUser = new User { Name = "Stare" };
-            var identityError = IdentityResult.Failed(new IdentityError { Description = "B≥πd bazy" });
+            var identityError = IdentityResult.Failed(new IdentityError { Description = "B≈ÇƒÖd bazy" });
 
             A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(Task.FromResult(testUser));
             A.CallTo(() => _fakeUserManager.UpdateAsync(A<User>._)).Returns(Task.FromResult(identityError));
@@ -271,7 +271,7 @@ namespace OnboardingXUnitTests.Controllers
             await _controller.UserSettings(new User { Name = "Nowe" });
 
             // Assert
-            _controller.TempData["SuccessMessage"].Should().Be("Dane uøytkownika zosta≥y zaktualizowane.");
+            _controller.TempData["SuccessMessage"].Should().Be("Dane u≈ºytkownika zosta≈Çy zaktualizowane.");
         }
 
         [Fact]
