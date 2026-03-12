@@ -1,4 +1,6 @@
-﻿namespace Onboarding.Interfaces
+using System.Threading.Tasks;
+
+namespace Onboarding.Interfaces
 {
 	/// <summary>
 	/// This interface is for example register form data validation.

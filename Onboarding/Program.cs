@@ -5,6 +5,8 @@ using Onboarding.Models;
 using Microsoft.AspNetCore.SignalR;
 using Onboarding.Hubs;
 using Onboarding.Services;
+using Onboarding.Interfaces;
+using Onboarding.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,12 @@ builder.Services.AddAuthorization(options =>
 {
    
 });
+
+// Register custom repositories and services
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IValidationService, ValidationService>();
+builder.Services.AddScoped<IRoleInitializer, RoleInitializer>();
+builder.Services.AddScoped<ICourseTaskInitializer, CourseTaskInitializer>();
 
 var app = builder.Build();
 
@@ -50,12 +58,16 @@ app.UseEndpoints(endpoints =>
 	endpoints.MapRazorPages();
 });
 
-//role
+// Seeding
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await RoleInitializer.SeedRolesAndAdminAsync(services);
-	await CourseTaskInitializer.SeedCoursesAndTasksAsync(services);
+    
+    var roleInitializer = services.GetRequiredService<IRoleInitializer>();
+    await roleInitializer.SeedRolesAndAdminAsync(services);
+    
+    var courseTaskInitializer = services.GetRequiredService<ICourseTaskInitializer>();
+	await courseTaskInitializer.SeedCoursesAndTasksAsync(services);
 }
 
 app.Run();
