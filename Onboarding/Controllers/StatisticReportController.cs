@@ -16,11 +16,18 @@ using Onboarding.ViewModels;
 
 namespace Onboarding.Controllers
 {
-    public class StatisticReportController(ApplicationDbContext context, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager) : Controller
+    public class StatisticReportController : Controller
     {
-        private readonly ApplicationDbContext _context = context;
-        private readonly UserManager<User> _userManager = userManager;
-        private readonly RoleManager<IdentityRole<int>> _roleManager = roleManager;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+
+        public StatisticReportController(ApplicationDbContext context, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
+        {
+            _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
 
         public async Task<IActionResult> Index()
         {
@@ -82,11 +89,11 @@ namespace Onboarding.Controllers
                 Roles = roles,
                 UserCountsByRole = userCountsByRole,
                 Courses = courseModels,
-                NewUsersInCourses = newUsersInCourses,
-                NewUsers = await _context.Users
-                .Where(u => newUserIds.Contains(u.Id))
-                .ToListAsync()
+                NewUsersInCourses = newUsersInCourses
             };
+            model.NewUsers = await _context.Users
+            .Where(u => newUserIds.Contains(u.Id))
+            .ToListAsync();
 
             return View(model);
         }
@@ -225,7 +232,7 @@ namespace Onboarding.Controllers
                     TaskId = ut.Task.Id,
                     TaskTitle = ut.Task.Title,
                     Status = ut.Status.ToString(),     // przyjmujemy enum StatusTask
-                    ut.Grade                   // ewentualna ocena/feedback
+                    Grade = ut.Grade                   // ewentualna ocena/feedback
                 })
                 .ToListAsync();
 
@@ -238,7 +245,7 @@ namespace Onboarding.Controllers
                 {
                     TestId = utr.Test.Id,
                     TestName = utr.Test.Name,
-                    utr.CorrectAnswers
+                    CorrectAnswers = utr.CorrectAnswers
                 })
                 .ToListAsync();
 

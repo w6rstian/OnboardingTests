@@ -5,7 +5,7 @@ namespace Onboarding.ViewModels
 {
     public class MeetingViewModel
     {
-        public List<string> SelectedUsersIds { get; set; } = [];
+        public List<string> SelectedUsersIds { get; set; } = new();
 
         public DateTime Start { get; set; }
 
@@ -14,6 +14,6 @@ namespace Onboarding.ViewModels
         public string? Title { get; set; }
 
         public MeetingType Type { get; set; }
-        public List<SelectListItem> AllUsers { get; set; } = [];
+        public List<SelectListItem> AllUsers { get; set; } = new();
     }
 }

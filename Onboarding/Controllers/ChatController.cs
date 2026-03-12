@@ -11,63 +11,69 @@ using Onboarding.Hubs;
 
 namespace Onboarding.Controllers
 {
-    public class ChatController(ApplicationDbContext db, IHubContext<ChatHub> chatHub) : Controller
-    {
-        private readonly ApplicationDbContext _db = db;
-        private readonly IHubContext<ChatHub> _chatHub = chatHub;
+	public class ChatController : Controller
+	{
+		private readonly ApplicationDbContext _db;
+		private readonly IHubContext<ChatHub> _chatHub;
 
-        [Authorize]
-        public IActionResult UserList()
-        {
-            var users = _db.Users.ToList();
-            return View(users);
-        }
+		public ChatController(ApplicationDbContext db, IHubContext<ChatHub> chatHub)
+		{
+			_db = db;
+			_chatHub = chatHub;
+		}
 
-        [Authorize]
-        public IActionResult Index(int receiverId)
-        {
-            var senderId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+		[Authorize]
+		public IActionResult UserList()
+		{
+			var users = _db.Users.ToList();
+			return View(users);
+		}
 
-            var messages = _db.Messages
-                .Where(m => (m.SenderId == senderId && m.ReceiverId == receiverId) ||
-                            (m.SenderId == receiverId && m.ReceiverId == senderId))
-                .OrderBy(m => m.SentAt)
-                .ToList();
+		[Authorize]
+		public IActionResult Index(int receiverId)
+		{
+			var senderId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-            ViewBag.ReceiverId = receiverId;
-            ViewBag.ReceiverName = _db.Users.FirstOrDefault(u => u.Id == receiverId)?.UserName;
+			var messages = _db.Messages
+				.Where(m => (m.SenderId == senderId && m.ReceiverId == receiverId) ||
+							(m.SenderId == receiverId && m.ReceiverId == senderId))
+				.OrderBy(m => m.SentAt)
+				.ToList();
 
-            return View(messages);
-        }
+			ViewBag.ReceiverId = receiverId;
+			ViewBag.ReceiverName = _db.Users.FirstOrDefault(u => u.Id == receiverId)?.UserName;
 
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> SendMessage(int receiverId, string content)
-        {
-            if (!string.IsNullOrEmpty(content))
-            {
-                var senderId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-                _ = User.Identity.Name;
+			return View(messages);
+		}
 
-                var message = new Message
-                {
-                    Content = content,
-                    SentAt = DateTime.Now,
-                    SenderId = senderId,
-                    ReceiverId = receiverId
-                };
+		[Authorize]
+		[HttpPost]
+		public async Task<IActionResult> SendMessage(int receiverId, string content)
+		{
+			if (!string.IsNullOrEmpty(content))
+			{
+				var senderId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+				var senderName = User.Identity.Name;
 
-                _db.Messages.Add(message);
-                await _db.SaveChangesAsync();
+				var message = new Message
+				{
+					Content = content,
+					SentAt = DateTime.Now,
+					SenderId = senderId,
+					ReceiverId = receiverId
+				};
 
-                // SignalR dynamiczne przesyłanie wiadomości
-                _ = $"{Math.Min(senderId, receiverId)}_{Math.Max(senderId, receiverId)}";
-                await _chatHub.Clients.Group($"{Math.Min(senderId, receiverId)}_{Math.Max(senderId, receiverId)}")
-    .SendAsync("ReceiveMessage", message.Content, message.SentAt.ToString("g"), message.SenderId);
+				_db.Messages.Add(message);
+				await _db.SaveChangesAsync();
 
-            }
+				// SignalR dynamiczne przesyłanie wiadomości
+				var groupName = $"{Math.Min(senderId, receiverId)}_{Math.Max(senderId, receiverId)}";
+				await _chatHub.Clients.Group($"{Math.Min(senderId, receiverId)}_{Math.Max(senderId, receiverId)}")
+	.SendAsync("ReceiveMessage", message.Content, message.SentAt.ToString("g"), message.SenderId);
 
-            return RedirectToAction("Index", new { receiverId });
-        }
-    }
+			}
+
+			return RedirectToAction("Index", new { receiverId });
+		}
+	}
 }

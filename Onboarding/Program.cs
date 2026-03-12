@@ -11,17 +11,20 @@ using Onboarding.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddRoles<IdentityRole<int>>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+	.AddRoles<IdentityRole<int>>()
+	.AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
-builder.Services.AddAuthorizationBuilder();
+builder.Services.AddAuthorization(options =>
+{
+   
+});
 
 // Register custom repositories and services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -34,8 +37,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+	app.UseExceptionHandler("/Home/Error");
+	app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -48,23 +51,23 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapHub<ChatHub>("/chatHub");
-    endpoints.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
-    endpoints.MapRazorPages();
+	endpoints.MapHub<ChatHub>("/chatHub");
+	endpoints.MapControllerRoute(
+		name: "default",
+		pattern: "{controller=Home}/{action=Index}/{id?}");
+	endpoints.MapRazorPages();
 });
 
 // Seeding
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
+    
     var roleInitializer = services.GetRequiredService<IRoleInitializer>();
     await roleInitializer.SeedRolesAndAdminAsync(services);
-
+    
     var courseTaskInitializer = services.GetRequiredService<ICourseTaskInitializer>();
-    await courseTaskInitializer.SeedCoursesAndTasksAsync(services);
+	await courseTaskInitializer.SeedCoursesAndTasksAsync(services);
 }
 
 app.Run();

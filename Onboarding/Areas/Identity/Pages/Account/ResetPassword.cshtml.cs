@@ -15,9 +15,14 @@ using Onboarding.Models;
 
 namespace Onboarding.Areas.Identity.Pages.Account
 {
-    public class ResetPasswordModel(UserManager<User> userManager) : PageModel
+    public class ResetPasswordModel : PageModel
     {
-        private readonly UserManager<User> _userManager = userManager;
+        private readonly UserManager<User> _userManager;
+
+        public ResetPasswordModel(UserManager<User> userManager)
+        {
+            _userManager = userManager;
+        }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used

@@ -34,11 +34,11 @@ namespace OnboardingXUnitTests.Controllers
 
             _controller = new StatisticReportController(_context, _userManager, _roleManager);
 
-            var user = new ClaimsPrincipal(new ClaimsIdentity(
-            [
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
                 new Claim(ClaimTypes.Name, "testuser"),
                 new Claim(ClaimTypes.NameIdentifier, "1")
-            ], "mock"));
+            }, "mock"));
 
             _controller.ControllerContext = new ControllerContext()
             {

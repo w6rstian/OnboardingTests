@@ -36,12 +36,12 @@ namespace OnboardingXUnitTests.Controllers
 
             _controller = new BuddyController(_context, _userManager, _chatHub);
 
-            var user = new ClaimsPrincipal(new ClaimsIdentity(
-            [
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
                 new Claim(ClaimTypes.Name, "testuser"),
                 new Claim(ClaimTypes.NameIdentifier, "1"),
                 new Claim(ClaimTypes.Role, "Buddy")
-            ], "mock"));
+            }, "mock"));
 
             _controller.ControllerContext = new ControllerContext()
             {

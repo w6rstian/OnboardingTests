@@ -12,11 +12,18 @@ using System.Security.Claims;
 namespace Onboarding.Controllers
 {
     [Authorize(Roles = "Admin,Buddy")]
-    public class BuddyController(ApplicationDbContext context, UserManager<User> userManager, IHubContext<ChatHub> chatHub) : Controller
+    public class BuddyController : Controller
     {
-        private readonly ApplicationDbContext _context = context;
-        private readonly UserManager<User> _userManager = userManager;
-        private readonly IHubContext<ChatHub> _chatHub = chatHub;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly IHubContext<ChatHub> _chatHub;
+
+        public BuddyController(ApplicationDbContext context, UserManager<User> userManager, IHubContext<ChatHub> chatHub)
+        {
+            _context = context;
+            _userManager = userManager;
+            _chatHub = chatHub;
+        }
 
         public IActionResult Index()
         {
@@ -41,9 +48,9 @@ namespace Onboarding.Controllers
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
-                newbies = newbies.Where(n => n.Email.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ||
-                                             n.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ||
-                                             n.Surname.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase));
+                newbies = newbies.Where(n => n.Email.ToLower().Contains(searchTerm) ||
+                                             n.Name.ToLower().Contains(searchTerm) ||
+                                             n.Surname.ToLower().Contains(searchTerm));
             }
 
             var newbiesList = await newbies.ToListAsync();

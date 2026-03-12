@@ -8,10 +8,16 @@ using Onboarding.Models;
 
 namespace Onboarding.Controllers
 {
-    public class ManagerController(ApplicationDbContext context, UserManager<User> userManager) : Controller
+    public class ManagerController : Controller
     {
-        private readonly ApplicationDbContext _context = context;
-        private readonly UserManager<User> _userManager = userManager;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+
+        public ManagerController(ApplicationDbContext context, UserManager<User> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
 
         public IActionResult Index()
         {

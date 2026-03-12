@@ -31,15 +31,15 @@ namespace OnboardingXUnitTests.Controllers
 
             var store = A.Fake<IUserStore<User>>();
             _fakeUserManager = A.Fake<UserManager<User>>(x => x.WithArgumentsForConstructor(
-                [store, null, null, null, null, null, null, null, null]));
+                new object[] { store, null, null, null, null, null, null, null, null }));
 
             _controller = new UserCoursesController(_context, _fakeUserManager);
 
-            var user = new ClaimsPrincipal(new ClaimsIdentity(
-            [
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
                 new Claim(ClaimTypes.Name, "test@test.com")
-            ], "TestAuthentication"));
+            }, "TestAuthentication"));
 
             _controller.ControllerContext = new ControllerContext
             {

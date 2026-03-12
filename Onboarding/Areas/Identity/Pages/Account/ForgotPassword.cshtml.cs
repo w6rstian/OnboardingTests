@@ -17,10 +17,16 @@ using Onboarding.Models;
 
 namespace Onboarding.Areas.Identity.Pages.Account
 {
-    public class ForgotPasswordModel(UserManager<User> userManager, IEmailSender emailSender) : PageModel
+    public class ForgotPasswordModel : PageModel
     {
-        private readonly UserManager<User> _userManager = userManager;
-        private readonly IEmailSender _emailSender = emailSender;
+        private readonly UserManager<User> _userManager;
+        private readonly IEmailSender _emailSender;
+
+        public ForgotPasswordModel(UserManager<User> userManager, IEmailSender emailSender)
+        {
+            _userManager = userManager;
+            _emailSender = emailSender;
+        }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used

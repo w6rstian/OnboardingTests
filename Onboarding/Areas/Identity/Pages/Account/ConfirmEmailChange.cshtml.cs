@@ -14,10 +14,16 @@ using Onboarding.Models;
 
 namespace Onboarding.Areas.Identity.Pages.Account
 {
-    public class ConfirmEmailChangeModel(UserManager<User> userManager, SignInManager<User> signInManager) : PageModel
+    public class ConfirmEmailChangeModel : PageModel
     {
-        private readonly UserManager<User> _userManager = userManager;
-        private readonly SignInManager<User> _signInManager = signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
+
+        public ConfirmEmailChangeModel(UserManager<User> userManager, SignInManager<User> signInManager)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used

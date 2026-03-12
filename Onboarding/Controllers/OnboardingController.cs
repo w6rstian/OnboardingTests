@@ -11,9 +11,14 @@ using System.Threading.Tasks;
 
 namespace Onboarding.Controllers
 {
-    public class OnboardingController(ApplicationDbContext context) : Controller
+    public class OnboardingController : Controller
     {
-        private readonly ApplicationDbContext _context = context;
+        private readonly ApplicationDbContext _context;
+
+        public OnboardingController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
         [Authorize(Roles = "Admin,Manager")]
         public IActionResult Create()
@@ -22,7 +27,7 @@ namespace Onboarding.Controllers
             .Select(u => new { u.Id, FullName = u.Name + " " + u.Surname })
             .ToList();
 
-            if (mentors.Count == 0)
+            if (!mentors.Any())
             {
                 ModelState.AddModelError("", "Brak dostępnych mentorów w systemie. Dodaj użytkowników przed utworzeniem kursu.");
             }
@@ -101,28 +106,30 @@ namespace Onboarding.Controllers
 
             try
             {
-                byte[] imageBytes = null;
-                string imageMimeType = null;
+				byte[] imageBytes = null;
+				string imageMimeType = null;
 
-                if (viewModel.ImageFile != null && viewModel.ImageFile.Length > 0)
-                {
-                    using var ms = new MemoryStream();
-                    await viewModel.ImageFile.CopyToAsync(ms);
-                    imageBytes = ms.ToArray();
-                    imageMimeType = viewModel.ImageFile.ContentType;
-                }
+				if (viewModel.ImageFile != null && viewModel.ImageFile.Length > 0)
+				{
+					using (var ms = new MemoryStream())
+					{
+						await viewModel.ImageFile.CopyToAsync(ms);
+						imageBytes = ms.ToArray();
+						imageMimeType = viewModel.ImageFile.ContentType;
+					}
+				}
 
-                var course = new Course
+				var course = new Course
                 {
                     Name = viewModel.CourseName,
                     MentorId = viewModel.MentorId,
-                    Image = imageBytes,
-                    ImageMimeType = imageMimeType
-                };
+					Image = imageBytes,
+					ImageMimeType = imageMimeType
+				};
                 _context.Courses.Add(course);
                 await _context.SaveChangesAsync();
 
-                if (viewModel.Tasks != null && viewModel.Tasks.Count != 0)
+                if (viewModel.Tasks != null && viewModel.Tasks.Any())
                 {
                     foreach (var taskVM in viewModel.Tasks)
                     {
@@ -174,7 +181,7 @@ namespace Onboarding.Controllers
                     }
                 }
 
-                if (viewModel.Tests != null && viewModel.Tests.Count != 0)
+                if (viewModel.Tests != null && viewModel.Tests.Any())
                 {
                     foreach (var testVM in viewModel.Tests)
                     {
@@ -183,10 +190,10 @@ namespace Onboarding.Controllers
                             Name = testVM.Name,
                             CourseId = course.Id,
                             Course = course,
-                            Questions = []
+                            Questions = new List<Question>()
                         };
 
-                        if (testVM.Questions != null && testVM.Questions.Count != 0)
+                        if (testVM.Questions != null && testVM.Questions.Any())
                         {
                             foreach (var questionVM in testVM.Questions)
                             {

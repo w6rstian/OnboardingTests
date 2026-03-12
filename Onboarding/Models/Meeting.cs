@@ -16,6 +16,6 @@ namespace Onboarding.Models
 
         public MeetingType Type { get; set; } // enum MeetingType
 
-        public ICollection<MeetingParticipant> Participants { get; set; } = [];
+        public ICollection<MeetingParticipant> Participants { get; set; } = new List<MeetingParticipant>();
     }
 }

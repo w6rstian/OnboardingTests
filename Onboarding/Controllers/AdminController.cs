@@ -10,11 +10,18 @@ using Onboarding.ViewModels;
 namespace Onboarding.Controllers
 {
     [Authorize(Roles = "Admin,Buddy,Mentor,Manager,HR")]
-    public class AdminController(ApplicationDbContext context, RoleManager<IdentityRole<int>> roleManager, UserManager<User> userManager) : Controller
+    public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _context = context;
-        private readonly RoleManager<IdentityRole<int>> _roleManager = roleManager;
-        private readonly UserManager<User> _userManager = userManager;
+        private readonly ApplicationDbContext _context;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+        private readonly UserManager<User> _userManager;
+
+        public AdminController(ApplicationDbContext context, RoleManager<IdentityRole<int>> roleManager, UserManager<User> userManager)
+        {
+            _context = context;
+            _roleManager = roleManager;
+            _userManager = userManager;
+        }
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ManageRoles(string searchTerm)
@@ -25,9 +32,9 @@ namespace Onboarding.Controllers
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
-                usersQuery = usersQuery.Where(u => u.Email.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ||
-                                                   u.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ||
-                                                   u.Surname.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase));
+                usersQuery = usersQuery.Where(u => u.Email.ToLower().Contains(searchTerm) ||
+                                                   u.Name.ToLower().Contains(searchTerm) ||
+                                                   u.Surname.ToLower().Contains(searchTerm));
             }
 
             var users = await usersQuery.ToListAsync();  // Pobieramy wyniki po filtrowaniu
@@ -112,9 +119,9 @@ namespace Onboarding.Controllers
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
-                users = users.Where(u => u.Email.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ||
-                                         u.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ||
-                                         u.Surname.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase));
+                users = users.Where(u => u.Email.ToLower().Contains(searchTerm) ||
+                                         u.Name.ToLower().Contains(searchTerm) ||
+                                         u.Surname.ToLower().Contains(searchTerm));
             }
 
             var userList = await users.ToListAsync();
@@ -149,7 +156,7 @@ namespace Onboarding.Controllers
                 Surname = user.Surname,
                 Email = user.Email,
                 BuddyId = user.BuddyId,
-                AvailableBuddies = isNowy ? [.. buddies] : [] // Pokazujemy Buddich tylko dla roli "Nowy"
+                AvailableBuddies = isNowy ? buddies.ToList() : new List<User>() // Pokazujemy Buddich tylko dla roli "Nowy"
             };
 
             return View(model);
@@ -160,7 +167,7 @@ namespace Onboarding.Controllers
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == model.Id);
             if (user == null) return NotFound();
-
+            
             var isBuddyModified = user.BuddyId != model.BuddyId;
 
             user.Name = model.Name;
@@ -178,8 +185,7 @@ namespace Onboarding.Controllers
                     if (buddy != null)
                     {
                         _context.Notifications.Add(
-                            new Notification
-                            {
+                            new Notification {
                                 UserId = user.Id,
                                 User = user,
                                 Message = $"Przypisano ci nowego buddiego! Twój nowy buddy to {buddy.Name} {buddy.Surname}"

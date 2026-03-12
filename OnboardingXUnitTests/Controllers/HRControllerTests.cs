@@ -28,12 +28,12 @@ namespace OnboardingXUnitTests.Controllers
 
             _controller = new HRController(_userManager, _emailSender, _userStore);
 
-            var user = new ClaimsPrincipal(new ClaimsIdentity(
-            [
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
                 new Claim(ClaimTypes.Name, "testuser"),
                 new Claim(ClaimTypes.NameIdentifier, "1"),
                 new Claim(ClaimTypes.Role, "HR")
-            ], "mock"));
+            }, "mock"));
 
             _controller.ControllerContext = new ControllerContext()
             {

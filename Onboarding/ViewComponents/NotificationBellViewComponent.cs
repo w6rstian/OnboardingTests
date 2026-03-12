@@ -7,10 +7,16 @@ using Onboarding.Models;
 
 namespace Onboarding.ViewComponents
 {
-    public class NotificationBellViewComponent(ApplicationDbContext context, UserManager<User> userManager) : ViewComponent
+    public class NotificationBellViewComponent : ViewComponent
     {
-        private readonly ApplicationDbContext _context = context;
-        private readonly UserManager<User> _userManager = userManager;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+
+        public NotificationBellViewComponent(ApplicationDbContext context, UserManager<User> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {

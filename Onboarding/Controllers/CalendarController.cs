@@ -9,10 +9,16 @@ using Onboarding.ViewModels;
 
 namespace Onboarding.Controllers
 {
-    public class CalendarController(ApplicationDbContext context, UserManager<User> userManager) : Controller
+    public class CalendarController : Controller
     {
-        private readonly ApplicationDbContext _context = context;
-        private readonly UserManager<User> _userManager = userManager;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+
+        public CalendarController(ApplicationDbContext context, UserManager<User> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
 
         public IActionResult Index()
         {
@@ -30,11 +36,11 @@ namespace Onboarding.Controllers
             var model = new MeetingViewModel
             {
                 Type = type,
-                AllUsers = [.. users.Select(u => new SelectListItem
+                AllUsers = users.Select(u => new SelectListItem
                 {
                     Value = u.Id.ToString(),
                     Text = $"{u.Name} {u.Surname} ({u.Email})"
-                })]
+                }).ToList()
             };
 
             return View(model);
@@ -120,27 +126,29 @@ namespace Onboarding.Controllers
                     Start = "2025-05-10T10:00:00",
                     End = "2025-05-10T11:00:00",
                     Type = "General",
-                    Participants = ["Anna Nowak (anna@firma.pl)", "Jan Kowalski (jan@firma.pl)"]
+                    Participants = new List<string> { "Anna Nowak (anna@firma.pl)", "Jan Kowalski (jan@firma.pl)" }
                 },
                 new() {
                     Title = "Lunch z klientem",
                     Start = "2025-05-12T13:00:00",
                     End = "2025-05-12T14:00:00",
                     Type = "General",
-                    Participants = ["Magdalena Wójcik (magda@firma.pl)"]
+                    Participants = new List<string> { "Magdalena Wójcik (magda@firma.pl)" }
                 },
                 new() {
                     Title = "Check-in z Basią",
                     Start = "2025-05-15T09:00:00",
                     End = "2025-05-15T10:00:00",
                     Type = "CheckIn",
-                    Participants = ["Basia Zielińska (basia@firma.pl)"]
+                    Participants = new List<string> { "Basia Zielińska (basia@firma.pl)" }
                 }
             };
 
             if (!string.IsNullOrEmpty(type))
             {
-                exampleEvents = [.. exampleEvents.Where(e => e.Type == type)];
+                exampleEvents = exampleEvents
+                    .Where(e => e.Type == type)
+                    .ToList();
             }
 
             events.AddRange(exampleEvents.Select(e => new
@@ -161,6 +169,6 @@ namespace Onboarding.Controllers
         public string Start { get; set; } = null!;
         public string End { get; set; } = null!;
         public string Type { get; set; } = null!;
-        public List<string> Participants { get; set; } = [];
+        public List<string> Participants { get; set; } = new List<string>();
     }
 }

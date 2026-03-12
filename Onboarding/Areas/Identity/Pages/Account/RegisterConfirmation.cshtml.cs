@@ -16,10 +16,16 @@ using Onboarding.Models;
 namespace Onboarding.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
-    public class RegisterConfirmationModel(UserManager<User> userManager, IEmailSender sender) : PageModel
+    public class RegisterConfirmationModel : PageModel
     {
-        private readonly UserManager<User> _userManager = userManager;
-        private readonly IEmailSender _sender = sender;
+        private readonly UserManager<User> _userManager;
+        private readonly IEmailSender _sender;
+
+        public RegisterConfirmationModel(UserManager<User> userManager, IEmailSender sender)
+        {
+            _userManager = userManager;
+            _sender = sender;
+        }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -45,7 +51,7 @@ namespace Onboarding.Areas.Identity.Pages.Account
             {
                 return RedirectToPage("/Index");
             }
-            returnUrl ??= Url.Content("~/");
+            returnUrl = returnUrl ?? Url.Content("~/");
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -64,7 +70,7 @@ namespace Onboarding.Areas.Identity.Pages.Account
                 EmailConfirmationUrl = Url.Page(
                     "/Account/ConfirmEmail",
                     pageHandler: null,
-                    values: new { area = "Identity", userId, code, returnUrl },
+                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                     protocol: Request.Scheme);
             }
 

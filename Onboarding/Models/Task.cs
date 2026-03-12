@@ -16,11 +16,11 @@ namespace Onboarding.Models
         public int CourseId { get; set; }
         public Course Course { get; set; }
         //public ICollection<Test> Tests { get; set; }
-        public ICollection<Article> Articles { get; set; } = [];
-        public ICollection<Link> Links { get; set; } = [];
+        public ICollection<Article> Articles { get; set; } = new List<Article>();
+        public ICollection<Link> Links { get; set; } = new List<Link>();
         public User Mentor { get; set; }
 
-        public ICollection<CourseTask> CourseTasks { get; set; } = [];
+        public ICollection<CourseTask> CourseTasks { get; set; } = new List<CourseTask>();
 
-    }
+	}
 }

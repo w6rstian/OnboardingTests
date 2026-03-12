@@ -29,7 +29,7 @@ namespace OnboardingXUnitTests.Controllers
         {
             _fakeUserStore = A.Fake<IUserStore<User>>();
             _fakeUserManager = A.Fake<UserManager<User>>(x => x.WithArgumentsForConstructor(
-                [_fakeUserStore, null, null, null, null, null, null, null, null]));
+                new object[] { _fakeUserStore, null, null, null, null, null, null, null, null }));
             _fakeEmailSender = A.Fake<IEmailSender>();
 
             _controller = new UserController(_fakeUserManager, _fakeEmailSender, _fakeUserStore);
@@ -41,11 +41,11 @@ namespace OnboardingXUnitTests.Controllers
             var tempDataDictionaryFactory = new TempDataDictionaryFactory(tempDataProvider);
             _controller.TempData = tempDataDictionaryFactory.GetTempData(new DefaultHttpContext());
 
-            var user = new ClaimsPrincipal(new ClaimsIdentity(
-            [
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
                 new Claim(ClaimTypes.Name, "test@test.com")
-            ], "TestAuthentication"));
+            }, "TestAuthentication"));
 
             _controller.ControllerContext = new ControllerContext
             {
