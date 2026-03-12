@@ -14,11 +14,9 @@ using Onboarding.ViewModels;
 //using QuestPDF.Helpers;
 //using QuestPDF.Infrastructure;
 
-using Onboarding.Interfaces;
-
 namespace Onboarding.Controllers
 {
-    public class StatisticReportController : Controller, IStatisticReportController
+    public class StatisticReportController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;

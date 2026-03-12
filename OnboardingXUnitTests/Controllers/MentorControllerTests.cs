@@ -7,7 +7,7 @@ using Onboarding.Controllers;
 using Onboarding.Interfaces;
 using System.Security.Claims;
 
-namespace OnboardingXUnitTests
+namespace OnboardingXUnitTests.Controllers
 {
     public class MentorControllerTests
     {

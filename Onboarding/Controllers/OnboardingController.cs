@@ -9,11 +9,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Onboarding.Interfaces;
-
 namespace Onboarding.Controllers
 {
-    public class OnboardingController : Controller, IOnboardingController
+    public class OnboardingController : Controller
     {
         private readonly ApplicationDbContext _context;
 

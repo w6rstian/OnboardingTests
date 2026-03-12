@@ -3,11 +3,9 @@ using Onboarding.Data;
 using Onboarding.Models;
 using System.Security.Claims;
 
-using Onboarding.Interfaces;
-
 namespace Onboarding.Controllers
 {
-    public class NotificationsController : Controller, INotificationsController
+    public class NotificationsController : Controller
     {
         private readonly ApplicationDbContext _context;
 

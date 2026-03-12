@@ -6,11 +6,9 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-using Onboarding.Interfaces;
-
 namespace Onboarding.Controllers
 {
-    public class MentorTaskProgress : Controller, IMentorTaskProgress
+    public class MentorTaskProgress : Controller
     {
         private readonly ApplicationDbContext _context;
 

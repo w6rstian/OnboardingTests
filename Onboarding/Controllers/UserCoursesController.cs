@@ -10,11 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Onboarding.Data;
 using Onboarding.Models;
 
-using Onboarding.Interfaces;
-
 namespace Onboarding.Controllers
 {
-    public class UserCoursesController : Controller, IUserCoursesController
+    public class UserCoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;

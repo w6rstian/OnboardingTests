@@ -9,11 +9,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 
-using Onboarding.Interfaces;
-
 namespace Onboarding.Controllers
 {
-	public class HRController : Controller, IHRController
+	public class HRController : Controller
 	{
 		private readonly UserManager<User> _userManager;
 		private readonly IUserStore<User> _userStore;

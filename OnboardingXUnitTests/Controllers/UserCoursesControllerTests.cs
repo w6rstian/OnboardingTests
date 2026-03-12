@@ -14,7 +14,7 @@ using Onboarding.Interfaces;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
 
-namespace OnboardingXUnitTests
+namespace OnboardingXUnitTests.Controllers
 {
     public class UserCoursesControllerTests : IDisposable
     {

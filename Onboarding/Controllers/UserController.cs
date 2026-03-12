@@ -8,11 +8,9 @@ using Onboarding.Models;
 using System.Text.Encodings.Web;
 using System.Text;
 
-using Onboarding.Interfaces;
-
 namespace Onboarding.Controllers
 {
-	public class UserController : Controller, IUserController
+	public class UserController : Controller
 	{
 		private UserManager<User> _userManager;
 		private readonly IEmailSender _emailSender;

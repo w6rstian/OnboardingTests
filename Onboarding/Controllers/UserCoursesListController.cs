@@ -7,12 +7,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-using Onboarding.Interfaces;
-
 namespace Onboarding.Controllers
 {
     [Authorize]
-    public class UserCoursesListController : Controller, IUserCoursesListController
+    public class UserCoursesListController : Controller
     {
         private readonly ApplicationDbContext _context;
 
