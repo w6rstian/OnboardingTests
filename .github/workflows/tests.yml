@@ -1,4 +1,4 @@
-name: .NET Core CI
+﻿name: .NET Core CI
 
 on: [push, pull_request]
 
@@ -17,6 +17,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
+    - name: Check for vulnerable packages
+      run: dotnet list package --vulnerable
+
     - name: Build
       run: dotnet build --no-restore
 
@@ -34,3 +37,12 @@ jobs:
 
     - name: Write to Job Summary
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Publish Build Artifacts
+      run: dotnet publish -c Release -o ./publish
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: onboarding-app-release
+        path: ./publish
