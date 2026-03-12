@@ -37,10 +37,11 @@ namespace OnboardingXUnitTests.Models
         public void User_Login_Property_ShouldWork()
         {
             // Arrange
-            var user = new User();
-
-            // Act
-            user.Login = "jkowalski";
+            var user = new User
+            {
+                // Act
+                Login = "jkowalski"
+            };
 
             // Assert
             user.Login.Should().Be("jkowalski");
@@ -102,12 +103,12 @@ namespace OnboardingXUnitTests.Models
             // Arrange
             var user = new User
             {
-                UserCourses = new List<UserCourse>(),
-                SentMessages = new List<Message>(),
-                ReceivedMessages = new List<Message>(),
-                GivenRewards = new List<Reward>(),
-                ReceivedRewards = new List<Reward>(),
-                Notifications = new List<Notification>()
+                UserCourses = [],
+                SentMessages = [],
+                ReceivedMessages = [],
+                GivenRewards = [],
+                ReceivedRewards = [],
+                Notifications = []
             };
 
             // Act & Assert
@@ -121,7 +122,7 @@ namespace OnboardingXUnitTests.Models
         public void User_UserCourses_ShouldStoreItems()
         {
             // Arrange
-            var user = new User { UserCourses = new List<UserCourse>() };
+            var user = new User { UserCourses = [] };
             var course = new UserCourse { CourseId = 1 };
 
             // Act
@@ -135,7 +136,7 @@ namespace OnboardingXUnitTests.Models
         public void User_Announcements_ShouldStoreItems()
         {
             // Arrange
-            var user = new User { Announcements = new List<Announcement>() };
+            var user = new User { Announcements = [] };
             var announcement = new Announcement { Id = 1 };
 
             // Act
@@ -149,7 +150,7 @@ namespace OnboardingXUnitTests.Models
         public void User_GivenRewards_ShouldStoreItems()
         {
             // Arrange
-            var user = new User { GivenRewards = new List<Reward>() };
+            var user = new User { GivenRewards = [] };
             var reward = new Reward
             {
                 Id = 1,
@@ -168,7 +169,7 @@ namespace OnboardingXUnitTests.Models
         public void User_ReceivedRewards_ShouldStoreItems()
         {
             // Arrange
-            var user = new User { ReceivedRewards = new List<Reward>() };
+            var user = new User { ReceivedRewards = [] };
             var reward = new Reward
             {
                 Id = 5,

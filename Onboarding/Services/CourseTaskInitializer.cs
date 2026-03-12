@@ -31,8 +31,8 @@ namespace Onboarding.Services
             // Create sample courses
             var courses = new List<Course>();
             var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "BaseImageCourse.jpg");
-            
-            byte[] imageBytes = Array.Empty<byte>();
+
+            byte[] imageBytes = [];
             if (File.Exists(imagePath))
             {
                 imageBytes = File.ReadAllBytes(imagePath);

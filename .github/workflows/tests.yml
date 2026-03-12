@@ -1,4 +1,4 @@
-name: .NET Core CI
+﻿name: .NET Core CI
 
 on: [push, pull_request]
 
@@ -8,6 +8,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -16,6 +18,17 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
+
+    - name: Check for vulnerable packages
+      run: dotnet list package --vulnerable
+
+    - name: Run dotnet format fixes
+      run: dotnet format --severity info --exclude-diagnostics ASP0014 IDE0060 IDE1006 CA1816 CA1050
+
+    - name: Commit formatting changes
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "style: auto-format code"
 
     - name: Build
       run: dotnet build --no-restore
@@ -34,3 +47,12 @@ jobs:
 
     - name: Write to Job Summary
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Publish Build Artifacts
+      run: dotnet publish -c Release -o ./publish
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: onboarding-app-release
+        path: ./publish

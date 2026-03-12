@@ -12,16 +12,10 @@ using Onboarding.Models;
 
 namespace Onboarding.Controllers
 {
-    public class UserCoursesController : Controller
+    public class UserCoursesController(ApplicationDbContext context, UserManager<User> userManager) : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<User> _userManager;
-
-        public UserCoursesController(ApplicationDbContext context, UserManager<User> userManager)
-        {
-            _context = context;
-            _userManager = userManager;
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly UserManager<User> _userManager = userManager;
 
         // GET: UserCourses
         public async Task<IActionResult> Index()

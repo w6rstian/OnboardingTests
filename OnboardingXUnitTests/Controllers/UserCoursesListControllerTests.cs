@@ -29,11 +29,11 @@ namespace OnboardingXUnitTests.Controllers
 
             _controller = new UserCoursesListController(_context);
 
-            var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
+            var user = new ClaimsPrincipal(new ClaimsIdentity(
+            [
                 new Claim(ClaimTypes.NameIdentifier, "1"),
                 new Claim(ClaimTypes.Name, "test@test.com")
-            }, "TestAuthentication"));
+            ], "TestAuthentication"));
 
             _controller.ControllerContext = new ControllerContext
             {

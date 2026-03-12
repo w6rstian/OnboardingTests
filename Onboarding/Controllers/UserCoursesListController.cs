@@ -10,14 +10,9 @@ using System.Threading.Tasks;
 namespace Onboarding.Controllers
 {
     [Authorize]
-    public class UserCoursesListController : Controller
+    public class UserCoursesListController(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public UserCoursesListController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         public async Task<IActionResult> Index()
         {
@@ -38,26 +33,26 @@ namespace Onboarding.Controllers
                 .Include(c => c.UserCourses)
                     .ThenInclude(uc => uc.User)
                 .Include(c => c.Tasks)
-                    .ThenInclude(t => t.Links) 
+                    .ThenInclude(t => t.Links)
                 .Include(c => c.Tasks)
-                    .ThenInclude(t => t.Mentor) 
+                    .ThenInclude(t => t.Mentor)
                 .Include(c => c.Tests)
-					.ThenInclude(t => t.Questions)
-				.FirstOrDefaultAsync(c => c.Id == id);
+                    .ThenInclude(t => t.Questions)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (course == null)
             {
                 return NotFound();
             }
 
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			var results = await _context.UserTestResults
-				.Where(r => r.UserId == userId)
-				.ToListAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var results = await _context.UserTestResults
+                .Where(r => r.UserId == userId)
+                .ToListAsync();
 
-			ViewBag.UserTestResults = results;
+            ViewBag.UserTestResults = results;
 
-			return View(course);
+            return View(course);
         }
     }
 }

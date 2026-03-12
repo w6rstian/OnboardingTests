@@ -17,14 +17,9 @@ using Newtonsoft.Json;
 
 namespace Onboarding.Controllers
 {
-    public class TasksController : Controller
+    public class TasksController(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public TasksController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         // GET: Tasks
         public async Task<IActionResult> Index()
@@ -35,7 +30,7 @@ namespace Onboarding.Controllers
                 .Include(t => t.Articles)
                 .Include(t => t.Links);
             return View(await applicationDbContext.ToListAsync());
-        }   
+        }
 
         // GET: Tasks/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -78,7 +73,7 @@ namespace Onboarding.Controllers
                 ModelState.AddModelError(string.Empty, "All fields are required.");
             }
 
-            if (!ModelState.IsValid)    
+            if (!ModelState.IsValid)
             {
                 ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Id");
                 ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id");
@@ -107,8 +102,8 @@ namespace Onboarding.Controllers
                 Title = Title,
                 Description = Description,
                 CourseId = CourseId,
-                Mentor = mentor,  
-                Course = course   
+                Mentor = mentor,
+                Course = course
             };
 
             if (!string.IsNullOrEmpty(Links))
@@ -310,28 +305,28 @@ namespace Onboarding.Controllers
             return _context.Tasks.Any(e => e.Id == id);
         }
 
-		[Authorize]
-		public async Task<IActionResult> Execute(int taskId)
-		{
-			var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-			
-			int userId = int.Parse(userIdString);
-
-			var userTask = _context.UserTasks
-	.Include(ut => ut.Task) // dodaj Include, aby załadować relację!
-	.FirstOrDefault(ut => ut.TaskId == taskId && ut.UserId == userId);
+        [Authorize]
+        public async Task<IActionResult> Execute(int taskId)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
 
-			if (userTask == null)
-			{
-				var task = await _context.Tasks.FindAsync(taskId);
+            int userId = int.Parse(userIdString);
 
-				if (task == null)
-				{
-					// Zadanie nie istnieje, zwróć NotFound lub odpowiedni komunikat
-					return NotFound($"Zadanie o ID {taskId} {userIdString} nie zostało znalezione.");
-				}
+            var userTask = _context.UserTasks
+    .Include(ut => ut.Task) // dodaj Include, aby załadować relację!
+    .FirstOrDefault(ut => ut.TaskId == taskId && ut.UserId == userId);
+
+
+            if (userTask == null)
+            {
+                var task = await _context.Tasks.FindAsync(taskId);
+
+                if (task == null)
+                {
+                    // Zadanie nie istnieje, zwróć NotFound lub odpowiedni komunikat
+                    return NotFound($"Zadanie o ID {taskId} {userIdString} nie zostało znalezione.");
+                }
 
                 userTask = new UserTask
                 {
@@ -343,43 +338,43 @@ namespace Onboarding.Controllers
 
                 };
 
-				_context.UserTasks.Add(userTask);
-				await _context.SaveChangesAsync();
-			}
-			if (userTask == null)
-			{
-				return NotFound("UserTask nie znaleziony.");
-			}
+                _context.UserTasks.Add(userTask);
+                await _context.SaveChangesAsync();
+            }
+            if (userTask == null)
+            {
+                return NotFound("UserTask nie znaleziony.");
+            }
 
-			if (userTask.Task == null)
-			{
-				return NotFound($"Nie znaleziono powiązanego zadania Task dla UserTask ID: {userTask.UserTaskId}");
-			}
-			return View("Execute", userTask);
-		}
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Execute(UserTask model)
-		{
-			var userTask = await _context.UserTasks
-				.Include(ut => ut.Task)
-				.FirstOrDefaultAsync(ut => ut.UserTaskId == model.UserTaskId);
+            if (userTask.Task == null)
+            {
+                return NotFound($"Nie znaleziono powiązanego zadania Task dla UserTask ID: {userTask.UserTaskId}");
+            }
+            return View("Execute", userTask);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Execute(UserTask model)
+        {
+            var userTask = await _context.UserTasks
+                .Include(ut => ut.Task)
+                .FirstOrDefaultAsync(ut => ut.UserTaskId == model.UserTaskId);
 
-			if (userTask == null)
-				return NotFound();
+            if (userTask == null)
+                return NotFound();
 
-			userTask.Container = model.Container;
+            userTask.Container = model.Container;
             userTask.Status = StatusTask.Completed;
 
-			await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-			TempData["Message"] = "Odpowiedź została zapisana!";
-			return RedirectToAction("Execute", new { taskId = userTask.TaskId });
-		}
-
-
+            TempData["Message"] = "Odpowiedź została zapisana!";
+            return RedirectToAction("Execute", new { taskId = userTask.TaskId });
+        }
 
 
 
-	}
+
+
+    }
 }

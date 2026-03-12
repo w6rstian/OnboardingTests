@@ -5,14 +5,9 @@ using System.Security.Claims;
 
 namespace Onboarding.Controllers
 {
-    public class NotificationsController : Controller
+    public class NotificationsController(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public NotificationsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         public ActionResult GetNotificationBell()
         {

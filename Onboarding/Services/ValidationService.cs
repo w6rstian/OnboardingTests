@@ -7,24 +7,19 @@ namespace Onboarding.Services
     /// This service is for example register form data validation.
     /// It validates login, password, and email using regex and checks for duplicate usernames and emails.
     /// </summary>
-    public class ValidationService : IValidationService
+    public partial class ValidationService(IUserRepository userRepository) : IValidationService
     {
-        private readonly IUserRepository _userRepository;
-
-        public ValidationService(IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
+        private readonly IUserRepository _userRepository = userRepository;
 
         public bool ValidateLoginFormat(string login)
         {
-            var loginRegex = new Regex(@"^[a-zA-Z0-9]{5,50}$");
+            var loginRegex = MyRegex();
             return loginRegex.IsMatch(login);
         }
 
         public bool ValidatePasswordFormat(string password)
         {
-            var passwordRegex = new Regex(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
+            var passwordRegex = MyRegex1();
             return passwordRegex.IsMatch(password);
         }
 
@@ -43,5 +38,10 @@ namespace Onboarding.Services
         {
             return !await _userRepository.UserExistsByEmailAsync(email);
         }
+
+        [GeneratedRegex(@"^[a-zA-Z0-9]{5,50}$")]
+        private static partial Regex MyRegex();
+        [GeneratedRegex(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$")]
+        private static partial Regex MyRegex1();
     }
 }

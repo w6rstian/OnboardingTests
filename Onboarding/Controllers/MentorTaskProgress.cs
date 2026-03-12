@@ -8,14 +8,9 @@ using System.Threading.Tasks;
 
 namespace Onboarding.Controllers
 {
-    public class MentorTaskProgress : Controller
+    public class MentorTaskProgress(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public MentorTaskProgress(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         // 1. Lista tasków, gdzie użytkownik jest mentorem
         public async Task<IActionResult> Index()
@@ -50,7 +45,7 @@ namespace Onboarding.Controllers
                 return new
                 {
                     User = ut.user,
-                    Status = ut.Status
+                    ut.Status
 
                 };
             }).ToList();

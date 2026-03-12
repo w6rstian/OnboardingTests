@@ -10,14 +10,9 @@ using Onboarding.Models;
 
 namespace Onboarding.Controllers
 {
-    public class QuestionsController : Controller
+    public class QuestionsController(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public QuestionsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         // GET: Questions
         public async Task<IActionResult> Index()
@@ -57,7 +52,7 @@ namespace Onboarding.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string Description,string AnswerA,string AnswerB,string AnswerC,string AnswerD,string CorrectAnswer,int TestId)
+        public async Task<IActionResult> Create(string Description, string AnswerA, string AnswerB, string AnswerC, string AnswerD, string CorrectAnswer, int TestId)
         {
             var question = new Question
             {

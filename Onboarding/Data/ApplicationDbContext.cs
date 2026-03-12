@@ -6,9 +6,8 @@ using System.Drawing;
 
 namespace Onboarding.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<int>, int>
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User, IdentityRole<int>, int>(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         //public DbSet<User> Users { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Models.Task> Tasks { get; set; }
@@ -24,9 +23,9 @@ namespace Onboarding.Data
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<CourseTask> CourseTasks { get; set; }
 
-		public DbSet<UserTask> UserTasks { get; set; }
+        public DbSet<UserTask> UserTasks { get; set; }
 
-		public DbSet<UserTestResult> UserTestResults { get; set; }
+        public DbSet<UserTestResult> UserTestResults { get; set; }
 
         public DbSet<Meeting> Meetings { get; set; }
         public DbSet<MeetingParticipant> MeetingParticipants { get; set; }

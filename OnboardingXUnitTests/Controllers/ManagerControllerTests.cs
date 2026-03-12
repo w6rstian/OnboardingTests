@@ -32,12 +32,12 @@ namespace OnboardingXUnitTests.Controllers
 
             _controller = new ManagerController(_context, _userManager);
 
-            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
+            var user = new ClaimsPrincipal(new ClaimsIdentity(
+            [
                 new Claim(ClaimTypes.Name, "testuser"),
                 new Claim(ClaimTypes.NameIdentifier, "1"),
                 new Claim(ClaimTypes.Role, "Manager")
-            }, "mock"));
+            ], "mock"));
 
             _controller.ControllerContext = new ControllerContext()
             {

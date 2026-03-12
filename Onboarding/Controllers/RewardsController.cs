@@ -10,14 +10,9 @@ using System.Threading.Tasks;
 namespace Onboarding.Controllers
 {
     [Authorize]
-    public class RewardsController : Controller
+    public class RewardsController(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public RewardsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         // Ocena Mentora
         public IActionResult RateMentor(int mentorId, int taskId)

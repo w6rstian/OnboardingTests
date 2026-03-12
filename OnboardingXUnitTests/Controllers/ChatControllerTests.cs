@@ -33,11 +33,11 @@ namespace OnboardingXUnitTests.Controllers
 
             _controller = new ChatController(_context, _chatHub);
 
-            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
+            var user = new ClaimsPrincipal(new ClaimsIdentity(
+            [
                 new Claim(ClaimTypes.Name, "testuser"),
                 new Claim(ClaimTypes.NameIdentifier, "1")
-            }, "mock"));
+            ], "mock"));
 
             _controller.ControllerContext = new ControllerContext()
             {

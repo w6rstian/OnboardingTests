@@ -13,14 +13,9 @@ using Onboarding.ViewModels;
 
 namespace Onboarding.Controllers
 {
-    public class TestsController : Controller
+    public class TestsController(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public TestsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         [Authorize(Roles = "Admin,Manager")]
         // GET: Tests
@@ -68,7 +63,7 @@ namespace Onboarding.Controllers
 
             if (Questions != null && Questions.Count > 0)
             {
-                test.Questions = new List<Question>();
+                test.Questions = [];
                 foreach (var question in Questions)
                 {
                     Console.WriteLine($"Pytanie: {question.Description}");
@@ -84,7 +79,7 @@ namespace Onboarding.Controllers
                 }
             }
 
-             _context.Tests.Add(test);
+            _context.Tests.Add(test);
             await _context.SaveChangesAsync();
 
             Console.WriteLine($"Test dodany do bazy: {test.Name}, ID: {test.Id}");
@@ -212,7 +207,7 @@ namespace Onboarding.Controllers
             }
 
             var test = await _context.Tests
-                 .Include(t => t.Course) 
+                 .Include(t => t.Course)
                  .Include(t => t.Questions)
                  .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -256,89 +251,89 @@ namespace Onboarding.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-		[HttpGet]
-		public async Task<IActionResult> Execute(int id)
-		{
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			var alreadyTaken = await _context.UserTestResults
-				.AnyAsync(r => r.TestId == id && r.UserId == userId);
-			if (alreadyTaken)
-			{
-				TempData["Error"] = "Już rozwiązałeś ten test.";
-				return RedirectToAction("Details", new { id });
-			}
+        [HttpGet]
+        public async Task<IActionResult> Execute(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var alreadyTaken = await _context.UserTestResults
+                .AnyAsync(r => r.TestId == id && r.UserId == userId);
+            if (alreadyTaken)
+            {
+                TempData["Error"] = "Już rozwiązałeś ten test.";
+                return RedirectToAction("Details", new { id });
+            }
 
-			var test = await _context.Tests
-				.Include(t => t.Questions)
-				.FirstOrDefaultAsync(t => t.Id == id);
+            var test = await _context.Tests
+                .Include(t => t.Questions)
+                .FirstOrDefaultAsync(t => t.Id == id);
 
-			if (test == null) return NotFound();
+            if (test == null) return NotFound();
 
-			var vm = new TestViewModel
-			{
-				TestId = test.Id,
-				Name = test.Name,
-				CourseId = test.CourseId,
-				Questions = test.Questions.Select(q => new QuestionViewModel
-				{
-					Id = q.Id,
-					Description = q.Description,
-					AnswerA = q.AnswerA,
-					AnswerB = q.AnswerB,
-					AnswerC = q.AnswerC,
-					AnswerD = q.AnswerD,
-					CorrectAnswer = q.CorrectAnswer
-				}).ToList(),
-				Answers = test.Questions.Select(q => new AnswerSubmissionModel
-				{
-					QuestionId = q.Id
-				}).ToList()
-			};
+            var vm = new TestViewModel
+            {
+                TestId = test.Id,
+                Name = test.Name,
+                CourseId = test.CourseId,
+                Questions = [.. test.Questions.Select(q => new QuestionViewModel
+                {
+                    Id = q.Id,
+                    Description = q.Description,
+                    AnswerA = q.AnswerA,
+                    AnswerB = q.AnswerB,
+                    AnswerC = q.AnswerC,
+                    AnswerD = q.AnswerD,
+                    CorrectAnswer = q.CorrectAnswer
+                })],
+                Answers = [.. test.Questions.Select(q => new AnswerSubmissionModel
+                {
+                    QuestionId = q.Id
+                })]
+            };
 
-			return View(vm);
-		}
+            return View(vm);
+        }
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Execute(TestViewModel model)
-		{
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			var alreadyTaken = await _context.UserTestResults
-				.AnyAsync(r => r.TestId == model.TestId && r.UserId == userId);
-			if (alreadyTaken)
-			{
-				TempData["Error"] = "Już rozwiązałeś ten test.";
-				return RedirectToAction("Details", new { id = model.TestId });
-			}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Execute(TestViewModel model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var alreadyTaken = await _context.UserTestResults
+                .AnyAsync(r => r.TestId == model.TestId && r.UserId == userId);
+            if (alreadyTaken)
+            {
+                TempData["Error"] = "Już rozwiązałeś ten test.";
+                return RedirectToAction("Details", new { id = model.TestId });
+            }
 
-			var questions = await _context.Questions
-				.Where(q => q.TestId == model.TestId)
-				.ToListAsync();
+            var questions = await _context.Questions
+                .Where(q => q.TestId == model.TestId)
+                .ToListAsync();
 
-			int correct = 0;
-			foreach (var ans in model.Answers)
-			{
-				var q = questions.FirstOrDefault(x => x.Id == ans.QuestionId);
-				if (q != null && ans.SelectedAnswer == q.CorrectAnswer)
-				{
-					correct++;
-				}
-			}
+            int correct = 0;
+            foreach (var ans in model.Answers)
+            {
+                var q = questions.FirstOrDefault(x => x.Id == ans.QuestionId);
+                if (q != null && ans.SelectedAnswer == q.CorrectAnswer)
+                {
+                    correct++;
+                }
+            }
 
-			var result = new UserTestResult
-			{
-				UserId = userId,
-				TestId = model.TestId,
-				TakenDate = DateTime.Now,
-				CorrectAnswers = correct
-			};
+            var result = new UserTestResult
+            {
+                UserId = userId,
+                TestId = model.TestId,
+                TakenDate = DateTime.Now,
+                CorrectAnswers = correct
+            };
 
-			_context.UserTestResults.Add(result);
-			await _context.SaveChangesAsync();
+            _context.UserTestResults.Add(result);
+            await _context.SaveChangesAsync();
 
-			TempData["Message"] = $"Twój wynik: {correct} poprawnych odpowiedzi.";
-			return RedirectToAction("Details", "UserCoursesList", new { id = model.CourseId });
+            TempData["Message"] = $"Twój wynik: {correct} poprawnych odpowiedzi.";
+            return RedirectToAction("Details", "UserCoursesList", new { id = model.CourseId });
 
-		}
-	}
+        }
+    }
 }
