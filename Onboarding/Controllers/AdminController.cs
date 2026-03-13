@@ -87,7 +87,7 @@ namespace Onboarding.Controllers
 
                 if (isCurrentUser)
                 {
-                    TempData["Error"] = "Nie możesz usunąć sobie roli administratora.";
+                    TempData["Error"] = "Nie mozesz usunac sobie roli administratora.";
                     return RedirectToAction("ManageRoles");
                 }
             }
