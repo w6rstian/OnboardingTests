@@ -113,7 +113,7 @@ namespace OnboardingXUnitTests.Controllers
 
             var redirect = result.Should().BeOfType<RedirectToActionResult>().Subject;
             redirect.ActionName.Should().Be("ManageRoles");
-            _controller.TempData["Error"].Should().Be("Nie mozesz usunac sobie roli administratora.");
+            _controller.TempData["Error"].Should().Be("Nie mo¿na usun¹æ roli 'Admin' ostatniemu administratorowi.");
         }
 
         [Fact]
