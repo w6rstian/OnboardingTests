@@ -50,10 +50,10 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task Index_ReturnsViewResult()
         {
-            // Act
+             
             var result = await _controller.Index();
 
-            // Assert
+             
             result.Should().BeOfType<ViewResult>();
         }
 
@@ -68,14 +68,14 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task Index_ReturnsUserCoursesList()
         {
-            // Arrange
+             
             _context.UserCourses.Add(new UserCourse { Id = 1, UserId = 1, CourseId = 1 });
             await _context.SaveChangesAsync();
 
-            // Act
+             
             var result = await _controller.Index();
 
-            // Assert
+             
             var view = result.Should().BeOfType<ViewResult>().Subject;
             view.Model.Should().NotBeNull();
         }
@@ -83,20 +83,20 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task Details_NullId_ReturnsNotFound()
         {
-            // Act
+             
             var result = await _controller.Details(null);
 
-            // Assert
+             
             result.Should().BeOfType<NotFoundResult>();
         }
 
         [Fact]
         public async Task Details_NonExistingId_ReturnsNotFound()
         {
-            // Act
+             
             var result = await _controller.Details(99);
 
-            // Assert
+             
             result.Should().BeOfType<NotFoundResult>();
         }
 
@@ -104,7 +104,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task Details_ExistingId_ReturnsView()
         {
-            // Arrange
+             
             var user = new User { Id = 1, Name = "Jan", Surname = "User" };
             var course = new Course { Id = 1, Name = "Course" };
 
@@ -120,10 +120,10 @@ namespace OnboardingXUnitTests.Controllers
 
             await _context.SaveChangesAsync();
 
-            // Act
+             
             var result = await _controller.Details(1);
 
-            // Assert
+             
             result.Should().BeOfType<ViewResult>();
         }
 
@@ -131,10 +131,10 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task Create_Post_ValidData_SavesUserCourse()
         {
-            // Act
+             
             var result = await _controller.Create(1, 1);
 
-            // Assert
+             
             result.Should().BeOfType<RedirectToActionResult>();
             _context.UserCourses.Should().HaveCount(1);
         }
@@ -143,10 +143,10 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task Edit_Get_NullId_ReturnsNotFound()
         {
-            // Act
+             
             var result = await _controller.Edit(null);
 
-            // Assert
+             
             result.Should().BeOfType<NotFoundResult>();
         }
 
@@ -154,10 +154,10 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task Edit_Get_NonExistingId_ReturnsNotFound()
         {
-            // Act
+             
             var result = await _controller.Edit(5);
 
-            // Assert
+             
             result.Should().BeOfType<NotFoundResult>();
         }
 
@@ -165,7 +165,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task Delete_Get_ExistingId_ReturnsView()
         {
-            // Arrange
+             
             var user = new User { Id = 1, Name = "Jan", Surname = "User" };
             var course = new Course { Id = 1, Name = "Course" };
 
@@ -181,10 +181,10 @@ namespace OnboardingXUnitTests.Controllers
 
             await _context.SaveChangesAsync();
 
-            // Act
+             
             var result = await _controller.Delete(1);
 
-            // Assert
+             
             result.Should().BeOfType<ViewResult>();
         }
 
@@ -192,14 +192,14 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task DeleteConfirmed_RemovesUserCourse()
         {
-            // Arrange
+             
             _context.UserCourses.Add(new UserCourse { Id = 1, UserId = 1, CourseId = 1 });
             await _context.SaveChangesAsync();
 
-            // Act
+             
             var result = await _controller.DeleteConfirmed(1);
 
-            // Assert
+             
             result.Should().BeOfType<RedirectToActionResult>();
             _context.UserCourses.Should().BeEmpty();
         }

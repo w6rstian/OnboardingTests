@@ -59,20 +59,20 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public void Index_ReturnsViewResult()
         {
-            // Act
+             
             var result = _controller.Index();
 
-            // Assert
+             
             result.Should().BeOfType<ViewResult>();
         }
 
         [Fact]
         public async Task CreateMeeting_Get_ReturnsViewWithModelAndFilteredUsers()
         {
-            // Act
+             
             var result = await _controller.CreateMeeting(MeetingType.BuddyCheckIn);
 
-            // Assert
+             
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
             var model = viewResult.Model.Should().BeOfType<MeetingViewModel>().Subject;
             model.Type.Should().Be(MeetingType.BuddyCheckIn);
@@ -83,14 +83,14 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreateMeeting_Post_InvalidModel_ReturnsViewWithModelAndAllUsers()
         {
-            // Arrange
+             
             var model = new MeetingViewModel { Type = MeetingType.General };
             _controller.ModelState.AddModelError("Title", "Required");
 
-            // Act
+             
             var result = await _controller.CreateMeeting(model);
 
-            // Assert
+             
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
             var returnedModel = viewResult.Model.Should().BeOfType<MeetingViewModel>().Subject;
             returnedModel.AllUsers.Should().HaveCount(1);
@@ -100,7 +100,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreateMeeting_Post_ValidModel_AddsMeetingToDatabaseAndRedirects()
         {
-            // Arrange
+             
             var model = new MeetingViewModel
             {
                 Title = "Meeting Title",
@@ -110,10 +110,10 @@ namespace OnboardingXUnitTests.Controllers
                 SelectedUsersIds = new List<string> { "2" }
             };
 
-            // Act
+             
             var result = await _controller.CreateMeeting(model);
 
-            // Assert
+             
             result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Index");
             _context.Meetings.Should().HaveCount(1);
             var meeting = _context.Meetings.Include(m => m.Participants).First();
@@ -125,7 +125,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task GetEvents_ReturnsEventsForCurrentUser()
         {
-            // Arrange
+             
             var otherUser = _context.Users.Find(2);
             var meeting = new Meeting
             {
@@ -161,10 +161,10 @@ namespace OnboardingXUnitTests.Controllers
 
             await _context.SaveChangesAsync();
 
-            // Act
+             
             var result = await _controller.GetEvents(null);
 
-            // Assert
+             
             var jsonResult = result.Should().BeOfType<JsonResult>().Subject;
             var events = jsonResult.Value as System.Collections.IEnumerable;
             events.Cast<object>().Should().HaveCount(5);
@@ -173,7 +173,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task GetEvents_WithSpecificType_FiltersEvents()
         {
-            // Arrange
+             
             var meeting = new Meeting
             {
                 OrganizerId = _currentUser.Id,
@@ -185,10 +185,10 @@ namespace OnboardingXUnitTests.Controllers
             _context.Meetings.Add(meeting);
             await _context.SaveChangesAsync();
 
-            // Act
+             
             var result = await _controller.GetEvents("General");
 
-            // Assert
+             
             var jsonResult = result.Should().BeOfType<JsonResult>().Subject;
             var events = jsonResult.Value as System.Collections.IEnumerable;
             
@@ -208,7 +208,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreateMeeting_Post_NullTitle_UsesDefaultTitle()
         {
-            // Arrange
+             
             var model = new MeetingViewModel
             {
                 Title = null,
@@ -218,10 +218,10 @@ namespace OnboardingXUnitTests.Controllers
                 SelectedUsersIds = new List<string>()
             };
 
-            // Act
+             
             await _controller.CreateMeeting(model);
 
-            // Assert
+             
             var meeting = _context.Meetings.First();
             meeting.Title.Should().Be("Spotkanie");
         }
@@ -229,7 +229,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreateMeeting_Post_WithMultipleParticipants_AddsAllParticipants()
         {
-            // Arrange
+             
             var model = new MeetingViewModel
             {
                 Title = "Team meeting",
@@ -239,10 +239,10 @@ namespace OnboardingXUnitTests.Controllers
                 SelectedUsersIds = new List<string> { "2", "2" }
             };
 
-            // Act
+             
             await _controller.CreateMeeting(model);
 
-            // Assert
+             
             var meeting = _context.Meetings.Include(m => m.Participants).First();
             meeting.Participants.Should().HaveCount(2);
         }
@@ -250,7 +250,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreateMeeting_Post_WithoutParticipants_CreatesMeeting()
         {
-            // Arrange
+             
             var model = new MeetingViewModel
             {
                 Title = "No participants",
@@ -260,10 +260,10 @@ namespace OnboardingXUnitTests.Controllers
                 SelectedUsersIds = new List<string>()
             };
 
-            // Act
+             
             await _controller.CreateMeeting(model);
 
-            // Assert
+             
             _context.Meetings.Should().HaveCount(1);
             var meeting = _context.Meetings.Include(x => x.Participants).First();
             meeting.Participants.Should().BeEmpty();
@@ -273,10 +273,10 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task GetEvents_WhenNoDatabaseMeetings_ReturnsExampleEvents()
         {
-            // Act
+             
             var result = await _controller.GetEvents(null);
 
-            // Assert
+             
             var json = result.Should().BeOfType<JsonResult>().Subject;
             var events = json.Value as System.Collections.IEnumerable;
 
@@ -287,10 +287,10 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreateMeeting_Get_UserTextIsFormattedCorrectly()
         {
-            // Act
+             
             var result = await _controller.CreateMeeting(MeetingType.General);
 
-            // Assert
+             
             var view = result.Should().BeOfType<ViewResult>().Subject;
             var model = view.Model.Should().BeOfType<MeetingViewModel>().Subject;
 
@@ -300,7 +300,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreateMeeting_Post_SetsOrganizerIdToCurrentUser()
         {
-            // Arrange
+             
             var model = new MeetingViewModel
             {
                 Title = "Test meeting",
@@ -310,10 +310,10 @@ namespace OnboardingXUnitTests.Controllers
                 SelectedUsersIds = new List<string>()
             };
 
-            // Act
+             
             await _controller.CreateMeeting(model);
 
-            // Assert
+             
             var meeting = _context.Meetings.First();
             meeting.OrganizerId.Should().Be(_currentUser.Id);
         }
@@ -322,7 +322,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreateMeeting_Post_SavesStartAndEndCorrectly()
         {
-            // Arrange
+             
             var start = DateTime.Now;
             var end = start.AddHours(2);
 
@@ -335,10 +335,10 @@ namespace OnboardingXUnitTests.Controllers
                 SelectedUsersIds = new List<string>()
             };
 
-            // Act
+             
             await _controller.CreateMeeting(model);
 
-            // Assert
+             
             var meeting = _context.Meetings.First();
             meeting.Start.Should().Be(start);
             meeting.End.Should().Be(end);
@@ -348,7 +348,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreateMeeting_Post_SavesCorrectMeetingType()
         {
-            // Arrange
+             
             var model = new MeetingViewModel
             {
                 Title = "Type test",
@@ -358,10 +358,10 @@ namespace OnboardingXUnitTests.Controllers
                 SelectedUsersIds = new List<string>()
             };
 
-            // Act
+             
             await _controller.CreateMeeting(model);
 
-            // Assert
+             
             var meeting = _context.Meetings.First();
             meeting.Type.Should().Be(MeetingType.BuddyCheckIn);
         }
@@ -370,10 +370,10 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreateMeeting_Get_SetsMeetingTypeCorrectly()
         {
-            // Act
+             
             var result = await _controller.CreateMeeting(MeetingType.General);
 
-            // Assert
+             
             var view = result.Should().BeOfType<ViewResult>().Subject;
             var model = view.Model.Should().BeOfType<MeetingViewModel>().Subject;
 
@@ -384,10 +384,10 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task GetEvents_ReturnsJsonResult()
         {
-            // Act
+             
             var result = await _controller.GetEvents(null);
 
-            // Assert
+             
             result.Should().BeOfType<JsonResult>();
         }
     }

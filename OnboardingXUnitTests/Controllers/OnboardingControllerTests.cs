@@ -45,19 +45,19 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public void Create_ReturnsViewResult()
         {
-            // Act
+             
             var result = _controller.Create();
 
-            // Assert
+             
             result.Should().BeOfType<ViewResult>();
         }
         [Fact]
         public async Task CreatePost_ModelIsNull_ReturnsViewWithModelError()
         {
-            // Act
+             
             var result = await _controller.Create(null);
 
-            // Assert
+             
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
             _controller.ModelState.ErrorCount.Should().BeGreaterThan(0);
         }
@@ -65,16 +65,16 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreatePost_CourseNameEmpty_ReturnsViewWithMentorsData()
         {
-            // Arrange
+             
             _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Testowy" });
             await _context.SaveChangesAsync();
 
             var viewModel = new CreateOnboardingViewModel { CourseName = "" };
 
-            // Act
+             
             var result = await _controller.Create(viewModel);
 
-            // Assert
+             
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
             _controller.ModelState.IsValid.Should().BeFalse();
             viewResult.ViewData.ContainsKey("Mentors").Should().BeTrue();
@@ -93,10 +93,10 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public void Create_WhenNoMentors_AddsModelError()
         {
-            // Act
+             
             var result = _controller.Create();
 
-            // Assert
+             
             result.Should().BeOfType<ViewResult>();
             _controller.ModelState.IsValid.Should().BeFalse();
         }
@@ -104,14 +104,14 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public void Create_WhenMentorsExist_ReturnsViewWithMentors()
         {
-            // Arrange
+             
             _context.Users.Add(new User { Id = 1, Name = "Anna", Surname = "Nowak" });
             _context.SaveChanges();
 
-            // Act
+             
             var result = _controller.Create();
 
-            // Assert
+             
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
             viewResult.ViewData.ContainsKey("Mentors").Should().BeTrue();
         }
@@ -120,17 +120,17 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreatePost_InvalidMentorId_AddsModelError()
         {
-            // Arrange
+             
             var vm = new CreateOnboardingViewModel
             {
                 CourseName = "Test Course",
                 MentorId = 99
             };
 
-            // Act
+             
             var result = await _controller.Create(vm);
 
-            // Assert
+             
             result.Should().BeOfType<ViewResult>();
             _controller.ModelState.IsValid.Should().BeFalse();
         }
@@ -139,7 +139,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreatePost_TaskWithoutTitle_AddsModelError()
         {
-            // Arrange
+             
             _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
             await _context.SaveChangesAsync();
 
@@ -160,10 +160,10 @@ namespace OnboardingXUnitTests.Controllers
         }
             };
 
-            // Act
+             
             var result = await _controller.Create(vm);
 
-            // Assert
+             
             result.Should().BeOfType<ViewResult>();
             _controller.ModelState.IsValid.Should().BeFalse();
         }
@@ -172,7 +172,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreatePost_TaskMentorDoesNotExist_ReturnsError()
         {
-            // Arrange
+             
             _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
             await _context.SaveChangesAsync();
 
@@ -193,10 +193,10 @@ namespace OnboardingXUnitTests.Controllers
         }
             };
 
-            // Act
+             
             var result = await _controller.Create(vm);
 
-            // Assert
+             
             result.Should().BeOfType<ViewResult>();
             _controller.ModelState.IsValid.Should().BeFalse();
         }
@@ -227,10 +227,10 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public void CreateGet_ReturnsView()
         {
-            // Act
+             
             var result = _controller.Create();
 
-            // Assert
+             
             result.Should().BeOfType<ViewResult>();
         }
 
