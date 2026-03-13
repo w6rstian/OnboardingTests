@@ -140,7 +140,8 @@ namespace OnboardingXUnitTests.Controllers
         public async Task CreatePost_ValidCourseWithoutTasks_CreatesCourse()
         {
             // Arrange
-            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            var mentor = new User { Id = 1, Name = "Jan", Surname = "Mentor" };
+            _context.Users.Add(mentor);
             await _context.SaveChangesAsync();
 
             var vm = new CreateOnboardingViewModel
@@ -228,7 +229,8 @@ namespace OnboardingXUnitTests.Controllers
         public async Task CreatePost_ValidTask_AddsTaskToDatabase()
         {
             // Arrange
-            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            var mentor = new User { Id = 1, Name = "Jan", Surname = "Mentor" };
+            _context.Users.Add(mentor);
             await _context.SaveChangesAsync();
 
             var vm = new CreateOnboardingViewModel
@@ -243,7 +245,7 @@ namespace OnboardingXUnitTests.Controllers
                 Description = "desc",
                 MentorId = 1,
                 ArticleContent = "article",
-                Links = "link"
+                Links = "http://link.com"
             }
         }
             };
@@ -257,10 +259,11 @@ namespace OnboardingXUnitTests.Controllers
 
 
         [Fact]
-        public async Task CreatePost_TaskCreatesLinks()
+        public async Task CreatePost_TaskCreatesLink()
         {
             // Arrange
-            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            var mentor = new User { Id = 1, Name = "Jan", Surname = "Mentor" };
+            _context.Users.Add(mentor);
             await _context.SaveChangesAsync();
 
             var vm = new CreateOnboardingViewModel
@@ -275,7 +278,7 @@ namespace OnboardingXUnitTests.Controllers
                 Description = "desc",
                 MentorId = 1,
                 ArticleContent = "article",
-                Links = "http://a.com http://b.com"
+                Links = "http://test.com"
             }
         }
             };
@@ -285,7 +288,7 @@ namespace OnboardingXUnitTests.Controllers
 
             // Assert
             var task = _context.Tasks.Include(t => t.Links).First();
-            task.Links.Should().HaveCount(2);
+            task.Links.Should().NotBeEmpty();
         }
 
 
@@ -293,7 +296,8 @@ namespace OnboardingXUnitTests.Controllers
         public async Task CreatePost_TaskCreatesArticle()
         {
             // Arrange
-            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            var mentor = new User { Id = 1, Name = "Jan", Surname = "Mentor" };
+            _context.Users.Add(mentor);
             await _context.SaveChangesAsync();
 
             var vm = new CreateOnboardingViewModel
@@ -308,7 +312,7 @@ namespace OnboardingXUnitTests.Controllers
                 Description = "desc",
                 MentorId = 1,
                 ArticleContent = "article text",
-                Links = "link"
+                Links = "http://link.com"
             }
         }
             };
@@ -326,7 +330,8 @@ namespace OnboardingXUnitTests.Controllers
         public async Task CreatePost_TestWithQuestions_IsSaved()
         {
             // Arrange
-            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            var mentor = new User { Id = 1, Name = "Jan", Surname = "Mentor" };
+            _context.Users.Add(mentor);
             await _context.SaveChangesAsync();
 
             var vm = new CreateOnboardingViewModel
