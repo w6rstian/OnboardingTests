@@ -90,7 +90,7 @@ namespace OnboardingXUnitTests.Controllers
 
             var redirect = result.Should().BeOfType<RedirectToActionResult>().Subject;
             redirect.ActionName.Should().Be("Newbies");
-            _controller.TempData["Error"].Should().Be("Feedback nie mo¿e byæ pusty.");
+            _controller.TempData["Error"].Should().Be("Feedback nie moze byc pusty.");
         }
 
         [Fact]

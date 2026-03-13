@@ -65,7 +65,7 @@ namespace Onboarding.Controllers
         {
             if (string.IsNullOrEmpty(feedbackContent))
             {
-                TempData["Error"] = "Feedback nie może być pusty.";
+                TempData["Error"] = "Feedback nie moze byc pusty.";
                 return RedirectToAction("Newbies");
             }
 
@@ -97,7 +97,7 @@ namespace Onboarding.Controllers
             await _chatHub.Clients.Group(groupName)
                 .SendAsync("ReceiveMessage", message.Content, message.SentAt.ToString("g"), message.SenderId);
 
-            TempData["Success"] = "Feedback został wysłany do mentora.";
+            TempData["Success"] = "Feedback został wysany do mentora.";
             return RedirectToAction("Newbies");
         }
 
