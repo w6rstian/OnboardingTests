@@ -1,14 +1,15 @@
-using Xunit;
 using FakeItEasy;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Onboarding.Controllers;
 using Onboarding.Data;
-using Onboarding.Models;
 using Onboarding.Interfaces;
+using Onboarding.Models;
+using Onboarding.ViewModels;
 using System.Security.Claims;
+using Xunit;
 using Task = System.Threading.Tasks.Task;
 
 namespace OnboardingXUnitTests.Controllers
@@ -49,6 +50,34 @@ namespace OnboardingXUnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<ViewResult>();
+        }
+        [Fact]
+        public async Task CreatePost_ModelIsNull_ReturnsViewWithModelError()
+        {
+            // Act
+            var result = await _controller.Create(null);
+
+            // Assert
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            _controller.ModelState.ErrorCount.Should().BeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task CreatePost_CourseNameEmpty_ReturnsViewWithMentorsData()
+        {
+            // Arrange
+            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Testowy" });
+            await _context.SaveChangesAsync();
+
+            var viewModel = new CreateOnboardingViewModel { CourseName = "" };
+
+            // Act
+            var result = await _controller.Create(viewModel);
+
+            // Assert
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            _controller.ModelState.IsValid.Should().BeFalse();
+            viewResult.ViewData.ContainsKey("Mentors").Should().BeTrue();
         }
 
         public void Dispose()

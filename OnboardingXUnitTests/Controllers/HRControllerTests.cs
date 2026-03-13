@@ -5,10 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Onboarding.Controllers;
 using Onboarding.Models;
 using Onboarding.Interfaces;
 using System.Security.Claims;
+using System.Threading;
 using Task = System.Threading.Tasks.Task;
 
 namespace OnboardingXUnitTests.Controllers
@@ -35,20 +38,91 @@ namespace OnboardingXUnitTests.Controllers
                 new Claim(ClaimTypes.Role, "HR")
             }, "mock"));
 
+            var httpContext = new DefaultHttpContext() { User = user };
+            httpContext.Request.Scheme = "https";
+
             _controller.ControllerContext = new ControllerContext()
             {
-                HttpContext = new DefaultHttpContext() { User = user }
+                HttpContext = httpContext
             };
+
+            _controller.TempData = new TempDataDictionary(httpContext, A.Fake<ITempDataProvider>());
+
+            var urlHelperFake = A.Fake<IUrlHelper>();
+            A.CallTo(() => urlHelperFake.Action(A<UrlActionContext>.Ignored)).Returns("https://fakeurl.com");
+            _controller.Url = urlHelperFake;
         }
 
         [Fact]
         public void HRPanel_ReturnsViewResult()
         {
-            // Act
             var result = _controller.HRPanel();
 
-            // Assert
             result.Should().BeOfType<ViewResult>();
+        }
+
+        [Fact]
+        public void CreateEmployeeGet_ReturnsViewResult()
+        {
+            var result = _controller.CreateEmployee();
+
+            result.Should().BeOfType<ViewResult>();
+        }
+
+        [Theory]
+        [InlineData("", "Kowalski", "test@test.com")]
+        [InlineData("Jan", "", "test@test.com")]
+        [InlineData("Jan", "Kowalski", "")]
+        [InlineData(null, null, null)]
+        public async Task CreateEmployeePost_EmptyFields_ReturnsViewWithError(string name, string lastname, string email)
+        {
+            var result = await _controller.CreateEmployee(name, lastname, email);
+
+            result.Should().BeOfType<ViewResult>();
+            _controller.ModelState.IsValid.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task CreateEmployeePost_ValidData_CreatesUserSendsEmailAndRedirects()
+        {
+            A.CallTo(() => _userManager.CreateAsync(A<User>.Ignored, A<string>.Ignored))
+                .Returns(IdentityResult.Success);
+
+            A.CallTo(() => _userManager.GetUserIdAsync(A<User>.Ignored))
+                .Returns("fake-user-id");
+
+            A.CallTo(() => _userManager.GenerateEmailConfirmationTokenAsync(A<User>.Ignored))
+                .Returns("fake-token");
+
+            var result = await _controller.CreateEmployee("Jan", "Kowalski", "jan@test.com");
+
+            var redirectResult = result.Should().BeOfType<RedirectToActionResult>().Subject;
+            redirectResult.ActionName.Should().Be("CreateEmployee");
+            _controller.TempData["SuccessMessage"].Should().Be("Employee created successfully. A confirmation email has been sent.");
+
+            A.CallTo(() => _userStore.SetUserNameAsync(A<User>.Ignored, "jan@test.com", CancellationToken.None))
+                .MustHaveHappenedOnceExactly();
+            A.CallTo(() => _userManager.SetEmailAsync(A<User>.Ignored, "jan@test.com"))
+                .MustHaveHappenedOnceExactly();
+            A.CallTo(() => _emailSender.SendEmailAsync("jan@test.com", "Confirm your email", A<string>.Ignored))
+                .MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public async Task CreateEmployeePost_CreationFails_ReturnsViewWithErrors()
+        {
+            var error = new IdentityError { Description = "Password too weak" };
+            A.CallTo(() => _userManager.CreateAsync(A<User>.Ignored, A<string>.Ignored))
+                .Returns(IdentityResult.Failed(error));
+
+            var result = await _controller.CreateEmployee("Jan", "Kowalski", "jan@test.com");
+
+            result.Should().BeOfType<ViewResult>();
+            _controller.ModelState.IsValid.Should().BeFalse();
+            _controller.ModelState[string.Empty].Errors[0].ErrorMessage.Should().Be("Password too weak");
+
+            A.CallTo(() => _emailSender.SendEmailAsync(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored))
+                .MustNotHaveHappened();
         }
     }
 }

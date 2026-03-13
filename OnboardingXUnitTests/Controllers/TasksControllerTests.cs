@@ -52,6 +52,176 @@ namespace OnboardingXUnitTests.Controllers
             result.Should().BeOfType<ViewResult>();
         }
 
+        [Fact]
+        public async Task Details_IdIsNull_ReturnsNotFound()
+        {
+            // Act
+            var result = await _controller.Details(null);
+
+            // Assert
+            result.Should().BeOfType<NotFoundResult>();
+        }
+        [Fact]
+        public async Task Details_TaskNotFound_ReturnsNotFound()
+        {
+            var result = await _controller.Details(null);
+
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+
+        [Fact]
+        public async Task Details_TaskExists_ReturnsViewResultWithTask()
+        {
+            // Arrange
+            var expectedTask = new Onboarding.Models.Task
+            {
+                Id = 1,
+                Title = "Test",
+                Description = "Test",
+
+                CourseId = 1,
+                Course = new Onboarding.Models.Course { Id = 1, Name = "Test" }, 
+
+                MentorId = 2,
+                Mentor = new Onboarding.Models.User { Id = 2, Name = "Test" }  
+            };
+
+            _context.Tasks.Add(expectedTask);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _controller.Details(expectedTask.Id);
+
+            // Assert
+            var viewResult = result.Should().BeOfType<ViewResult>("ponieważ zadanie zostało zapisane wraz z powiązanymi danymi").Subject;
+
+            var model = viewResult.Model.Should().BeAssignableTo<Onboarding.Models.Task>().Subject;
+            model.Id.Should().Be(expectedTask.Id);
+        }
+
+        [Fact]
+        public async Task Create_MissingRequiredFields_ReturnsViewResult()
+        {
+            // Arrange
+            _context.Courses.Add(new Onboarding.Models.Course { Id = 1, Name = "Kurs" });
+            _context.Users.Add(new Onboarding.Models.User { Id = 1, Name = "Mentor" }); 
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _controller.Create(1, "", "Opis", 1, null, null);
+
+            // Assert
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+
+            _controller.ModelState.IsValid.Should().BeFalse();
+
+            viewResult.ViewData.ContainsKey("CourseId").Should().BeTrue();
+            viewResult.ViewData.ContainsKey("MentorId").Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task Create_CourseNotFound_ReturnsNotFound()
+        {
+            // Act
+            var result = await _controller.Create(1, "Tytuł", "Opis", 999, null, null);
+
+            // Assert
+            result.Should().BeOfType<NotFoundResult>("ponieważ w bazie nie ma kursu o ID 999");
+        }
+        [Fact]
+        public async Task Create_MentorNotFound_ReturnsNotFound()
+        {
+            // Arrange
+            var course = new Onboarding.Models.Course { Id = 1, Name = "Kurs testowy" };
+            _context.Courses.Add(course);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _controller.Create(999, "Tytuł", "Opis", 1, null, null);
+
+            // Assert
+            result.Should().BeOfType<NotFoundResult>("ponieważ w bazie nie ma mentora o ID 999");
+        }
+
+        
+        [Fact]
+        public async Task Create_ValidData_SavesTaskAndReturnsRedirectToIndex()
+        {
+            
+            var course = new Onboarding.Models.Course { Id = 1, Name = "Kurs" };
+            var mentor = new Onboarding.Models.User { Id = 1, Name = "Mentor" }; 
+
+            _context.Courses.Add(course);
+            _context.Users.Add(mentor);
+            await _context.SaveChangesAsync();
+
+            string title = "Nowe zadanie";
+            string links = "https://google.com https://github.com"; 
+            string articleContent = "Treść artykułu";
+
+            // Act
+            var result = await _controller.Create(mentor.Id, title, "Opis", course.Id, articleContent, links);
+
+            // Assert
+            var redirectResult = result.Should().BeOfType<RedirectToActionResult>().Subject;
+            redirectResult.ActionName.Should().Be("Index");
+
+            var savedTask = await _context.Tasks
+                .Include(t => t.Links)
+                .Include(t => t.Articles)
+                .FirstOrDefaultAsync(t => t.Title == title);
+
+            savedTask.Should().NotBeNull();
+            savedTask.Description.Should().Be("Opis");
+            savedTask.CourseId.Should().Be(1);
+            savedTask.MentorId.Should().Be(1);
+
+            savedTask.Links.Should().HaveCount(2);
+            savedTask.Links.Should().Contain(l => l.LinkUrl == "https://google.com");
+
+            savedTask.Articles.Should().HaveCount(1);
+            savedTask.Articles.First().Content.Should().Be("Treść artykułu");
+        }
+        [Fact]
+        public async Task DeleteGet_IdIsNull_ReturnsNotFound()
+        {
+            var result = await _controller.Delete(null);
+
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public async Task DeleteGet_TaskNotFound_ReturnsNotFound()
+        {
+            var result = await _controller.Delete(999);
+
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public async Task DeleteGet_TaskExists_ReturnsViewResultWithTask()
+        {
+            var expectedTask = new Onboarding.Models.Task
+            {
+                Id = 1,
+                Title = "Test",
+                Description = "Test",
+                CourseId = 1,
+                Course = new Onboarding.Models.Course { Id = 1, Name = "Test" },
+                MentorId = 1,
+                Mentor = new Onboarding.Models.User { Id = 1, Name = "Test" }
+            };
+
+            _context.Tasks.Add(expectedTask);
+            await _context.SaveChangesAsync();
+
+            var result = await _controller.Delete(expectedTask.Id);
+
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            var model = viewResult.Model.Should().BeAssignableTo<Onboarding.Models.Task>().Subject;
+            model.Id.Should().Be(expectedTask.Id);
+        }
         public void Dispose()
         {
             _context.Dispose();
