@@ -124,5 +124,57 @@ namespace OnboardingXUnitTests.Controllers
             A.CallTo(() => _emailSender.SendEmailAsync(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored))
                 .MustNotHaveHappened();
         }
+
+        [Fact]
+        public async Task CreateEmployeePost_CreationFails_AddsAllIdentityErrorsToModelState()
+        {
+            var errors = new List<IdentityError>
+            {
+                new IdentityError { Description = "Has³o jest za krótkie." },
+                new IdentityError { Description = "Has³o musi mieæ znak specjalny." }
+            };
+
+            A.CallTo(() => _userManager.CreateAsync(A<User>.Ignored, A<string>.Ignored)).Returns(IdentityResult.Failed(errors.ToArray()));
+
+            var result = await _controller.CreateEmployee("Jan", "Kowalski", "jan@test.com");
+
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            _controller.ModelState.IsValid.Should().BeFalse();
+
+            _controller.ModelState[string.Empty].Errors.Should().HaveCount(2);
+            _controller.ModelState[string.Empty].Errors[0].ErrorMessage.Should().Be("Has³o jest za krótkie.");
+            _controller.ModelState[string.Empty].Errors[1].ErrorMessage.Should().Be("Has³o musi mieæ znak specjalny.");
+        }
+
+        [Fact]
+        public async Task CreateEmployeePost_ValidData_SetsEmailConfirmedToTrue()
+        {
+
+            User capturedUser = null;
+
+            A.CallTo(() => _userManager.CreateAsync(A<User>.Ignored, A<string>.Ignored)).Invokes((User u, string p) => capturedUser = u).Returns(IdentityResult.Success);
+
+            A.CallTo(() => _userManager.GetUserIdAsync(A<User>.Ignored)).Returns("1");
+            A.CallTo(() => _userManager.GenerateEmailConfirmationTokenAsync(A<User>.Ignored)).Returns("token");
+
+
+            await _controller.CreateEmployee("Jan", "Kowalski", "jan@test.com");
+
+            capturedUser.Should().NotBeNull();
+            capturedUser.Name.Should().Be("Jan");
+            capturedUser.Surname.Should().Be("Kowalski");
+
+            capturedUser.EmailConfirmed.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task CreateEmployeePost_NullFields_ReturnsViewWithError()
+        {
+            var result = await _controller.CreateEmployee(null, null, null);
+
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            _controller.ModelState.IsValid.Should().BeFalse();
+            _controller.ModelState[string.Empty].Errors[0].ErrorMessage.Should().Be("All fields are required.");
+        }
     }
 }
