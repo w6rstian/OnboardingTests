@@ -13,6 +13,8 @@ using Onboarding.Interfaces;
 using Onboarding.Hubs;
 using System.Security.Claims;
 using Task = System.Threading.Tasks.Task;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Onboarding.Data.Enums;
 
 namespace OnboardingXUnitTests.Controllers
 {
@@ -47,6 +49,97 @@ namespace OnboardingXUnitTests.Controllers
             {
                 HttpContext = new DefaultHttpContext() { User = user }
             };
+        }
+
+        [Fact]
+        public void BuddyPanel_ReturnsViewResult()
+        {
+            var result = _controller.BuddyPanel();
+
+            result.Should().BeOfType<ViewResult>();
+        }
+
+        [Fact]
+        public async Task Newbies_ReturnsOnlyAssignedNewbies_WhenSearchTermIsProvided()
+        {
+            var currentUser = new User { Id = 1, UserName = "testuser" };
+            var assignedNewbie = new User { Id = 10, Name = "Marek", Surname = "B¹czek", Buddy = currentUser };
+            var otherNewbie = new User { Id = 11, Name = "Anna", Surname = "Nowak", Buddy = null };
+
+            _context.Users.AddRange(assignedNewbie, otherNewbie);
+            await _context.SaveChangesAsync();
+
+            A.CallTo(() => _userManager.GetUserAsync(_controller.User)).Returns(currentUser);
+
+            var result = await _controller.Newbies("Marek");
+
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            var model = viewResult.Model.Should().BeAssignableTo<IEnumerable<User>>().Subject;
+
+            model.Should().ContainSingle();
+            model.First().Name.Should().Be("Marek");
+            _controller.ViewData["SearchTerm"].Should().Be("marek"); 
+        }
+
+        [Fact]
+        public async Task SendFeedbackToMentor_ReturnsError_WhenContentIsEmpty()
+        {
+            _controller.TempData = A.Fake<ITempDataDictionary>();
+
+            var result = await _controller.SendFeedbackToMentor(10, 1, "");
+
+            var redirect = result.Should().BeOfType<RedirectToActionResult>().Subject;
+            redirect.ActionName.Should().Be("Newbies");
+            _controller.TempData["Error"].Should().Be("Feedback nie mo¿e byæ pusty.");
+        }
+
+        [Fact]
+        public async Task TaskStatus_ReturnsViewWithTasks_IncludingDebugTask()
+        {
+            var currentUser = new User { Id = 1, Email = "buddy@test.com", UserName = "buddy@test.com" };
+            var newbieDebug = new User
+            {
+                Id = 2,
+                Email = "nowy1@mail.com",
+                UserName = "nowy1@mail.com",
+                Buddy = currentUser
+            };
+
+            _context.Users.AddRange(currentUser, newbieDebug);
+
+            var course = new Course { Id = 1, Name = "Kurs C#" };
+
+            var taskBase = new Onboarding.Models.Task
+            {
+                Id = 1,
+                Title = "Zadanie 1",
+                Description = "Opis zadania", // To naprawia b³¹d
+                Course = course
+            };
+
+            var userTask = new UserTask
+            {
+                user = newbieDebug,
+                Task = taskBase,
+                Status = StatusTask.InProgress,
+                Container = "TestContainer",
+                Grade = "brak"
+            };
+
+            _context.UserTasks.Add(userTask);
+            await _context.SaveChangesAsync();
+
+            A.CallTo(() => _userManager.GetUserAsync(_controller.User)).Returns(currentUser);
+            A.CallTo(() => _userManager.GetUsersInRoleAsync("Nowy")).Returns(new List<User> { newbieDebug });
+
+            var result = await _controller.TaskStatus();
+
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            var model = viewResult.Model.Should().BeAssignableTo<List<UserTask>>().Subject;
+
+            model.Should().HaveCount(2);
+            model.Should().Contain(t => t.Task.Title == "Zadanie 1");
+            model.Should().Contain(t => t.Task.Title == "Testowy task");
         }
 
         [Fact]
