@@ -105,7 +105,19 @@ namespace OnboardingXUnitTests.Controllers
         public async Task Details_ExistingId_ReturnsView()
         {
             // Arrange
-            _context.UserCourses.Add(new UserCourse { Id = 1, UserId = 1, CourseId = 1 });
+            var user = new User { Id = 1, Name = "Jan", Surname = "User" };
+            var course = new Course { Id = 1, Name = "Course" };
+
+            _context.Users.Add(user);
+            _context.Courses.Add(course);
+
+            _context.UserCourses.Add(new UserCourse
+            {
+                Id = 1,
+                UserId = 1,
+                CourseId = 1
+            });
+
             await _context.SaveChangesAsync();
 
             // Act
@@ -154,7 +166,19 @@ namespace OnboardingXUnitTests.Controllers
         public async Task Delete_Get_ExistingId_ReturnsView()
         {
             // Arrange
-            _context.UserCourses.Add(new UserCourse { Id = 1, UserId = 1, CourseId = 1 });
+            var user = new User { Id = 1, Name = "Jan", Surname = "User" };
+            var course = new Course { Id = 1, Name = "Course" };
+
+            _context.Users.Add(user);
+            _context.Courses.Add(course);
+
+            _context.UserCourses.Add(new UserCourse
+            {
+                Id = 1,
+                UserId = 1,
+                CourseId = 1
+            });
+
             await _context.SaveChangesAsync();
 
             // Act
