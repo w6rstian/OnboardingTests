@@ -201,5 +201,194 @@ namespace OnboardingXUnitTests.Controllers
             _context.Database.EnsureDeleted();
             _context.Dispose();
         }
+
+
+        // S
+
+        [Fact]
+        public async Task CreateMeeting_Post_NullTitle_UsesDefaultTitle()
+        {
+            // Arrange
+            var model = new MeetingViewModel
+            {
+                Title = null,
+                Start = DateTime.Now,
+                End = DateTime.Now.AddHours(1),
+                Type = MeetingType.General,
+                SelectedUsersIds = new List<string>()
+            };
+
+            // Act
+            await _controller.CreateMeeting(model);
+
+            // Assert
+            var meeting = _context.Meetings.First();
+            meeting.Title.Should().Be("Spotkanie");
+        }
+
+        [Fact]
+        public async Task CreateMeeting_Post_WithMultipleParticipants_AddsAllParticipants()
+        {
+            // Arrange
+            var model = new MeetingViewModel
+            {
+                Title = "Team meeting",
+                Start = DateTime.Now,
+                End = DateTime.Now.AddHours(1),
+                Type = MeetingType.General,
+                SelectedUsersIds = new List<string> { "2", "2" }
+            };
+
+            // Act
+            await _controller.CreateMeeting(model);
+
+            // Assert
+            var meeting = _context.Meetings.Include(m => m.Participants).First();
+            meeting.Participants.Should().HaveCount(2);
+        }
+
+        [Fact]
+        public async Task CreateMeeting_Post_WithoutParticipants_CreatesMeeting()
+        {
+            // Arrange
+            var model = new MeetingViewModel
+            {
+                Title = "No participants",
+                Start = DateTime.Now,
+                End = DateTime.Now.AddHours(1),
+                Type = MeetingType.General,
+                SelectedUsersIds = new List<string>()
+            };
+
+            // Act
+            await _controller.CreateMeeting(model);
+
+            // Assert
+            _context.Meetings.Should().HaveCount(1);
+            var meeting = _context.Meetings.Include(x => x.Participants).First();
+            meeting.Participants.Should().BeEmpty();
+        }
+
+
+        [Fact]
+        public async Task GetEvents_WhenNoDatabaseMeetings_ReturnsExampleEvents()
+        {
+            // Act
+            var result = await _controller.GetEvents(null);
+
+            // Assert
+            var json = result.Should().BeOfType<JsonResult>().Subject;
+            var events = json.Value as System.Collections.IEnumerable;
+
+            events.Cast<object>().Should().HaveCount(3);
+        }
+
+
+        [Fact]
+        public async Task CreateMeeting_Get_UserTextIsFormattedCorrectly()
+        {
+            // Act
+            var result = await _controller.CreateMeeting(MeetingType.General);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Subject;
+            var model = view.Model.Should().BeOfType<MeetingViewModel>().Subject;
+
+            model.AllUsers.First().Text.Should().Be("Other User (other@user.com)");
+        }
+
+        [Fact]
+        public async Task CreateMeeting_Post_SetsOrganizerIdToCurrentUser()
+        {
+            // Arrange
+            var model = new MeetingViewModel
+            {
+                Title = "Test meeting",
+                Start = DateTime.Now,
+                End = DateTime.Now.AddHours(1),
+                Type = MeetingType.General,
+                SelectedUsersIds = new List<string>()
+            };
+
+            // Act
+            await _controller.CreateMeeting(model);
+
+            // Assert
+            var meeting = _context.Meetings.First();
+            meeting.OrganizerId.Should().Be(_currentUser.Id);
+        }
+
+
+        [Fact]
+        public async Task CreateMeeting_Post_SavesStartAndEndCorrectly()
+        {
+            // Arrange
+            var start = DateTime.Now;
+            var end = start.AddHours(2);
+
+            var model = new MeetingViewModel
+            {
+                Title = "Time test",
+                Start = start,
+                End = end,
+                Type = MeetingType.General,
+                SelectedUsersIds = new List<string>()
+            };
+
+            // Act
+            await _controller.CreateMeeting(model);
+
+            // Assert
+            var meeting = _context.Meetings.First();
+            meeting.Start.Should().Be(start);
+            meeting.End.Should().Be(end);
+        }
+
+
+        [Fact]
+        public async Task CreateMeeting_Post_SavesCorrectMeetingType()
+        {
+            // Arrange
+            var model = new MeetingViewModel
+            {
+                Title = "Type test",
+                Start = DateTime.Now,
+                End = DateTime.Now.AddHours(1),
+                Type = MeetingType.BuddyCheckIn,
+                SelectedUsersIds = new List<string>()
+            };
+
+            // Act
+            await _controller.CreateMeeting(model);
+
+            // Assert
+            var meeting = _context.Meetings.First();
+            meeting.Type.Should().Be(MeetingType.BuddyCheckIn);
+        }
+
+
+        [Fact]
+        public async Task CreateMeeting_Get_SetsMeetingTypeCorrectly()
+        {
+            // Act
+            var result = await _controller.CreateMeeting(MeetingType.General);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Subject;
+            var model = view.Model.Should().BeOfType<MeetingViewModel>().Subject;
+
+            model.Type.Should().Be(MeetingType.General);
+        }
+
+
+        [Fact]
+        public async Task GetEvents_ReturnsJsonResult()
+        {
+            // Act
+            var result = await _controller.GetEvents(null);
+
+            // Assert
+            result.Should().BeOfType<JsonResult>();
+        }
     }
 }

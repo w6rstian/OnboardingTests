@@ -85,5 +85,280 @@ namespace OnboardingXUnitTests.Controllers
             _context.Database.EnsureDeleted();
             _context.Dispose();
         }
+
+
+
+        // S
+
+        [Fact]
+        public void Create_WhenNoMentors_AddsModelError()
+        {
+            // Act
+            var result = _controller.Create();
+
+            // Assert
+            result.Should().BeOfType<ViewResult>();
+            _controller.ModelState.IsValid.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Create_WhenMentorsExist_ReturnsViewWithMentors()
+        {
+            // Arrange
+            _context.Users.Add(new User { Id = 1, Name = "Anna", Surname = "Nowak" });
+            _context.SaveChanges();
+
+            // Act
+            var result = _controller.Create();
+
+            // Assert
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            viewResult.ViewData.ContainsKey("Mentors").Should().BeTrue();
+        }
+
+
+        [Fact]
+        public async Task CreatePost_InvalidMentorId_AddsModelError()
+        {
+            // Arrange
+            var vm = new CreateOnboardingViewModel
+            {
+                CourseName = "Test Course",
+                MentorId = 99
+            };
+
+            // Act
+            var result = await _controller.Create(vm);
+
+            // Assert
+            result.Should().BeOfType<ViewResult>();
+            _controller.ModelState.IsValid.Should().BeFalse();
+        }
+
+
+        [Fact]
+        public async Task CreatePost_ValidCourseWithoutTasks_CreatesCourse()
+        {
+            // Arrange
+            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            await _context.SaveChangesAsync();
+
+            var vm = new CreateOnboardingViewModel
+            {
+                CourseName = "Course A",
+                MentorId = 1
+            };
+
+            // Act
+            var result = await _controller.Create(vm);
+
+            // Assert
+            result.Should().BeOfType<RedirectToActionResult>();
+            _context.Courses.Should().HaveCount(1);
+        }
+
+
+        [Fact]
+        public async Task CreatePost_TaskWithoutTitle_AddsModelError()
+        {
+            // Arrange
+            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            await _context.SaveChangesAsync();
+
+            var vm = new CreateOnboardingViewModel
+            {
+                CourseName = "Course",
+                MentorId = 1,
+                Tasks = new List<TaskViewModel>
+        {
+            new TaskViewModel
+            {
+                Title = "",
+                Description = "desc",
+                MentorId = 1,
+                ArticleContent = "article",
+                Links = "link"
+            }
+        }
+            };
+
+            // Act
+            var result = await _controller.Create(vm);
+
+            // Assert
+            result.Should().BeOfType<ViewResult>();
+            _controller.ModelState.IsValid.Should().BeFalse();
+        }
+
+
+        [Fact]
+        public async Task CreatePost_TaskMentorDoesNotExist_ReturnsError()
+        {
+            // Arrange
+            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            await _context.SaveChangesAsync();
+
+            var vm = new CreateOnboardingViewModel
+            {
+                CourseName = "Course",
+                MentorId = 1,
+                Tasks = new List<TaskViewModel>
+        {
+            new TaskViewModel
+            {
+                Title = "Task",
+                Description = "desc",
+                MentorId = 99,
+                ArticleContent = "article",
+                Links = "link"
+            }
+        }
+            };
+
+            // Act
+            var result = await _controller.Create(vm);
+
+            // Assert
+            result.Should().BeOfType<ViewResult>();
+            _controller.ModelState.IsValid.Should().BeFalse();
+        }
+
+
+        [Fact]
+        public async Task CreatePost_ValidTask_AddsTaskToDatabase()
+        {
+            // Arrange
+            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            await _context.SaveChangesAsync();
+
+            var vm = new CreateOnboardingViewModel
+            {
+                CourseName = "Course",
+                MentorId = 1,
+                Tasks = new List<TaskViewModel>
+        {
+            new TaskViewModel
+            {
+                Title = "Task",
+                Description = "desc",
+                MentorId = 1,
+                ArticleContent = "article",
+                Links = "link"
+            }
+        }
+            };
+
+            // Act
+            await _controller.Create(vm);
+
+            // Assert
+            _context.Tasks.Should().HaveCount(1);
+        }
+
+
+        [Fact]
+        public async Task CreatePost_TaskCreatesLinks()
+        {
+            // Arrange
+            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            await _context.SaveChangesAsync();
+
+            var vm = new CreateOnboardingViewModel
+            {
+                CourseName = "Course",
+                MentorId = 1,
+                Tasks = new List<TaskViewModel>
+        {
+            new TaskViewModel
+            {
+                Title = "Task",
+                Description = "desc",
+                MentorId = 1,
+                ArticleContent = "article",
+                Links = "http://a.com http://b.com"
+            }
+        }
+            };
+
+            // Act
+            await _controller.Create(vm);
+
+            // Assert
+            var task = _context.Tasks.Include(t => t.Links).First();
+            task.Links.Should().HaveCount(2);
+        }
+
+
+        [Fact]
+        public async Task CreatePost_TaskCreatesArticle()
+        {
+            // Arrange
+            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            await _context.SaveChangesAsync();
+
+            var vm = new CreateOnboardingViewModel
+            {
+                CourseName = "Course",
+                MentorId = 1,
+                Tasks = new List<TaskViewModel>
+        {
+            new TaskViewModel
+            {
+                Title = "Task",
+                Description = "desc",
+                MentorId = 1,
+                ArticleContent = "article text",
+                Links = "link"
+            }
+        }
+            };
+
+            // Act
+            await _controller.Create(vm);
+
+            // Assert
+            var task = _context.Tasks.Include(t => t.Articles).First();
+            task.Articles.Should().HaveCount(1);
+        }
+
+
+        [Fact]
+        public async Task CreatePost_TestWithQuestions_IsSaved()
+        {
+            // Arrange
+            _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
+            await _context.SaveChangesAsync();
+
+            var vm = new CreateOnboardingViewModel
+            {
+                CourseName = "Course",
+                MentorId = 1,
+                Tests = new List<TestViewModel>
+        {
+            new TestViewModel
+            {
+                Name = "Test 1",
+                Questions = new List<QuestionViewModel>
+                {
+                    new QuestionViewModel
+                    {
+                        Description = "Question",
+                        AnswerA = "A",
+                        AnswerB = "B",
+                        AnswerC = "C",
+                        AnswerD = "D",
+                        CorrectAnswer = "A"
+                    }
+                }
+            }
+        }
+            };
+
+            // Act
+            await _controller.Create(vm);
+
+            // Assert
+            _context.Tests.Should().HaveCount(1);
+        }
     }
 }
