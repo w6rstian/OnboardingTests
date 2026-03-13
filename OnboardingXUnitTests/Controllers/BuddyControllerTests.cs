@@ -94,6 +94,39 @@ namespace OnboardingXUnitTests.Controllers
         }
 
         [Fact]
+        public async Task SendFeedbackToMentor_Success_SavesMessageAndCallsSignalR()
+        {
+            _controller.TempData = A.Fake<ITempDataDictionary>();
+            var mentor = new User { Id = 5, Name = "Mentor" };
+
+            var course = new Course
+            {
+                Id = 1,
+                Name = "Testowy Kurs", 
+                Mentor = mentor,
+                MentorId = 5
+            };
+
+            _context.Users.Add(mentor);
+            _context.Courses.Add(course);
+            await _context.SaveChangesAsync(); 
+
+            var clientsProxy = A.Fake<IClientProxy>();
+            A.CallTo(() => _chatHub.Clients.Group(A<string>._)).Returns(clientsProxy);
+
+            var result = await _controller.SendFeedbackToMentor(10, 1, "Wszystko super!");
+
+            _context.Messages.Should().Contain(m => m.Content == "Wszystko super!" && m.ReceiverId == 5);
+
+            A.CallTo(() => clientsProxy.SendCoreAsync("ReceiveMessage", A<object[]>._, default))
+                .MustHaveHappenedOnceExactly();
+
+            var redirect = result.Should().BeOfType<RedirectToActionResult>().Subject;
+            redirect.ActionName.Should().Be("Newbies");
+            _controller.TempData["Success"].Should().Be("Feedback zostal wysany do mentora.");
+        }
+
+        [Fact]
         public async Task TaskStatus_ReturnsViewWithTasks_IncludingDebugTask()
         {
             var currentUser = new User { Id = 1, Email = "buddy@test.com", UserName = "buddy@test.com" };

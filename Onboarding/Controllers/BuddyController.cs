@@ -97,7 +97,7 @@ namespace Onboarding.Controllers
             await _chatHub.Clients.Group(groupName)
                 .SendAsync("ReceiveMessage", message.Content, message.SentAt.ToString("g"), message.SenderId);
 
-            TempData["Success"] = "Feedback został wysany do mentora.";
+            TempData["Success"] = "Feedback zostal wysany do mentora.";
             return RedirectToAction("Newbies");
         }
 

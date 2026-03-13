@@ -11,6 +11,8 @@ using Onboarding.Models;
 using Onboarding.Interfaces;
 using System.Security.Claims;
 using Task = System.Threading.Tasks.Task;
+using Onboarding.Data.Enums;
+using Onboarding.ViewModels;
 
 namespace OnboardingXUnitTests.Controllers
 {
@@ -52,6 +54,82 @@ namespace OnboardingXUnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<ViewResult>();
+        }
+
+        [Fact]
+        public async Task CreateMeeting_GET_ReturnsViewWithModel()
+        {
+            var currentUser = new User { Id = 1, Email = "test@test.com" };
+            var otherUser = new User { Id = 2, Email = "other@test.com", Name = "Jan", Surname = "Kowalski" };
+
+            _context.Users.AddRange(currentUser, otherUser);
+            await _context.SaveChangesAsync();
+
+            A.CallTo(() => _userManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(currentUser);
+
+            var result = await _controller.CreateMeeting(MeetingType.General);
+
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            var model = viewResult.Model.Should().BeOfType<MeetingViewModel>().Subject;
+            model.Type.Should().Be(MeetingType.General);
+            model.AllUsers.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task CreateMeeting_POST_InvalidModel_ReturnsViewWithAllUsers()
+        {
+            var currentUser = new User { Id = 1, Email = "test@test.com" };
+            var otherUser = new User { Id = 2, Email = "other@test.com", Name = "Jan", Surname = "Kowalski" };
+            _context.Users.AddRange(currentUser, otherUser);
+            await _context.SaveChangesAsync();
+
+            A.CallTo(() => _userManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(currentUser);
+
+            _controller.ModelState.AddModelError("Title", "Required");
+            var model = new MeetingViewModel { SelectedUsersIds = new List<string>() };
+
+            var result = await _controller.CreateMeeting(model);
+
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            var returnedModel = viewResult.Model.Should().BeOfType<MeetingViewModel>().Subject;
+            returnedModel.AllUsers.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task CreateMeeting_POST_ValidModel_RedirectsToIndex()
+        {
+            var currentUser = new User { Id = 1, Email = "test@test.com" };
+            A.CallTo(() => _userManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(currentUser);
+
+            var model = new MeetingViewModel
+            {
+                Title = "Spotkanie",
+                Start = DateTime.Now.AddDays(1),
+                End = DateTime.Now.AddDays(1).AddHours(1), 
+                SelectedUsersIds = new List<string> { "2" }, 
+                Type = MeetingType.General
+            };
+
+            var result = await _controller.CreateMeeting(model);
+
+            result.Should().BeOfType<RedirectToActionResult>()
+                  .Which.ActionName.Should().Be("Index");
+
+            _context.Meetings.Should().Contain(m => m.Title == "Spotkanie");
+        }
+
+        [Fact]
+        public async Task GetEvents_ReturnsJsonResult_WithMeetingsAndExamples()
+        {
+            var currentUser = new User { Id = 1, Email = "test@test.com" };
+            A.CallTo(() => _userManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(currentUser);
+
+            var result = await _controller.GetEvents("General");
+
+            var jsonResult = result.Should().BeOfType<JsonResult>().Subject;
+
+            var data = jsonResult.Value.Should().BeAssignableTo<System.Collections.IEnumerable>().Subject;
+            data.Cast<object>().Should().NotBeEmpty();
         }
 
         public void Dispose()
