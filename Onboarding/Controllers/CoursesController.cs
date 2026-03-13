@@ -179,10 +179,12 @@ namespace Onboarding.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CourseExists(int id)
-        {
-            return _context.Courses.Any(e => e.Id == id);
-        }
+        // method is never used :))
+        //private bool CourseExists(int id)
+        //{
+        //    return _context.Courses.Any(e => e.Id == id);
+        //}
+
 		public IActionResult GetCourseImage(int id)
 		{
 			var course = _context.Courses.FirstOrDefault(c => c.Id == id);
