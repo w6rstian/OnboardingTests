@@ -12,7 +12,7 @@ using System.Security.Claims;
 using Task = System.Threading.Tasks.Task;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class RewardsControllerTests : IDisposable
     {

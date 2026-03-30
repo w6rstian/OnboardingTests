@@ -12,7 +12,7 @@ using System;
 using System.Security.Claims;
 using Task = System.Threading.Tasks.Task;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class QuestionsControllerTests : IDisposable
     {
@@ -67,7 +67,7 @@ namespace OnboardingXUnitTests.Controllers
                 AnswerD = "D",
                 CorrectAnswer = "A",
                 TestId = 1,
-                Test = new Onboarding.Models.Test { Id = 1, Name = "Test 1", CourseId = 1 }
+                Test = new Test { Id = 1, Name = "Test 1", CourseId = 1 }
             };
             _context.Questions.Add(question);
             await _context.SaveChangesAsync();
@@ -86,7 +86,7 @@ namespace OnboardingXUnitTests.Controllers
         public async Task CreatePost_ValidData_SavesQuestionAndRedirects()
         {
             // Arrange
-            var test = new Onboarding.Models.Test { Id = 1, Name = "Test z C#", CourseId = 1 };
+            var test = new Test { Id = 1, Name = "Test z C#", CourseId = 1 };
             _context.Tests.Add(test);
             await _context.SaveChangesAsync();
 

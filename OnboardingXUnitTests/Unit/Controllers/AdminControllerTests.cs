@@ -14,7 +14,7 @@ using Task = System.Threading.Tasks.Task;
 using Onboarding.ViewModels;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class AdminControllerTests : IDisposable
     {

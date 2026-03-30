@@ -16,7 +16,7 @@ using Task = System.Threading.Tasks.Task;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Onboarding.Data.Enums;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class BuddyControllerTests : IDisposable
     {

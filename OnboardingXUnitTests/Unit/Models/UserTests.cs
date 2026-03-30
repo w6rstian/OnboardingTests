@@ -3,7 +3,7 @@ using FluentAssertions;
 using Onboarding.Models;
 using System.Collections.Generic;
 
-namespace OnboardingXUnitTests.Models
+namespace OnboardingXUnitTests.Unit.Models
 {
     public class UserTests
     {

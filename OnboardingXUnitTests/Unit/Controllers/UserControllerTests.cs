@@ -16,7 +16,7 @@ using Task = System.Threading.Tasks.Task;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Routing;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class UserControllerTests
     {

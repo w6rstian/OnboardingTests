@@ -12,7 +12,7 @@ using System.Security.Claims;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class OnboardingControllerTests : IDisposable
     {

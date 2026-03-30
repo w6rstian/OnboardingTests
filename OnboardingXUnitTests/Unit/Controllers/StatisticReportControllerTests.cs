@@ -13,7 +13,7 @@ using System.Security.Claims;
 using Task = System.Threading.Tasks.Task;
 using Onboarding.Data.Enums;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class StatisticReportControllerTests : IDisposable
     {
