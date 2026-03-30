@@ -172,7 +172,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.DoesNotMatch("https://localhost:7231/Admin/AdminPanel", _page.Url);
 
             Assert.False(await _page.IsVisibleAsync("h1:text('Panel Administratora')"),
-                 "Elementy panelu administratora nie powinny być widoczne.");
+                "Elementy panelu administratora nie powinny być widoczne.");
         }
 
         [Fact]
@@ -212,10 +212,10 @@ namespace OnboardingXUnitTests.E2E
             await _page.ClickAsync("a.nav-link[href='/UserCoursesList']");
 
             Assert.True(await _page.IsVisibleAsync(".no-data.text-center.mt-4"),
-                        "Sekcja 'no-data' powinna być widoczna.");
+                "Sekcja 'no-data' powinna być widoczna.");
 
             Assert.True(await _page.IsVisibleAsync(".no-data i.bi.bi-emoji-frown"),
-                        "Ikona bi-emoji-frown powinna być widoczna.");
+                "Ikona bi-emoji-frown powinna być widoczna.");
 
             var messageText = await _page.Locator(".no-data p").InnerTextAsync();
 

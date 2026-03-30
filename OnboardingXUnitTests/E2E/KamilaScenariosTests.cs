@@ -1,10 +1,4 @@
 using Microsoft.Playwright;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace OnboardingXUnitTests.E2E
 {
@@ -46,7 +40,7 @@ namespace OnboardingXUnitTests.E2E
             await Login("admin@mail.com", "AdminPassword123!");
             await _page.GotoAsync($"{_baseUrl}/Calendar/Index");
             await _page.ClickAsync("a:has-text('Zaplanuj spotkanie')");
-            
+
             var options = await _page.Locator("select[name='SelectedUsersIds'] option").AllInnerTextsAsync();
             Assert.DoesNotContain("Admin User (admin@mail.com)", options);
             Assert.Contains("Nowy1 Nowak (nowy1@mail.com)", options);
@@ -56,18 +50,19 @@ namespace OnboardingXUnitTests.E2E
         public async Task ID2_Create_Meeting_Multiple_Participants()
         {
             await Login("admin@mail.com", "AdminPassword123!");
-            
+
             await _page.GotoAsync($"{_baseUrl}/Calendar/CreateMeeting?type=General");
-            
+
             await _page.FillAsync("input[name='Title']", "Ważne spotkanie");
-            
+
             var start = DateTime.Now.AddDays(1).ToString("yyyy-MM-ddTHH:mm");
             var end = DateTime.Now.AddDays(1).AddHours(1).ToString("yyyy-MM-ddTHH:mm");
             await _page.FillAsync("input[name='Start']", start);
             await _page.FillAsync("input[name='End']", end);
 
             // Nowy1 i Nowy2
-            await _page.SelectOptionAsync("select[name='SelectedUsersIds']", new[] { 
+            await _page.SelectOptionAsync("select[name='SelectedUsersIds']", new[]
+            {
                 new SelectOptionValue { Label = "Nowy1 Nowak (nowy1@mail.com)" },
                 new SelectOptionValue { Label = "Nowy2 Nowak (nowy2@mail.com)" }
             });
@@ -170,7 +165,7 @@ namespace OnboardingXUnitTests.E2E
 
             var response = await _page.APIRequest.GetAsync($"{_baseUrl}/Courses/GetCourseImage/{courseId}");
             Assert.True(response.Ok);
-            Assert.Equal("image/jpeg", response.Headers["content-type"]); 
+            Assert.Equal("image/jpeg", response.Headers["content-type"]);
         }
 
         [Fact]
@@ -182,7 +177,8 @@ namespace OnboardingXUnitTests.E2E
 
             var content = await _page.InnerTextAsync("body");
 
-            Assert.True(content.Contains("Access denied") || _page.Url.Contains("AccessDenied") || _page.Url.Contains("Login"));
+            Assert.True(content.Contains("Access denied") || _page.Url.Contains("AccessDenied") ||
+                        _page.Url.Contains("Login"));
         }
 
         [Fact]
