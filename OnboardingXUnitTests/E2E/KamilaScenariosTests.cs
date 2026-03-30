@@ -1,4 +1,4 @@
-using Microsoft.Playwright;
+﻿using Microsoft.Playwright;
 
 namespace OnboardingXUnitTests.E2E
 {
@@ -15,8 +15,8 @@ namespace OnboardingXUnitTests.E2E
 
             _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
-                Headless = false,
-                SlowMo = 1000
+                Headless = true,
+                SlowMo = 100
             });
 
             _page = await _browser.NewPageAsync(new BrowserNewPageOptions
@@ -205,6 +205,8 @@ namespace OnboardingXUnitTests.E2E
             string msgA = $"{Guid.NewGuid()} W Józka strzelił pierun";
             await _page.FillAsync("#messageInput", msgA);
             await _page.ClickAsync("#messageForm button[type='submit']");
+
+            await _page.WaitForTimeoutAsync(500);
 
             string msgB = $"{Guid.NewGuid()} Nie wiem czym nie nagrał tego";
             await _page.FillAsync("#messageInput", msgB);
