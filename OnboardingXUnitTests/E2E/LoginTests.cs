@@ -14,7 +14,7 @@ namespace OnboardingXUnitTests.E2E
 
             _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
-                Headless = false,
+                Headless = true,
                 SlowMo = 100
             });
 
