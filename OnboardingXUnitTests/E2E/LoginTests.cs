@@ -1,4 +1,5 @@
 ﻿using Microsoft.Playwright;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace OnboardingXUnitTests.E2E
 {
@@ -83,16 +84,22 @@ namespace OnboardingXUnitTests.E2E
 
             await _page.SetInputFilesAsync("input[name='ImageFile']", "../../../Assets/kurs.jpg");
 
-            await _page.FillAsync("#CourseName", "KursTestPlaywright1337");
+            var rand = new Random();
+            var testNameSalt = (rand.NextInt64() % 9999) + 1;
+            var testName = $"KursTestPlaywright1337+{testNameSalt}";
+
+            await _page.FillAsync("#CourseName", testName);
 
             await _page.ClickAsync("button:has-text('Utwórz')");
 
             await _page.WaitForURLAsync("https://localhost:7231/Courses");
 
-            var courseVisible = await _page.IsVisibleAsync("h5:has-text('KursTestPlaywright1337')");
-            Assert.True(courseVisible, "Nowy kurs 'KursTest' nie pojawił się na liście.");
+            var coursePageLocator = $"h5:has-text('{testName}')";
+            var courseVisible = await _page.IsVisibleAsync(coursePageLocator);
+            Assert.True(courseVisible, $"Nowy kurs '{testName}' nie pojawił się na liście.");
 
-            await _page.ClickAsync("h5.card-title.fw-bold:text('KursTest') >> xpath=../.. >> text=Usuń");
+            var locatorCard = $"h5.card-title.fw-bold:text('{testName}') >> xpath =../.. >> text=Usuń";
+            await _page.ClickAsync(locatorCard);
 
             await _page.WaitForURLAsync("**/Courses/Delete/**");
 
@@ -100,7 +107,7 @@ namespace OnboardingXUnitTests.E2E
 
             await _page.WaitForURLAsync("https://localhost:7231/Courses");
 
-            var courseStillVisible = await _page.IsVisibleAsync("h5.card-title.fw-bold:text('KursTestPlaywright1337')");
+            var courseStillVisible = await _page.IsVisibleAsync(locatorCard);
             Assert.False(courseStillVisible, "Kurs powinien zostać usunięty z listy.");
         }
 
@@ -125,6 +132,7 @@ namespace OnboardingXUnitTests.E2E
             var userRow = _page.Locator("tbody tr").Filter(new() { HasText = "Nowy1 Nowak" });
             await userRow.Locator("button.show-new-user-report").ClickAsync();
 
+            await _page.Locator("#newUserReport").ScrollIntoViewIfNeededAsync();
             var reportVisible = await _page.IsVisibleAsync("#newUserReport");
             Assert.True(reportVisible, "Sekcja raportu użytkownika powinna być widoczna.");
 
