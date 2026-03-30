@@ -12,7 +12,7 @@ using Onboarding.Hubs;
 using System.Security.Claims;
 using Task = System.Threading.Tasks.Task;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class ChatControllerTests : IDisposable
     {

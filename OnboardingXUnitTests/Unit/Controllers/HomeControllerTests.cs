@@ -9,7 +9,7 @@ using Onboarding.Models;
 using Onboarding.Interfaces;
 using System.Security.Claims;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class HomeControllerTests
     {

@@ -14,7 +14,7 @@ using Onboarding.Interfaces;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class TasksControllerTests : IDisposable
     {
@@ -81,10 +81,10 @@ namespace OnboardingXUnitTests.Controllers
                 Description = "Test",
 
                 CourseId = 1,
-                Course = new Onboarding.Models.Course { Id = 1, Name = "Test" }, 
+                Course = new Course { Id = 1, Name = "Test" }, 
 
                 MentorId = 2,
-                Mentor = new Onboarding.Models.User { Id = 2, Name = "Test" }  
+                Mentor = new User { Id = 2, Name = "Test" }  
             };
 
             _context.Tasks.Add(expectedTask);
@@ -104,8 +104,8 @@ namespace OnboardingXUnitTests.Controllers
         public async Task Create_MissingRequiredFields_ReturnsViewResult()
         {
             // Arrange
-            _context.Courses.Add(new Onboarding.Models.Course { Id = 1, Name = "Kurs" });
-            _context.Users.Add(new Onboarding.Models.User { Id = 1, Name = "Mentor" }); 
+            _context.Courses.Add(new Course { Id = 1, Name = "Kurs" });
+            _context.Users.Add(new User { Id = 1, Name = "Mentor" }); 
             await _context.SaveChangesAsync();
 
             // Act
@@ -133,7 +133,7 @@ namespace OnboardingXUnitTests.Controllers
         public async Task Create_MentorNotFound_ReturnsNotFound()
         {
             // Arrange
-            var course = new Onboarding.Models.Course { Id = 1, Name = "Kurs testowy" };
+            var course = new Course { Id = 1, Name = "Kurs testowy" };
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
@@ -149,8 +149,8 @@ namespace OnboardingXUnitTests.Controllers
         public async Task Create_ValidData_SavesTaskAndReturnsRedirectToIndex()
         {
             
-            var course = new Onboarding.Models.Course { Id = 1, Name = "Kurs" };
-            var mentor = new Onboarding.Models.User { Id = 1, Name = "Mentor" }; 
+            var course = new Course { Id = 1, Name = "Kurs" };
+            var mentor = new User { Id = 1, Name = "Mentor" }; 
 
             _context.Courses.Add(course);
             _context.Users.Add(mentor);
@@ -208,9 +208,9 @@ namespace OnboardingXUnitTests.Controllers
                 Title = "Test",
                 Description = "Test",
                 CourseId = 1,
-                Course = new Onboarding.Models.Course { Id = 1, Name = "Test" },
+                Course = new Course { Id = 1, Name = "Test" },
                 MentorId = 1,
-                Mentor = new Onboarding.Models.User { Id = 1, Name = "Test" }
+                Mentor = new User { Id = 1, Name = "Test" }
             };
 
             _context.Tasks.Add(expectedTask);

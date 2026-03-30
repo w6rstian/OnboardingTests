@@ -12,11 +12,11 @@ using Microsoft.EntityFrameworkCore;
 using Onboarding.Controllers;
 using Onboarding.Data;
 using Onboarding.Models;
-using Onboarding.ViewModels; 
+using Onboarding.ViewModels;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class TestsControllerTests : IDisposable
     {
@@ -68,7 +68,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task CreatePost_CourseNotFound_ReturnsNotFound()
         {
-            var test = new Onboarding.Models.Test { CourseId = 999, Name = "Nowy Test" };
+            var test = new Test { CourseId = 999, Name = "Nowy Test" };
 
             var result = await _controller.Create(test, new List<Question>());
 
@@ -82,7 +82,7 @@ namespace OnboardingXUnitTests.Controllers
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
-            var test = new Onboarding.Models.Test { CourseId = 1, Name = "Test z C#" };
+            var test = new Test { CourseId = 1, Name = "Test z C#" };
             var questions = new List<Question>
             {
                 new Question
@@ -118,28 +118,28 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task Details_TestExists_ReturnsViewResult()
         {
-            var test = new Onboarding.Models.Test { Id = 1, Name = "Test 1", Course = new Course { Id = 1, Name = "Kurs" } };
+            var test = new Test { Id = 1, Name = "Test 1", Course = new Course { Id = 1, Name = "Kurs" } };
             _context.Tests.Add(test);
             await _context.SaveChangesAsync();
 
             var result = await _controller.Details(1);
 
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
-            var model = viewResult.Model.Should().BeAssignableTo<Onboarding.Models.Test>().Subject;
+            var model = viewResult.Model.Should().BeAssignableTo<Test>().Subject;
             model.Id.Should().Be(1);
         }
 
         [Fact]
         public async Task EditGet_TestExists_ReturnsViewResult()
         {
-            var test = new Onboarding.Models.Test { Id = 1, Name = "Test", Course = new Course { Id = 1, Name = "Kurs" } };
+            var test = new Test { Id = 1, Name = "Test", Course = new Course { Id = 1, Name = "Kurs" } };
             _context.Tests.Add(test);
             await _context.SaveChangesAsync();
 
             var result = await _controller.Edit(1);
 
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
-            var model = viewResult.Model.Should().BeAssignableTo<Onboarding.Models.Test>().Subject;
+            var model = viewResult.Model.Should().BeAssignableTo<Test>().Subject;
             model.Id.Should().Be(1);
         }
 
@@ -148,19 +148,19 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task DeleteGet_TestExists_ReturnsViewResult()
         {
-            var test = new Onboarding.Models.Test { Id = 1, Name = "Test", Course = new Course { Id = 1, Name = "Kurs" } };
+            var test = new Test { Id = 1, Name = "Test", Course = new Course { Id = 1, Name = "Kurs" } };
             _context.Tests.Add(test);
             await _context.SaveChangesAsync();
 
             var result = await _controller.Delete(1);
 
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
-            viewResult.Model.Should().BeAssignableTo<Onboarding.Models.Test>();
+            viewResult.Model.Should().BeAssignableTo<Test>();
         }
         [Fact]
         public async Task EditPost_ValidData_UpdatesTestAndRedirects()
         {
-            var test = new Onboarding.Models.Test
+            var test = new Test
             {
                 Id = 1,
                 Name = "Stara nazwa",
@@ -174,7 +174,7 @@ namespace OnboardingXUnitTests.Controllers
             _context.Tests.Add(test);
             await _context.SaveChangesAsync();
 
-            var updatedTest = new Onboarding.Models.Test { Id = 1, Name = "Nowa nazwa", CourseId = 1 };
+            var updatedTest = new Test { Id = 1, Name = "Nowa nazwa", CourseId = 1 };
             var newQuestions = new List<Question>
             {
                 new Question { Description = "Nowe pytanie", AnswerA = "A", AnswerB = "B", AnswerC = "C", AnswerD = "D", CorrectAnswer = "B" }
@@ -194,7 +194,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task DeleteConfirmed_DeletesTestAndRedirects()
         {
-            var test = new Onboarding.Models.Test { Id = 1, Name = "Test do usunięcia", Questions = new List<Question>() };
+            var test = new Test { Id = 1, Name = "Test do usunięcia", Questions = new List<Question>() };
             _context.Tests.Add(test);
             await _context.SaveChangesAsync();
 
@@ -223,7 +223,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task ExecuteGet_NotTaken_ReturnsViewWithViewModel()
         {
-            var test = new Onboarding.Models.Test
+            var test = new Test
             {
                 Id = 1,
                 Name = "C# Basics",
@@ -247,7 +247,7 @@ namespace OnboardingXUnitTests.Controllers
         [Fact]
         public async Task ExecutePost_ValidAnswers_CalculatesScoreAndRedirects()
         {
-            var test = new Onboarding.Models.Test
+            var test = new Test
             {
                 Id = 1,
                 Name = "Test kompetencji", // Brakowało nazwy testu

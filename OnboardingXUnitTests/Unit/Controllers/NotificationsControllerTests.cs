@@ -11,7 +11,7 @@ using Onboarding.Interfaces;
 using System.Security.Claims;
 using Task = System.Threading.Tasks.Task;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class NotificationsControllerTests : IDisposable
     {

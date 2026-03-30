@@ -4,7 +4,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Onboarding.Controllers;
 using Onboarding.Data;
 using Onboarding.Models;
@@ -12,15 +11,14 @@ using Onboarding.Interfaces;
 using System.Security.Claims;
 using Task = System.Threading.Tasks.Task;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
-    public class ManagerControllerTests : IDisposable
+    public class MentorTaskProgressTests : IDisposable
     {
         private readonly ApplicationDbContext _context;
-        private readonly ManagerController _controller;
-        private readonly UserManager<User> _userManager;
+        private readonly MentorTaskProgress _controller;
 
-        public ManagerControllerTests()
+        public MentorTaskProgressTests()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -28,15 +26,12 @@ namespace OnboardingXUnitTests.Controllers
             _context = new ApplicationDbContext(options);
             _context.Database.EnsureCreated();
 
-            _userManager = A.Fake<UserManager<User>>(x => x.WithArgumentsForConstructor(() => new UserManager<User>(A.Fake<IUserStore<User>>(), null, null, null, null, null, null, null, null)));
-
-            _controller = new ManagerController(_context, _userManager);
+            _controller = new MentorTaskProgress(_context);
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Name, "testuser"),
-                new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(ClaimTypes.Role, "Manager")
+                new Claim(ClaimTypes.NameIdentifier, "1")
             }, "mock"));
 
             _controller.ControllerContext = new ControllerContext()
@@ -46,10 +41,10 @@ namespace OnboardingXUnitTests.Controllers
         }
 
         [Fact]
-        public void Index_ReturnsViewResult()
+        public async Task Index_ReturnsViewResult()
         {
             // Act
-            var result = _controller.Index();
+            var result = await _controller.Index();
 
             // Assert
             result.Should().BeOfType<ViewResult>();

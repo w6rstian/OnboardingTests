@@ -16,7 +16,7 @@ using Task = System.Threading.Tasks.Task;
 using Onboarding.Data.Enums;
 using Onboarding.ViewModels;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class CalendarControllerTests : IDisposable
     {

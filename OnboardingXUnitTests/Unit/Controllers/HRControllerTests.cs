@@ -14,7 +14,7 @@ using System.Security.Claims;
 using System.Threading;
 using Task = System.Threading.Tasks.Task;
 
-namespace OnboardingXUnitTests.Controllers
+namespace OnboardingXUnitTests.Unit.Controllers
 {
     public class HRControllerTests
     {
