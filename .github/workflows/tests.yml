@@ -10,7 +10,7 @@ jobs:
       mssql:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
-          ACCEPT_EULA: Y
+          ACCEPT_EULA: "Y"
           MSSQL_SA_PASSWORD: "SuperStrongPassword123!"
         ports:
           - 1433:1433
@@ -46,8 +46,8 @@ jobs:
 
     - name: Setup HTTPS Certificate
       run: |
-        mkdir -p ${HOME}/.aspnet/https
-        dotnet dev-certs https -ep ${HOME}/.aspnet/https/cert.pfx -p mypassword
+        mkdir -p ${{ github.workspace }}/.cert
+        dotnet dev-certs https -ep ${{ github.workspace }}/.cert/cert.pfx -p mypassword
         dotnet dev-certs https --trust || true
 
     - name: Apply Database Migrations
@@ -61,7 +61,7 @@ jobs:
       env:
         ASPNETCORE_ENVIRONMENT: Development
         ASPNETCORE_Kestrel__Certificates__Default__Password: mypassword
-        ASPNETCORE_Kestrel__Certificates__Default__Path: ${HOME}/.aspnet/https/cert.pfx
+        ASPNETCORE_Kestrel__Certificates__Default__Path: ${{ github.workspace }}/.cert/cert.pfx
         ConnectionStrings__DefaultConnection: "Server=127.0.0.1,1433;Database=OnboardingTestDb;User Id=sa;Password=SuperStrongPassword123!;TrustServerCertificate=True;"
       run: |
         dotnet run --project ./Onboarding/Onboarding.csproj --urls "https://localhost:7231" > app.log 2>&1 &
