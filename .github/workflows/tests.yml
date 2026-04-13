@@ -28,6 +28,7 @@ jobs:
 
     - name: Setup HTTPS Certificate
       run: |
+        mkdir -p ${HOME}/.aspnet/https
         dotnet dev-certs https -ep ${HOME}/.aspnet/https/cert.pfx -p mypassword
         dotnet dev-certs https --trust || true
 
@@ -38,9 +39,9 @@ jobs:
         ASPNETCORE_Kestrel__Certificates__Default__Path: ${HOME}/.aspnet/https/cert.pfx
       run: |
         dotnet run --project ./Onboarding/Onboarding.csproj --urls "https://localhost:7231" > app.log 2>&1 &
-        echo "Czekam 15 sekund na start serwera..."
+        echo "Waiting 15 seconds for server..."
         sleep 15
-        echo "--- LOGI Z URUCHOMIENIA APLIKACJI (app.log) ---"
+        echo "--- APP LOGS (app.log) ---"
         cat app.log
         echo "-----------------------------------------------"
 
