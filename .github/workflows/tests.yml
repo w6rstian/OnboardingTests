@@ -41,6 +41,13 @@ jobs:
         dotnet dev-certs https -ep ${HOME}/.aspnet/https/cert.pfx -p mypassword
         dotnet dev-certs https --trust || true
 
+    - name: Apply Database Migrations
+      env:
+        ConnectionStrings__DefaultConnection: "Server=127.0.0.1,1433;Database=OnboardingTestDb;User Id=sa;Password=SuperStrongPassword123!;TrustServerCertificate=True;"
+      run: |
+        dotnet tool install --global dotnet-ef
+        dotnet ef database update --project ./Onboarding/Onboarding.csproj
+
     - name: Start the web application in the background
       env:
         ASPNETCORE_ENVIRONMENT: Development
