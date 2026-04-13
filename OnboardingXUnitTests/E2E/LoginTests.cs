@@ -19,7 +19,10 @@ namespace OnboardingXUnitTests.E2E
                 SlowMo = 100
             });
 
-            _page = await _browser.NewPageAsync();
+            _page = await _browser.NewPageAsync(new BrowserNewPageOptions
+            {
+                IgnoreHTTPSErrors = true
+            });
         }
 
         [Fact]
