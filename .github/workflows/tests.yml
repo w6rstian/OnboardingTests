@@ -26,6 +26,14 @@ jobs:
     - name: Install Playwright Browsers and Dependencies
       run: pwsh ./OnboardingXUnitTests/bin/Debug/net8.0/playwright.ps1 install --with-deps
 
+    - name: Generate HTTPS dev certificate
+      run: dotnet dev-certs https
+
+    - name: Start the web application in the background
+      run: |
+        dotnet run --project ./Onboarding/Onboarding.csproj --urls "https://localhost:7231" &
+        sleep 15
+
     - name: Test with Coverage
       run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage"
 
