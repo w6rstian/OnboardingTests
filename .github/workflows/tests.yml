@@ -26,13 +26,23 @@ jobs:
     - name: Install Playwright Browsers and Dependencies
       run: pwsh ./OnboardingXUnitTests/bin/Debug/net8.0/playwright.ps1 install --with-deps
 
-    - name: Generate HTTPS dev certificate
-      run: dotnet dev-certs https
+    - name: Setup HTTPS Certificate
+      run: |
+        dotnet dev-certs https -ep ${HOME}/.aspnet/https/cert.pfx -p mypassword
+        dotnet dev-certs https --trust || true
 
     - name: Start the web application in the background
+      env:
+        ASPNETCORE_ENVIRONMENT: Development
+        ASPNETCORE_Kestrel__Certificates__Default__Password: mypassword
+        ASPNETCORE_Kestrel__Certificates__Default__Path: ${HOME}/.aspnet/https/cert.pfx
       run: |
-        dotnet run --project ./Onboarding/Onboarding.csproj --urls "https://localhost:7231" &
+        dotnet run --project ./Onboarding/Onboarding.csproj --urls "https://localhost:7231" > app.log 2>&1 &
+        echo "Czekam 15 sekund na start serwera..."
         sleep 15
+        echo "--- LOGI Z URUCHOMIENIA APLIKACJI (app.log) ---"
+        cat app.log
+        echo "-----------------------------------------------"
 
     - name: Test with Coverage
       run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage"
