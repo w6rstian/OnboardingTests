@@ -1,5 +1,6 @@
 ﻿using Microsoft.Playwright;
 using static System.Net.Mime.MediaTypeNames;
+using static Microsoft.Playwright.Assertions;
 
 namespace OnboardingXUnitTests.E2E
 {
@@ -162,6 +163,49 @@ namespace OnboardingXUnitTests.E2E
         }
 
         [Fact]
+        public async Task Admin_Cannot_Add_Task_Without_Name_Mock()
+        {
+            await _page.GotoAsync("https://localhost:7231/Identity/Account/Login");
+            await _page.FillAsync("#Input_Email", "admin@mail.com");
+            await _page.FillAsync("#Input_Password", "AdminPassword123!");
+            await _page.ClickAsync("button[type='submit']");
+            await _page.WaitForSelectorAsync("#logout");
+
+            await _page.RouteAsync("**/Tasks/Create", async route =>
+            {
+                if (route.Request.Method == "POST")
+                {
+                    await route.FulfillAsync(new RouteFulfillOptions
+                    {
+                        Status = 400,
+                        ContentType = "text/html",
+                        Body = @"
+                    <html>
+                        <body>
+                            <span id=""Title-error"" class=""text-danger"">
+                                The Title field is required.
+                            </span>
+                        </body>
+                    </html>"
+                    });
+                }
+                else
+                {
+                    await route.ContinueAsync();
+                }
+            });
+
+            await _page.GotoAsync($"https://localhost:7231/Admin/AdminPanel");
+            await _page.ClickAsync("a[href='/Tasks/Create']");
+
+            await _page.ClickAsync("input[type='submit']");
+
+            var error = _page.Locator("#Title-error");
+            await Expect(error).ToBeVisibleAsync();
+            await Expect(error).ToContainTextAsync("The Title field is required.");
+        }
+
+        [Fact]
         public async Task RegularUser_Cannot_Access_AdminPanel()
         {
             await _page.GotoAsync("https://localhost:7231/Identity/Account/Login");
@@ -187,6 +231,51 @@ namespace OnboardingXUnitTests.E2E
         }
 
         [Fact]
+        public async Task RegularUser_Cannot_Access_AdminPanel_Mock()
+        {
+            await _page.GotoAsync("https://localhost:7231/Identity/Account/Login");
+            await _page.FillAsync("#Input_Email", "nowy1@mail.com");
+            await _page.FillAsync("#Input_Password", "NowyPassword123!");
+            await _page.ClickAsync("button[type='submit']");
+
+            await _page.WaitForSelectorAsync("#logout");
+            Assert.True(await _page.IsVisibleAsync("#logout"), "Użytkownik powinien być zalogowany");
+
+            await _page.RouteAsync("**/Admin/AdminPanel", async route =>
+            {
+                if (route.Request.Method == "GET")
+                {
+                    await route.FulfillAsync(new RouteFulfillOptions
+                    {
+                        Status = 403,
+                        ContentType = "text/html",
+                        Body = @"
+                    <html>
+                        <body>
+                            <h1>Access denied</h1>
+                            <p>You do not have permission to access this resource.</p>
+                        </body>
+                    </html>"
+                    });
+                }
+                else
+                {
+                    await route.ContinueAsync();
+                }
+            });
+
+            await _page.GotoAsync("https://localhost:7231/Admin/AdminPanel");
+
+            var bodyText = await _page.Locator("body").InnerTextAsync();
+
+            Assert.True(bodyText.Contains("Access denied", StringComparison.OrdinalIgnoreCase),
+                "Powinien pojawić się komunikat o braku uprawnień.");
+
+            Assert.False(await _page.IsVisibleAsync("h1:text('Panel Administratora')"),
+                "Panel admina nie powinien być widoczny.");
+        }
+
+        [Fact]
         public async Task RegularUser_Cannot_RateBuddy_When_NotAssigned()
         {
             await _page.GotoAsync("https://localhost:7231/Identity/Account/Login");
@@ -206,6 +295,49 @@ namespace OnboardingXUnitTests.E2E
 
             Assert.Contains("Brak przypisanego Buddy'ego", messageText);
             Assert.Equal("Brak przypisanego Buddy'ego.", messageText.Trim());
+        }
+
+        [Fact]
+        public async Task RegularUser_Cannot_RateBuddy_When_NotAssigned_Mock()
+        {
+            await _page.GotoAsync("https://localhost:7231/Identity/Account/Login");
+
+            await _page.FillAsync("#Input_Email", "nowy2@mail.com");
+            await _page.FillAsync("#Input_Password", "NowyPassword123!");
+            await _page.ClickAsync("button[type='submit']");
+
+            await _page.WaitForSelectorAsync("#logout");
+            Assert.True(await _page.IsVisibleAsync("#logout"), "Użytkownik powinien być zalogowany");
+
+            await _page.RouteAsync("**/Rewards/RateBuddy", async route =>
+            {
+                if (route.Request.Method == "GET")
+                {
+                    await route.FulfillAsync(new RouteFulfillOptions
+                    {
+                        Status = 200,
+                        ContentType = "text/html",
+                        Body = @"
+                    <html>
+                        <body>
+                            <pre>Brak przypisanego Buddy'ego.</pre>
+                        </body>
+                    </html>"
+                    });
+                }
+                else
+                {
+                    await route.ContinueAsync();
+                }
+            });
+
+            await _page.ClickAsync("a.nav-link[href='/UserCoursesList']");
+            await _page.ClickAsync("a[href='/Rewards/RateBuddy']");
+
+            var message = _page.Locator("pre");
+
+            await Expect(message).ToBeVisibleAsync();
+            await Expect(message).ToHaveTextAsync("Brak przypisanego Buddy'ego.");
         }
 
         [Fact]
