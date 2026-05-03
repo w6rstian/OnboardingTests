@@ -161,6 +161,43 @@ namespace OnboardingXUnitTests.E2E
             var validationError = _page.GetByText(new Regex("required|wymagane", RegexOptions.IgnoreCase)).First;
             await Assertions.Expect(validationError).ToBeVisibleAsync();
         }
+        
+        // API tests
+
+        // Opis: Weryfikacja działania endpointu pobierającego wydarzenia kalendarza (Test API).
+        // Autor: Wojciech Jurkowicz
+        [Fact]
+        public async Task GET_CalendarEvents_GetEvents_ReturnsSuccess()
+        {
+            await Login("admin@mail.com", "AdminPassword123!");
+
+            var response = await _page.APIRequest.GetAsync($"{_baseUrl}/Calendar/GetEvents?type=General");
+
+            Assert.True(response.Ok, "Endpoint kalendarza powinien zwrócić status HTTP 200 OK.");
+            Assert.Equal("application/json; charset=utf-8", response.Headers["content-type"]);
+        }
+
+        // Opis: Weryfikacja działania endpointu raportów statystycznych z parametrami URL.
+        // Autor: Wojciech Jurkowicz
+        [Fact]
+        public async Task GET_StatisticReportDetails_GetDetailsByRoleUser_ReturnsSuccess()
+        {
+            await Login("admin@mail.com", "AdminPassword123!");
+
+            var response = await _page.APIRequest.GetAsync($"{_baseUrl}/StatisticReport/GetDetailsByRoleUser?role=Buddy&userId=1");
+
+            Assert.True(response.Ok, "Endpoint raportów powinien zwrócić status HTTP 200 OK.");
+        }
+
+        // Opis: Bezpieczeństwo API - próba pobrania chronionych danych przez niezalogowanego użytkownika.
+        // Autor: Wojciech Jurkowicz
+        [Fact]
+        public async Task GET_Admin_GetUsers_Unauthorized_Fails()
+        {
+            var response = await _page.APIRequest.GetAsync($"{_baseUrl}/Admin/GetUsers");
+
+            Assert.False(response.Ok, "Niezalogowany użytkownik nie powinien mieć dostępu do tego endpointu.");
+        }
 
         public async Task DisposeAsync()
         {
