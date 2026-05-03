@@ -101,12 +101,19 @@ namespace OnboardingXUnitTests.E2E
             await Login("admin@mail.com", "AdminPassword123!");
 
             var request = _page.APIRequest;
-
             var response = await request.GetAsync($"{_baseUrl}/Calendar/GetEvents?type=General");
             Assert.True(response.Ok);
 
             var json = await response.JsonAsync();
-            Assert.NotNull(json);
+            var events = json?.EnumerateArray();
+
+            Assert.NotNull(events);
+
+            foreach (var ev in events)
+            {
+                var typeValue = ev.GetProperty("type").GetString();
+                Assert.Equal("General", typeValue);
+            }
         }
 
         [Fact]
