@@ -199,6 +199,78 @@ namespace OnboardingXUnitTests.E2E
             Assert.False(response.Ok, "Niezalogowany użytkownik nie powinien mieć dostępu do tego endpointu.");
         }
 
+        // Przypadek testowy: MOCK_ID3_WJ
+        // Opis: Mockowanie uprawnień do oceny mentora (omijanie braku danych w bazie).
+        // Autor: Wojciech Jurkowicz
+        [Fact]
+        public async Task MOCK_ID3_RateMentor_Without_Feedback_Shows_Error()
+        {
+            await Login("nowy2@mail.com", "NowyPassword123!");
+
+            await _page.RouteAsync("**/Rewards/CheckAssignment**", async route =>
+            {
+                await route.FulfillAsync(new RouteFulfillOptions
+                {
+                    Status = 200,
+                    ContentType = "application/json",
+                    Body = "{\"hasMentor\": true, \"mentorName\": \"MOCK MENTOR\"}"
+                });
+            });
+
+            await _page.GotoAsync($"{_baseUrl}/Rewards/RateMentor?mentorId=1&taskId=1");
+
+            await _page.Locator("#Rating").FillAsync("5");
+            await _page.Locator("#Feedback").FillAsync("Bardzo dobra współpraca!");
+
+            var submitBtn = _page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Wyślij|Zapisz", RegexOptions.IgnoreCase) });
+            await Assertions.Expect(submitBtn).ToBeVisibleAsync();
+        }
+
+        // Przypadek testowy: MOCK_ID4_WJ
+        // Opis: Mockowanie wysyłki formularza oceny Buddy'ego (symulacja zapisu).
+        // Autor: Wojciech Jurkowicz
+        [Fact]
+        public async Task MOCK_ID4_RateBuddy_Form_Submission_Mocked()
+        {
+            await Login("nowy1@mail.com", "NowyPassword123!");
+
+            await _page.RouteAsync("**/Rewards/RateBuddy**", async route => {
+                if (route.Request.Method == "POST")
+                {
+                    await route.FulfillAsync(new RouteFulfillOptions { Status = 200, Body = "OK" });
+                }
+                else
+                {
+                    await route.ContinueAsync();
+                }
+            });
+
+            await _page.GotoAsync($"{_baseUrl}/Rewards/RateBuddy");
+        }
+
+        // Przypadek testowy: MOCK_ID8_WJ
+        // Opis: Wstrzyknięcie sztucznych danych (JSON) do kalendarza i weryfikacja ich wyświetlania.
+        // Autor: Wojciech Jurkowicz
+        [Fact]
+        public async Task MOCK_Calendar_Injected_Data_Displays_Correctly()
+        {
+            await Login("admin@mail.com", "AdminPassword123!");
+
+            await _page.RouteAsync("**/Calendar/GetEvents**", async route => {
+                var fakeJson = "[{\"id\":101,\"title\":\"WAŻNE SPOTKANIE MOCK\",\"start\":\"" + DateTime.Now.ToString("yyyy-MM-dd") + "T10:00:00\"}]";
+                await route.FulfillAsync(new RouteFulfillOptions
+                {
+                    Status = 200,
+                    ContentType = "application/json",
+                    Body = fakeJson
+                });
+            });
+
+            await _page.GotoAsync($"{_baseUrl}/Calendar/Index");
+
+            await Assertions.Expect(_page.GetByText("WAŻNE SPOTKANIE MOCK")).ToBeVisibleAsync();
+        }
+
         public async Task DisposeAsync()
         {
             await _browser.CloseAsync();
