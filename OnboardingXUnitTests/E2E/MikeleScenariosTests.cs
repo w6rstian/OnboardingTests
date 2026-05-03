@@ -142,10 +142,10 @@ namespace OnboardingXUnitTests.E2E
             await Page.GetByRole(AriaRole.Textbox, new() { Name = "Password" }).FillAsync("MaciekPassword123!");
             await Page.GetByRole(AriaRole.Button, new() { Name = "Log in" }).ClickAsync();
 
-            // Zakładając domyślny przycisk "Logout" z ASP.NET Core Identity
+            
             await Page.GetByRole(AriaRole.Button, new() { Name = "Logout" }).ClickAsync();
 
-            // Po wylogowaniu powinien pojawić się z powrotem link do logowania
+           
             await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "Login" })).ToBeVisibleAsync();
         }
 
@@ -162,5 +162,107 @@ namespace OnboardingXUnitTests.E2E
 
             await Expect(Page.GetByRole(AriaRole.Link, new() { Name = " Dodaj pracownika" })).Not.ToBeVisibleAsync();
         }
+        //mocki
+        private const string BaseUrl = "https://localhost:5021";
+
+        [Fact]
+        public async Task ShouldMockSuccessfulEmployeeCreationAndShowSuccess()
+        {
+            await Page.GotoAsync($"{BaseUrl}/HR/CreateEmployee");
+
+            await Page.RouteAsync("**/HR/CreateEmployee", async route =>
+            {
+                if (route.Request.Method == "POST")
+                {
+                    await route.FulfillAsync(new RouteFulfillOptions
+                    {
+                        Status = 200,
+                        ContentType = "text/html",
+                        Body = @"
+                            <html>
+                                <body>
+                                    <div class=""alert alert-success"" id=""success-message"">
+                                        Employee created successfully. A confirmation email has been sent.
+                                    </div>
+                                </body>
+                            </html>"
+                    });
+                }
+                else
+                {
+                    await route.ContinueAsync();
+                }
+            });
+
+            await Page.FillAsync("input[name=\"name\"]", "Jan");
+            await Page.FillAsync("input[name=\"lastname\"]", "Kowalski");
+            await Page.FillAsync("input[name=\"email\"]", "jan.kowalski@firma.pl");
+
+            await Page.ClickAsync("button[type=\"submit\"]");
+
+            var successAlert = Page.Locator("#success-message");
+            await Expect(successAlert).ToBeVisibleAsync();
+            await Expect(successAlert).ToContainTextAsync("Employee created successfully");
+        }
+
+        [Fact]
+        public async Task ShouldMockValidationErrorWhenDataIsMissing()
+        {
+            await Page.GotoAsync($"{BaseUrl}/HR/CreateEmployee");
+
+            await Page.RouteAsync("**/HR/CreateEmployee", async route =>
+            {
+                if (route.Request.Method == "POST")
+                {
+                    await route.FulfillAsync(new RouteFulfillOptions
+                    {
+                        Status = 400,
+                        ContentType = "text/html",
+                        Body = @"
+                            <html>
+                                <body>
+                                    <div class=""validation-summary-errors"">
+                                        <ul><li>All fields are required.</li></ul>
+                                    </div>
+                                </body>
+                            </html>"
+                    });
+                }
+                else
+                {
+                    await route.ContinueAsync();
+                }
+            });
+
+            await Page.ClickAsync("button[type=\"submit\"]");
+
+            var validationSummary = Page.Locator(".validation-summary-errors");
+            await Expect(validationSummary).ToBeVisibleAsync();
+            await Expect(validationSummary).ToContainTextAsync("All fields are required.");
+        }
+
+        [Fact]
+        public async Task ShouldBlockNavigationWhenServerReturns500()
+        {
+            await Page.GotoAsync($"{BaseUrl}/HR/HRPanel");
+
+            await Expect(Page.Locator("h1.main-title")).ToHaveTextAsync("Panel HR");
+
+            await Page.RouteAsync("**/HR/CreateEmployee", async route =>
+            {
+                await route.FulfillAsync(new RouteFulfillOptions
+                {
+                    Status = 500,
+                    ContentType = "text/html",
+                    Body = "<h1>Wewnętrzny błąd serwera (500)</h1><p>Baza danych nie odpowiada.</p>"
+                });
+            });
+
+            await Page.ClickAsync("a[href=\"/HR/CreateEmployee\"]");
+
+            await Expect(Page.Locator("h1")).ToHaveTextAsync("Wewnętrzny błąd serwera (500)");
+            await Expect(Page.Locator("p")).ToHaveTextAsync("Baza danych nie odpowiada.");
+        }
     }
+
 }
