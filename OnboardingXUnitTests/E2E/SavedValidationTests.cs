@@ -80,6 +80,7 @@ namespace OnboardingXUnitTests.E2E
             await Expect(header).ToHaveTextAsync("Panel Buddyego");
 
             await Expect(page.Locator("a[href='/Buddy/Newbies']")).ToBeVisibleAsync();
-            await Expect(page.Locator("a[href='/Buddy/TaskStatus']")).ToBeVisibleAsync(); 
+            await Expect(page.Locator("a[href='/Buddy/TaskStatus']")).ToBeVisibleAsync();
+        }
     }
 }
