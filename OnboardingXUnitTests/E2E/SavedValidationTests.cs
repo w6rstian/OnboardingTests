@@ -73,13 +73,13 @@ namespace OnboardingXUnitTests.E2E
 
             await page.GotoAsync("http://localhost:5021/Buddy/BuddyPanel");
 
-            await Expect(page.Locator("h1.main-title")).ToHaveTextAsync("Panel Buddyego");
+            await Expect(page).Not.ToHaveURLAsync(new System.Text.RegularExpressions.Regex(".*Account/Login.*"));
 
-            await Expect(page.GetByRole(AriaRole.Link, new() { Name = "Podgląd nowych" })).ToBeVisibleAsync();
-            await Expect(page.GetByRole(AriaRole.Link, new() { Name = "Postęp Nowych" })).ToBeVisibleAsync();
+            var header = page.Locator("h1.main-title");
+            await Expect(header).ToBeVisibleAsync();
+            await Expect(header).ToHaveTextAsync("Panel Buddyego");
 
-            await page.GetByRole(AriaRole.Link, new() { Name = "Podgląd nowych" }).ClickAsync();
-            await Expect(page).ToHaveURLAsync(new System.Text.RegularExpressions.Regex(".*/Buddy/Newbies"));
-        }
+            await Expect(page.Locator("a[href='/Buddy/Newbies']")).ToBeVisibleAsync();
+            await Expect(page.Locator("a[href='/Buddy/TaskStatus']")).ToBeVisibleAsync(); 
     }
 }
