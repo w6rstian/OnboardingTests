@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
-using System.Text.Json;
 using System.Linq;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace OnboardingXUnitTests.E2E
 {
@@ -84,8 +85,7 @@ namespace OnboardingXUnitTests.E2E
 
             Assert.NotNull(events);
 
-            var createdMeeting = events.Value.FirstOrDefault(
-                e => e.GetProperty("title").GetString() == meetingTitle);
+            var createdMeeting = events.Value.FirstOrDefault(e => e.GetProperty("title").GetString() == meetingTitle);
             Assert.NotEqual(default, createdMeeting);
 
             var participants = createdMeeting.GetProperty("participants")
@@ -247,6 +247,94 @@ namespace OnboardingXUnitTests.E2E
             int indexB = messages.FindIndex(m => m.Contains(msgB));
 
             Assert.True(indexA < indexB);
+        }
+
+        // mock testy
+        [Fact]
+        public async Task MOCK_RateMentor_Access_Granted()
+        {
+            await Login("nowy1@mail.com", "NowyPassword123!");
+
+            await _page.RouteAsync("**/Rewards/CheckAssignment**", async route =>
+            {
+                await route.FulfillAsync(new RouteFulfillOptions
+                {
+                    Status = 200,
+                    ContentType = "application/json",
+                    Body = "{\"hasMentor\": true, \"mentorName\": \"MOCK MENTOR\"}"
+                });
+            });
+
+            await _page.GotoAsync($"{_baseUrl}/Rewards/RateMentor?mentorId=1&taskId=1");
+            var submitBtn = _page.GetByRole(AriaRole.Button,
+                new() { NameRegex = new Regex("Wyślij|Zapisz", RegexOptions.IgnoreCase) });
+            await Assertions.Expect(submitBtn).ToBeVisibleAsync();
+        }
+
+        [Fact]
+        public async Task MOCK_Statistics_Role_Filter()
+        {
+            await Login("admin@mail.com", "AdminPassword123!");
+
+            await _page.RouteAsync("**/StatisticReport/GetUsersByRole?role=Admin", async route =>
+            {
+                var json = new[]
+                {
+                    new { id = 999, name = "MOCK ADMIN USER", login = "mockadmin" }
+                };
+                await route.FulfillAsync(new RouteFulfillOptions
+                {
+                    Status = 200,
+                    ContentType = "application/json",
+                    Body = JsonSerializer.Serialize(json)
+                });
+            });
+
+            await _page.GotoAsync($"{_baseUrl}/StatisticReport/Index");
+            await _page.SelectOptionAsync("#roleSelect", "Admin");
+
+            var userItem = _page.Locator("text=MOCK ADMIN USER");
+            await Assertions.Expect(userItem).ToBeVisibleAsync();
+        }
+
+        [Fact]
+        public async Task MOCK_Notification_Delete_Success()
+        {
+            await Login("nowy1@mail.com", "NowyPassword123!");
+
+            int getNotificationsCallCount = 0;
+
+            await _page.RouteAsync("**/Notifications/GetNotifications", async route =>
+            {
+                getNotificationsCallCount++;
+                string body = getNotificationsCallCount == 1
+                    ? @"<div class='notification-item unread'>
+                            <p>MOCK NOTIFICATION TO DELETE</p>
+                            <button class='delete-notification' data-id='999' style='border: none; background: transparent;'>
+                                <small>Usuń</small>
+                            </button>
+                        </div>"
+                    : "<p>No notifications available.</p>";
+
+                await route.FulfillAsync(new RouteFulfillOptions
+                {
+                    Status = 200,
+                    ContentType = "text/html",
+                    Body = body
+                });
+            });
+
+            await _page.RouteAsync("**/Notifications/Delete/999", async route =>
+            {
+                await route.FulfillAsync(new RouteFulfillOptions { Status = 200 });
+            });
+
+            _page.Dialog += (_, dialog) => dialog.AcceptAsync();
+
+            await _page.ClickAsync("#notification-bell");
+            await Assertions.Expect(_page.Locator("text=MOCK NOTIFICATION TO DELETE")).ToBeVisibleAsync();
+            await _page.ClickAsync(".delete-notification");
+            await Assertions.Expect(_page.Locator("text=No notifications available.")).ToBeVisibleAsync();
         }
 
         public async Task DisposeAsync()
