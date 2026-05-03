@@ -1,4 +1,6 @@
 ﻿using Microsoft.Playwright;
+using System.Text.Json;
+using System.Linq;
 
 namespace OnboardingXUnitTests.E2E
 {
@@ -53,7 +55,8 @@ namespace OnboardingXUnitTests.E2E
 
             await _page.GotoAsync($"{_baseUrl}/Calendar/CreateMeeting?type=General");
 
-            await _page.FillAsync("input[name='Title']", "Ważne spotkanie");
+            string meetingTitle = $"Ważne spotkanie {Guid.NewGuid()}";
+            await _page.FillAsync("input[name='Title']", meetingTitle);
 
             var start = DateTime.Now.AddDays(1).ToString("yyyy-MM-ddTHH:mm");
             var end = DateTime.Now.AddDays(1).AddHours(1).ToString("yyyy-MM-ddTHH:mm");
@@ -71,6 +74,25 @@ namespace OnboardingXUnitTests.E2E
 
             await _page.WaitForURLAsync($"{_baseUrl}/Calendar");
             Assert.Equal($"{_baseUrl}/Calendar", _page.Url);
+
+            // weryfikacja API
+            var response = await _page.APIRequest.GetAsync($"{_baseUrl}/Calendar/GetEvents");
+            Assert.True(response.Ok);
+
+            var json = await response.JsonAsync();
+            var events = json?.EnumerateArray();
+
+            Assert.NotNull(events);
+
+            var createdMeeting = events.Value.FirstOrDefault(
+                e => e.GetProperty("title").GetString() == meetingTitle);
+            Assert.NotEqual(default, createdMeeting);
+
+            var participants = createdMeeting.GetProperty("participants")
+                .EnumerateArray().Select(p => p.GetString())
+                .ToList();
+            Assert.Contains("Nowy1 Nowak (nowy1@mail.com)", participants);
+            Assert.Contains("Nowy2 Nowak (nowy2@mail.com)", participants);
         }
 
         [Fact]

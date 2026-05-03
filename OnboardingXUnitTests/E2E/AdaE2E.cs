@@ -144,7 +144,97 @@ public class AdaE2E : IAsyncLifetime
         await Assertions.Expect(_page).Not.ToHaveURLAsync(new Regex(".*/Buddy/BuddyPanel"));
     }
 
-public async Task DisposeAsync()
+    //mocki
+
+    [Fact]
+    public async Task ID02_HR_Panel_Statistics_Visible_Mocked()
+    {
+        await Login("hr@mail.com", "HrPassword123!");
+
+        await _page.RouteAsync("**/HR/HRPanel", async route =>
+        {
+            string htmlContent = @"
+            <html>
+                <body>
+                    <h1>Panel HR</h1>
+                    <div class='stats-container'>
+                        <h3>Statystyki</h3>
+                        <p>Aktywni pracownicy: 150</p>
+                    </div>
+                </body>
+            </html>";
+
+            await route.FulfillAsync(new RouteFulfillOptions
+            {
+                Status = 200,
+                ContentType = "text/html; charset=utf-8",
+                BodyBytes = System.Text.Encoding.UTF8.GetBytes(htmlContent)
+            });
+        });
+
+        await _page.GotoAsync($"{_baseUrl}/HR/HRPanel");
+        var statsHeader = _page.Locator("h3:has-text('Statystyki')");
+        await Assertions.Expect(statsHeader).ToBeVisibleAsync();
+        await Assertions.Expect(_page.Locator("text=Aktywni pracownicy: 150")).ToBeVisibleAsync();
+    }
+
+    [Fact]
+    public async Task ID04_HR_CreateEmployee_Success_Mocked()
+    {
+        await Login("hr@mail.com", "HrPassword123!");
+
+        await _page.RouteAsync("**/HR/CreateEmployee", async route =>
+        {
+            if (route.Request.Method == "POST")
+            {
+                await route.FulfillAsync(new RouteFulfillOptions
+                {
+                    Status = 302,
+                    Headers = new Dictionary<string, string> { { "Location", "/" } }
+                });
+            }
+            else { await route.ContinueAsync(); }
+        });
+
+        await _page.GotoAsync($"{_baseUrl}/HR/CreateEmployee");
+        await _page.FillAsync("#name", "Test");
+        await _page.FillAsync("#lastname", "Pracownik");
+        await _page.FillAsync("#email", "mocked_user@mail.com");
+
+        await _page.ClickAsync("button[type='submit']");
+
+        await Assertions.Expect(_page).ToHaveURLAsync($"{_baseUrl}/");
+    }
+
+    [Fact]
+    public async Task ID07_Buddy_TaskStatus_BadgeVerification_Mocked()
+    {
+        await Login("buddy1@mail.com", "BuddyPassword123!");
+
+        await _page.RouteAsync("**/Buddy/TaskStatus", async route =>
+        {
+            await route.FulfillAsync(new RouteFulfillOptions
+            {
+                Status = 200,
+                ContentType = "text/html",
+                Body = @"
+                <div class='accordion-item'>
+                    <button class='accordion-button'>Jan Kowalski</button>
+                    <div class='accordion-collapse collapse show'>
+                        <span class='badge bg-warning text-dark'>W trakcie</span>
+                    </div>
+                </div>"
+            });
+        });
+
+        await _page.GotoAsync($"{_baseUrl}/Buddy/TaskStatus");
+
+        var badge = _page.Locator(".badge").First;
+        await Assertions.Expect(badge).ToBeVisibleAsync();
+        await Assertions.Expect(badge).ToHaveTextAsync("W trakcie");
+    }
+
+    public async Task DisposeAsync()
     {
         await _browser.CloseAsync();
         _playwright.Dispose();
