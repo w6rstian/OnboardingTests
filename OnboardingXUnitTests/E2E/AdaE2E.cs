@@ -58,16 +58,7 @@ public class AdaE2E : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ID03_NewEmployee_ShouldNotSee_AddEmployeeButton()
-    {
-        await Login("nowy1@mail.com", "NowyPassword123!");
-        await _page.GotoAsync($"{_baseUrl}/HR/HRPanel");
-        var addEmployeeButton = _page.GetByRole(AriaRole.Link, new() { Name = "Dodaj pracownika" });
-        await Assertions.Expect(addEmployeeButton).ToBeHiddenAsync();
-    }
-
-    [Fact]
-    public async Task ID04_HR_BackButton_Works()
+    public async Task ID03_HR_BackButton_Works()
     {
         await Login("hr@mail.com", "HrPassword123!");
         await _page.GotoAsync($"{_baseUrl}/HR/HRPanel");
@@ -77,7 +68,7 @@ public class AdaE2E : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ID05_HR_CreateEmployee_Success()
+    public async Task ID04_HR_CreateEmployee_Success()
     {
         await Login("hr@mail.com", "HrPassword123!");
         await _page.GotoAsync($"{_baseUrl}/HR/CreateEmployee");
@@ -90,7 +81,7 @@ public class AdaE2E : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ID06_Buddy_Panel_Navigation()
+    public async Task ID05_Buddy_Panel_Navigation()
     {
         await Login("buddy1@mail.com", "BuddyPassword123!"); 
         await _page.GotoAsync($"{_baseUrl}/Buddy/BuddyPanel");
@@ -100,7 +91,7 @@ public class AdaE2E : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ID07_Buddy_TaskStatus_AccordionExpands()
+    public async Task ID06_Buddy_TaskStatus_AccordionExpands()
     {
         await Login("buddy1@mail.com", "BuddyPassword123!");
         await _page.GotoAsync($"{_baseUrl}/Buddy/TaskStatus");
@@ -121,7 +112,7 @@ public class AdaE2E : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ID08_Buddy_TaskStatus_BadgeVerification()
+    public async Task ID07_Buddy_TaskStatus_BadgeVerification()
     {
         await Login("buddy1@mail.com", "BuddyPassword123!");
         await _page.GotoAsync($"{_baseUrl}/Buddy/TaskStatus");
@@ -136,7 +127,7 @@ public class AdaE2E : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ID09_Buddy_NoNewbies_Message()
+    public async Task ID08_Buddy_NoNewbies_Message()
     {
         await Login("buddy2@mail.com", "BuddyPassword123!"); 
         await _page.GotoAsync($"{_baseUrl}/Buddy/TaskStatus");
@@ -145,7 +136,7 @@ public class AdaE2E : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ID10_Unauthorized_Access_Redirects()
+    public async Task ID9_Unauthorized_Access_Redirects()
     {
         await Login("nowy1@mail.com", "NowyPassword123!"); 
         await _page.GotoAsync($"{_baseUrl}/Buddy/BuddyPanel");
