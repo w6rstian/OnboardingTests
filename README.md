@@ -1,10 +1,10 @@
 Imported from BitBucket
 
-1. **Uruchomienie test�w z pokryciem:**
+1. **Uruchomienie testów z pokryciem:**
    ```bash
    dotnet test --collect:"XPlat Code Coverage"
 
-2. **Uruchomienie test�w z pokryciem:**
+2. **Uruchomienie testów z pokryciem:**
 	```bash
 	dotnet tool restore
 	reportgenerator -reports:"**/TestResults/**/coverage.cobertura.xml" -targetdir:"coveragereport" -reporttypes:Html
