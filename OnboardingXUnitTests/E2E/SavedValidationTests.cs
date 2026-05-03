@@ -60,5 +60,26 @@ namespace OnboardingXUnitTests.E2E
             await Expect(page.GetByRole(AriaRole.Main)).ToContainTextAsync("IT");
             await Expect(page.GetByRole(AriaRole.Main)).ToContainTextAsync("Coder");
         }
+
+        [Fact]
+        public async Task BuddyCanAccessPanelUsingStoredSession_SavedValidation()
+        {
+            var context = await Browser.NewContextAsync(new()
+            {
+                StorageStatePath = "auth.json"
+            });
+
+            var page = await context.NewPageAsync();
+
+            await page.GotoAsync("http://localhost:5021/Buddy/BuddyPanel");
+
+            await Expect(page.Locator("h1.main-title")).ToHaveTextAsync("Panel Buddyego");
+
+            await Expect(page.GetByRole(AriaRole.Link, new() { Name = "Podgląd nowych" })).ToBeVisibleAsync();
+            await Expect(page.GetByRole(AriaRole.Link, new() { Name = "Postęp Nowych" })).ToBeVisibleAsync();
+
+            await page.GetByRole(AriaRole.Link, new() { Name = "Podgląd nowych" }).ClickAsync();
+            await Expect(page).ToHaveURLAsync(new System.Text.RegularExpressions.Regex(".*/Buddy/Newbies"));
+        }
     }
 }
