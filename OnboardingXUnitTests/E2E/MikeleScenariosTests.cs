@@ -59,8 +59,8 @@ namespace OnboardingXUnitTests.E2E
             await Page.GetByRole(AriaRole.Textbox, new() { Name = "Password" }).FillAsync("MaciekPassword123!");
             await Page.GetByRole(AriaRole.Button, new() { Name = "Log in" }).ClickAsync();
             await Page.GetByRole(AriaRole.Link, new() { Name = "Przejdź do panelu" }).ClickAsync();
-            await Page.GetByRole(AriaRole.Link, new() { Name = " Moje konto" }).ClickAsync();
-            await Page.GetByRole(AriaRole.Link, new() { Name = " Edytuj dane" }).ClickAsync();
+            await Page.GetByRole(AriaRole.Link, new() { Name = "Moje konto" }).ClickAsync();
+            await Page.GetByRole(AriaRole.Link, new() { Name = "Edytuj dane" }).ClickAsync();
             await Page.Locator("#Name").ClickAsync();
             await Page.Locator("#Name").FillAsync("Maciek");
             await Page.Locator("#Name").PressAsync("Tab");
@@ -71,7 +71,7 @@ namespace OnboardingXUnitTests.E2E
             await Page.Locator("#Department").FillAsync("IT");
             await Page.Locator("#Position").ClickAsync();
             await Page.Locator("#Position").FillAsync("Coder");
-            await Page.GetByRole(AriaRole.Button, new() { Name = " Zapisz zmiany" }).ClickAsync();
+            await Page.GetByRole(AriaRole.Button, new() { Name = "Zapisz zmiany" }).ClickAsync();
             await Expect(Page.GetByRole(AriaRole.Main)).ToContainTextAsync("Maciek");
             await Expect(Page.GetByRole(AriaRole.Main)).ToContainTextAsync("Super");
             await Expect(Page.GetByRole(AriaRole.Main)).ToContainTextAsync("123456789");
@@ -91,7 +91,7 @@ namespace OnboardingXUnitTests.E2E
             await Page.GetByRole(AriaRole.Textbox, new() { Name = "Password" }).FillAsync("HrPassword123!");
             await Page.GetByRole(AriaRole.Button, new() { Name = "Log in" }).ClickAsync();
             await Page.GetByRole(AriaRole.Link, new() { Name = "Przejdź do panelu" }).ClickAsync();
-            await Page.GetByRole(AriaRole.Link, new() { Name = " Dodaj pracownika" }).ClickAsync();
+            await Page.GetByRole(AriaRole.Link, new() { Name = "Dodaj pracownika" }).ClickAsync();
             await Page.GetByRole(AriaRole.Textbox, new() { Name = "Imię" }).ClickAsync();
             await Page.GetByRole(AriaRole.Textbox, new() { Name = "Imię" }).FillAsync("Marek");
             await Page.GetByRole(AriaRole.Textbox, new() { Name = "Nazwisko" }).ClickAsync();
@@ -163,12 +163,12 @@ namespace OnboardingXUnitTests.E2E
             await Expect(Page.GetByRole(AriaRole.Link, new() { Name = " Dodaj pracownika" })).Not.ToBeVisibleAsync();
         }
         //mocki
-        private const string BaseUrl = "https://localhost:5021";
+        private const string BaseUrl = "http://localhost:5021";
 
         [Fact]
         public async Task ShouldMockSuccessfulEmployeeCreationAndShowSuccess()
         {
-            await Page.GotoAsync($"{BaseUrl}/HR/CreateEmployee");
+            await Page.GotoAsync($"{BaseUrl}/HR/CreateEmployee*");
 
             await Page.RouteAsync("**/HR/CreateEmployee", async route =>
             {
@@ -198,7 +198,7 @@ namespace OnboardingXUnitTests.E2E
             await Page.FillAsync("input[name=\"lastname\"]", "Kowalski");
             await Page.FillAsync("input[name=\"email\"]", "jan.kowalski@firma.pl");
 
-            await Page.ClickAsync("button[type=\"submit\"]");
+           await Page.ClickAsync("button[type=\"submit\"]");
 
             var successAlert = Page.Locator("#success-message");
             await Expect(successAlert).ToBeVisibleAsync();
@@ -254,15 +254,20 @@ namespace OnboardingXUnitTests.E2E
                 {
                     Status = 500,
                     ContentType = "text/html",
-                    Body = "<h1>Wewnętrzny błąd serwera (500)</h1><p>Baza danych nie odpowiada.</p>"
+                    Body = "<h1>Wewnetrzny blad serwera (500)</h1><p>Baza danych nie odpowiada.</p>"
                 });
             });
 
             await Page.ClickAsync("a[href=\"/HR/CreateEmployee\"]");
 
-            await Expect(Page.Locator("h1")).ToHaveTextAsync("Wewnętrzny błąd serwera (500)");
+            await Expect(Page.Locator("h1")).ToHaveTextAsync("Wewnetrzny blad serwera (500)");
             await Expect(Page.Locator("p")).ToHaveTextAsync("Baza danych nie odpowiada.");
         }
+
+        //stan
+        
+        
+
     }
 
 }
