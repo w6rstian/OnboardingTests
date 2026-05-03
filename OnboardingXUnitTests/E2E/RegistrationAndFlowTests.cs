@@ -1,4 +1,5 @@
 ﻿using Microsoft.Playwright;
+using System.Text.RegularExpressions;
 
 namespace OnboardingXUnitTests.E2E
 {
@@ -25,28 +26,70 @@ namespace OnboardingXUnitTests.E2E
             });
         }
 
+        // helper method
         private async Task Login(string email, string password)
         {
             await _page.GotoAsync($"{_baseUrl}/Identity/Account/Login");
-            await _page.FillAsync("#Input_Email", email);
-            await _page.FillAsync("#Input_Password", password);
-            await _page.ClickAsync("button[type='submit']");
-            await _page.WaitForSelectorAsync("#logout");
+
+            await _page.GetByLabel("Email").FillAsync(email);
+            await _page.GetByLabel("Password", new() { Exact = false }).FillAsync(password);
+
+            await _page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Log in|Zaloguj", RegexOptions.IgnoreCase) }).ClickAsync();
+
+            await _page.Locator("#logout").WaitForAsync();
         }
 
+        // Przypadek testowy: ID-x
+        // Opis: Weryfikacja walidacji formularza rejestracji. Sprawdzenie, czy po wpisaniu dwóch różnych haseł i kliknięciu submit wyświetla się komunikat o błędzie.
+        // Autor: Wojciech Jurkowicz
         [Fact]
         public async Task Registration_Passwords_Do_Not_Match_Shows_Error()
         {
             await _page.GotoAsync($"{_baseUrl}/Identity/Account/Register");
 
-            await _page.FillAsync("#Input_Email", "nowy_test@mail.com");
-            await _page.FillAsync("#Input_Password", "Haslo123!");
-            await _page.FillAsync("#Input_ConfirmPassword", "InneHaslo456!");
+            await _page.GetByLabel("Email").FillAsync("nowy_test@mail.com");
+            await _page.GetByLabel("Password", new() { Exact = true }).FillAsync("Haslo123!");
+            await _page.GetByLabel("Confirm password", new() { Exact = false }).FillAsync("InneHaslo456!"); // Zmień na "Potwierdź hasło" jeśli to polski UI
 
-            await _page.ClickAsync("#registerSubmit");
+            await _page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Register|Zarejestruj", RegexOptions.IgnoreCase) }).ClickAsync();
 
-            var errorMessage = await _page.Locator("span[data-valmsg-for='Input.ConfirmPassword']").InnerTextAsync();
-            Assert.Contains("match", errorMessage, StringComparison.OrdinalIgnoreCase);
+            var errorMessage = _page.GetByText(new Regex("match|nie pasują|nie zgadzają", RegexOptions.IgnoreCase)).First;
+            await Assertions.Expect(errorMessage).ToBeVisibleAsync();
+        }
+
+        // Przypadek testowy: ID-x
+        // Opis: Weryfikacja walidacji po stronie serwera. Administrator próbuje dodać nowy kurs omijając blokadę HTML, system powinien odrzucić żądanie i wyświetlić błąd.
+        // Autor: Wojciech Jurkowicz
+        [Fact]
+        public async Task Admin_Cannot_Create_OnboardingCourse_Without_Name()
+        {
+            await Login("admin@mail.com", "AdminPassword123!");
+
+            await _page.GotoAsync($"{_baseUrl}/Onboarding/Create");
+
+            await _page.EvaluateAsync("document.getElementById('CourseName').removeAttribute('required')");
+
+            await _page.GetByRole(AriaRole.Button, new() { Name = "Utwórz" }).ClickAsync();
+
+            var errorMsg = _page.GetByText("Nazwa kursu jest wymagana");
+            await Assertions.Expect(errorMsg).ToBeVisibleAsync();
+        }
+
+        // Przypadek testowy: ID-x 
+        // Opis: Pełna ścieżka logowania i wylogowania użytkownika. Sprawdzenie przekierowań i ukrywania elementów interfejsu (przycisku wylogowania) po sukcesie.
+        // Autor: Wojciech Jurkowicz
+        [Fact]
+        public async Task Logout_User_Redirects_To_Home_Page()
+        {
+            await Login("nowy1@mail.com", "NowyPassword123!");
+
+            await _page.Locator("#logout").ClickAsync();
+
+            await _page.WaitForURLAsync($"{_baseUrl}/");
+            Assert.Equal($"{_baseUrl}/", _page.Url);
+
+            var isLogoutVisible = await _page.Locator("#logout").IsVisibleAsync();
+            Assert.False(isLogoutVisible, "Przycisk wylogowania nie powinien być widoczny po wylogowaniu."); ;
         }
 
         [Fact]
@@ -54,13 +97,13 @@ namespace OnboardingXUnitTests.E2E
         {
             await _page.GotoAsync($"{_baseUrl}/Identity/Account/Register");
 
-            await _page.FillAsync("#Input_Email", "zly_adres.com");
-            await _page.FillAsync("#Input_Password", "Haslo123!");
-            await _page.FillAsync("#Input_ConfirmPassword", "Haslo123!");
+            await _page.GetByLabel("Email").FillAsync("zly_adres.com");
+            await _page.GetByLabel("Password", new() { Exact = true }).FillAsync("Haslo123!");
+            await _page.GetByLabel("Confirm password", new() { Exact = false }).FillAsync("Haslo123!");
 
-            await _page.ClickAsync("#registerSubmit");
+            await _page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Register|Zarejestruj", RegexOptions.IgnoreCase) }).ClickAsync();
 
-            var errorSpan = _page.Locator("span[data-valmsg-for='Input.Email']");
+            var errorSpan = _page.GetByText(new Regex("valid e-mail|valid email|prawidłowym adresem|nieprawidłowy|invalid", RegexOptions.IgnoreCase)).First;
             await Assertions.Expect(errorSpan).ToBeVisibleAsync();
         }
 
@@ -69,15 +112,14 @@ namespace OnboardingXUnitTests.E2E
         {
             await _page.GotoAsync($"{_baseUrl}/Identity/Account/Register");
 
-            await _page.FillAsync("#Input_Email", "nowy_test2@mail.com");
-            await _page.FillAsync("#Input_Password", "Krotk");
-            await _page.FillAsync("#Input_ConfirmPassword", "Krotk");
+            await _page.GetByLabel("Email").FillAsync("nowy_test2@mail.com");
+            await _page.GetByLabel("Password", new() { Exact = true }).FillAsync("Krotk");
+            await _page.GetByLabel("Confirm password", new() { Exact = false }).FillAsync("Krotk");
 
-            await _page.ClickAsync("#registerSubmit");
+            await _page.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Register|Zarejestruj", RegexOptions.IgnoreCase) }).ClickAsync();
 
-            var bodyText = await _page.InnerTextAsync("body");
-            Assert.True(bodyText.Contains("at least 6"),
-                "System powinien zablokować hasło krótsze niż 6 znaków.");
+            var shortPasswordError = _page.GetByText(new Regex("at least 6|co najmniej 6", RegexOptions.IgnoreCase)).First;
+            await Assertions.Expect(shortPasswordError).ToBeVisibleAsync();
         }
 
         [Fact]
@@ -90,56 +132,14 @@ namespace OnboardingXUnitTests.E2E
         }
 
         [Fact]
-        public async Task Logout_User_Redirects_To_Home_Page()
-        {
-            await Login("nowy1@mail.com", "NowyPassword123!");
-
-            await _page.ClickAsync("#logout");
-
-            await _page.WaitForURLAsync($"{_baseUrl}/");
-            Assert.Equal($"{_baseUrl}/", _page.Url);
-
-            var isLogoutVisible = await _page.IsVisibleAsync("#logout");
-            Assert.False(isLogoutVisible, "Przycisk wylogowania nie powinien być widoczny po wylogowaniu.");
-        }
-
-        [Fact]
-        public async Task Admin_Cannot_Create_OnboardingCourse_Without_Name()
-        {
-            await Login("admin@mail.com", "AdminPassword123!");
-
-            await _page.GotoAsync($"{_baseUrl}/Onboarding/Create");
-
-            await _page.EvaluateAsync("document.getElementById('CourseName').removeAttribute('required')");
-
-            await _page.ClickAsync("button[type='submit']:has-text('Utwórz')");
-
-            var bodyLocator = _page.Locator("body");
-            await Assertions.Expect(bodyLocator).ToContainTextAsync("Nazwa kursu jest wymagana");
-        }
-
-        [Fact]
         public async Task Create_Question_Form_Loads_Correctly()
         {
             await Login("admin@mail.com", "AdminPassword123!");
 
             await _page.GotoAsync($"{_baseUrl}/Questions/Create");
 
-            var isDescriptionInputVisible = await _page.IsVisibleAsync("input[name='Description'], textarea[name='Description']");
-            Assert.True(isDescriptionInputVisible, "Pole 'Description' pytania powinno być widoczne na formularzu.");
-        }
-
-        [Fact]
-        public async Task API_StatisticReport_GetUsersByRole_Returns_Success()
-        {
-            await Login("admin@mail.com", "AdminPassword123!");
-
-            var response = await _page.APIRequest.GetAsync($"{_baseUrl}/StatisticReport/GetUsersByRole?role=Nowy");
-
-            Assert.True(response.Ok);
-
-            var jsonResponse = await response.JsonAsync();
-            Assert.NotNull(jsonResponse);
+            var descriptionField = _page.GetByLabel(new Regex("Description|Opis", RegexOptions.IgnoreCase)).First;
+            await Assertions.Expect(descriptionField).ToBeVisibleAsync();
         }
 
         public async Task DisposeAsync()

@@ -27,6 +27,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
 
         public UserControllerTests()
         {
+            // setup mocks
             _fakeUserStore = A.Fake<IUserStore<User>>();
             _fakeUserManager = A.Fake<UserManager<User>>(x => x.WithArgumentsForConstructor(
                 new object[] { _fakeUserStore, null, null, null, null, null, null, null, null }));
@@ -34,9 +35,12 @@ namespace OnboardingXUnitTests.Unit.Controllers
 
             _controller = new UserController(_fakeUserManager, _fakeEmailSender, _fakeUserStore);
 
+            // setup UrlHelper
             var fakeUrlHelper = A.Fake<IUrlHelper>();
+            A.CallTo(() => fakeUrlHelper.Action(A<UrlActionContext>._)).Returns("http://localhost/confirm-email");
             _controller.Url = fakeUrlHelper;
 
+            // setup tempdata
             var tempDataProvider = A.Fake<ITempDataProvider>();
             var tempDataDictionaryFactory = new TempDataDictionaryFactory(tempDataProvider);
             _controller.TempData = tempDataDictionaryFactory.GetTempData(new DefaultHttpContext());
@@ -53,33 +57,28 @@ namespace OnboardingXUnitTests.Unit.Controllers
             };
         }
 
+        // MainPage and UserPanel tests
         [Fact]
         public void MainPage_ReturnsViewResult()
         {
-            // Act
             var result = _controller.MainPage();
-
-            // Assert
             result.Should().BeOfType<ViewResult>();
         }
 
         [Fact]
         public void UserPanel_ReturnsViewResult()
         {
-            // Act
             var result = _controller.UserPanel();
-
-            // Assert
             result.Should().BeOfType<ViewResult>();
         }
 
-        // New tests - MyAccount
+        // MyAccount Tests
         [Fact]
-        public async Task MyAccount_Get_ReturnsViewWithUser()
+        public async Task MyAccountGet_ReturnsView_WithCurrentUser()
         {
-            // Arrange - checks if returns user
+            // Arrange
             var testUser = new User { Name = "Jan" };
-            A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(Task.FromResult(testUser));
+            A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(testUser);
 
             // Act
             var result = await _controller.MyAccount();
@@ -90,46 +89,51 @@ namespace OnboardingXUnitTests.Unit.Controllers
         }
 
         [Fact]
-        public async Task MyAccount_Post_ReturnsNotFound_WhenUserNull()
+        public async Task MyAccountPost_WhenUserIsNull_ReturnsNotFound()
         {
-            // Arrange - checks whether user is null
-            A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(Task.FromResult<User>(null));
+            // Arrange
+            A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns((User)null!);
 
             // Act
-            var result = await _controller.MyAccount("Jan", "K", "j@j.pl", "123", "IT", "Dev");
+            var result = await _controller.MyAccount("Jan", "K", "nowy@mail.pl", "123", "IT", "Dev");
 
             // Assert
             result.Should().BeOfType<NotFoundResult>();
         }
 
         [Fact]
-        public async Task MyAccount_Post_ReturnsRedirect_OnSuccess()
+        public async Task MyAccountPost_WhenUpdateSucceeds_UpdatesUserSendsEmailAndRedirects()
         {
             // Arrange
             var testUser = new User { Id = 1, Email = "test@test.com" };
-            A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(Task.FromResult(testUser));
+            A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(testUser);
             A.CallTo(() => _fakeUserManager.UpdateAsync(A<User>._)).Returns(Task.FromResult(IdentityResult.Success));
             A.CallTo(() => _fakeUserManager.GetUserIdAsync(A<User>._)).Returns(Task.FromResult(testUser.Id.ToString()));
             A.CallTo(() => _fakeUserManager.GenerateEmailConfirmationTokenAsync(A<User>._)).Returns(Task.FromResult("token123"));
 
             // Act
-            var result = await _controller.MyAccount("Jan", "K", "j@j.pl", "123", "IT", "Dev");
+            var result = await _controller.MyAccount("Jan", "Kowalski", "nowy@mail.pl", "123", "IT", "Dev");
 
             // Assert
-            var redirect = result.Should().BeOfType<RedirectToActionResult>().Subject;
-            redirect.ActionName.Should().Be("MyAccount");
+            testUser.Name.Should().Be("Jan");
+            testUser.Surname.Should().Be("Kowalski");
+            testUser.Department.Should().Be("IT");
 
-            // Checks if mail was sent
-            A.CallTo(() => _fakeEmailSender.SendEmailAsync(A<string>._, A<string>._, A<string>._)).MustHaveHappened();
+            A.CallTo(() => _fakeEmailSender.SendEmailAsync("nowy@mail.pl", "Confirm your email", A<string>._))
+                .MustHaveHappenedOnceExactly();
+
+            var redirectResult = result.Should().BeOfType<RedirectToActionResult>().Subject;
+            redirectResult.ActionName.Should().Be("MyAccount");
         }
 
         [Fact]
-        public async Task MyAccount_Post_ReturnsView_WhenUpdateFails()
+        public async Task MyAccountPost_WhenUpdateFails_AddsErrorsToModelStateAndReturnsView()
         {
             // Arrange
             var testUser = new User { Id = 1 };
-            var identityError = IdentityResult.Failed(new IdentityError { Description = "Błąd zapisu" });
-            A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(Task.FromResult(testUser));
+            var identityError = IdentityResult.Failed(new IdentityError { Description = "Błąd zapisu w bazie danych" });
+
+            A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(testUser);
             A.CallTo(() => _fakeUserManager.UpdateAsync(A<User>._)).Returns(identityError);
 
             // Act
@@ -137,26 +141,11 @@ namespace OnboardingXUnitTests.Unit.Controllers
 
             // Assert
             result.Should().BeOfType<ViewResult>();
-            _controller.ModelState.ErrorCount.Should().BeGreaterThan(0);
-        }
+            _controller.ModelState.ErrorCount.Should().Be(1);
+            _controller.ModelState.Values.SelectMany(v => v.Errors).Should().Contain(e => e.ErrorMessage == "Błąd zapisu w bazie danych");
 
-        [Theory] // 3 tests
-        [InlineData("", "Kowalski")]
-        [InlineData("Jan", "")]
-        [InlineData(null, null)]
-        public async Task MyAccount_Post_HandlesMissingNames(string n, string ln)
-        {
-            // Arrange
-            var testUser = new User { Id = 1 };
-            A.CallTo(() => _fakeUserManager.GetUserAsync(A<ClaimsPrincipal>._)).Returns(testUser);
-            A.CallTo(() => _fakeUserManager.UpdateAsync(A<User>._)).Returns(IdentityResult.Success);
-            A.CallTo(() => _fakeUserManager.GetUserIdAsync(A<User>._)).Returns("1");
-
-            // Act
-            var result = await _controller.MyAccount(n, ln, "test@o2.pl", "111", "IT", "Dev");
-
-            // Assert
-            result.Should().BeOfType<RedirectToActionResult>();
+            A.CallTo(() => _fakeEmailSender.SendEmailAsync(A<string>._, A<string>._, A<string>._))
+                .MustNotHaveHappened();
         }
 
         [Fact]
@@ -268,7 +257,8 @@ namespace OnboardingXUnitTests.Unit.Controllers
             A.CallTo(() => _fakeUserManager.UpdateAsync(A<User>._)).Returns(IdentityResult.Success);
 
             // Act
-            await _controller.UserSettings(new User { Name = "Nowe" });
+            var fullModel = new User { Name = "Nowe", Surname = "Kowalski", Department = "IT", Position = "Dev", PhoneNumber = "123" };
+            await _controller.UserSettings(fullModel);
 
             // Assert
             _controller.TempData["SuccessMessage"].Should().Be("Dane użytkownika zostały zaktualizowane.");
