@@ -42,7 +42,7 @@ public class AdaE2E : IAsyncLifetime
     [Fact]
     public async Task ID01_HR_Sidebar_NavigateToCreateEmployee()
     {
-        await Login("admin@mail.com", "AdminPassword123!");
+        await Login("hr@mail.com", "HrPassword123!");
         await _page.GotoAsync($"{_baseUrl}/HR/HRPanel");
         await _page.ClickAsync("a:has-text('Dodaj pracownika')");
         await Assertions.Expect(_page).ToHaveURLAsync(new System.Text.RegularExpressions.Regex(".*/HR/CreateEmployee"));
@@ -51,7 +51,7 @@ public class AdaE2E : IAsyncLifetime
     [Fact]
     public async Task ID02_HR_Panel_Statistics_Visible()
     {
-        await Login("admin@mail.com", "AdminPassword123!");
+        await Login("hr@mail.com", "HrPassword123!");
         await _page.GotoAsync($"{_baseUrl}/HR/HRPanel");
         var statsHeader = _page.Locator("h3:has-text('Statystyki')");
         await Assertions.Expect(statsHeader).ToBeVisibleAsync();
