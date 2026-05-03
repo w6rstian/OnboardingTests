@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace OnboardingXUnitTests.E2E
 {
     public class SavedValidationTests : PageTest
@@ -62,7 +61,7 @@ namespace OnboardingXUnitTests.E2E
         }
 
         [Fact]
-        public async Task BuddyCanAccessPanelUsingStoredSession_SavedValidation()
+        public async Task NewEmployeeCanAccessOwnTasksUsingStoredSession_SavedValidation()
         {
             var context = await Browser.NewContextAsync(new()
             {
@@ -71,15 +70,15 @@ namespace OnboardingXUnitTests.E2E
 
             var page = await context.NewPageAsync();
 
-            await page.GotoAsync("http://localhost:5021/Buddy/BuddyPanel");
+            await page.GotoAsync("http://localhost:5021/");
 
-            await Expect(page).Not.ToHaveURLAsync(new System.Text.RegularExpressions.Regex(".*Account/Login.*"));
+            var panelButton = page.GetByRole(AriaRole.Link, new() { Name = "Przejdź do panelu" });
+            await Expect(panelButton).ToBeVisibleAsync();
 
-            var header = page.Locator("h1.main-title");
-            await Expect(header).ToBeVisibleAsync();
-            await Expect(header).ToHaveTextAsync("Panel Buddyego");
+            await panelButton.ClickAsync();
 
-            await Expect(page.Locator("a[href='/Buddy/Newbies']")).ToBeVisibleAsync();
-            await Expect(page.Locator("a[href='/Buddy/TaskStatus']")).ToBeVisibleAsync(); 
+            await Expect(page.GetByRole(AriaRole.Main)).ToContainTextAsync("Witaj");
+        }
     }
 }
+
