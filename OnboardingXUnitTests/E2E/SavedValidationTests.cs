@@ -61,7 +61,7 @@ namespace OnboardingXUnitTests.E2E
         }
 
         [Fact]
-        public async Task NewEmployeeCanAccessOwnTasksUsingStoredSession_SavedValidation()
+        public async Task NewEmployeeCanAccessOwnTasksUsing_SavedValidation()
         {
             var context = await Browser.NewContextAsync(new()
             {
@@ -79,6 +79,35 @@ namespace OnboardingXUnitTests.E2E
 
             await Expect(page.GetByRole(AriaRole.Main)).ToContainTextAsync("Witaj");
         }
+
+
+        [Fact]
+        public async Task RegularUser_Cannot_Access_AdminPanel_SavedValidation()
+        {
+            
+            var context = await Browser.NewContextAsync(new()
+            {
+                StorageStatePath = "auth.json"
+            });
+
+            var page = await context.NewPageAsync();
+
+           
+            await page.GotoAsync("https://localhost:7231/Admin/AdminPanel");
+
+            
+            var hasAccessDeniedMessage = await page.Locator("body").InnerTextAsync();
+
+            
+            Assert.True(hasAccessDeniedMessage.Contains("Access denied", StringComparison.OrdinalIgnoreCase),
+                "Powinien pojawić się komunikat o braku uprawnień do panelu administratora.");
+
+            Assert.DoesNotMatch("https://localhost:7231/Admin/AdminPanel", page.Url);
+
+            Assert.False(await page.IsVisibleAsync("h1:text('Panel Administratora')"),
+                "Elementy panelu administratora nie powinny być widoczne.");
+        }
+
     }
 }
 
