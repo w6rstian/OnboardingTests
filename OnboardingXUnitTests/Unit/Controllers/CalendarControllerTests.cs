@@ -203,7 +203,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
         }
 
 
-        // S
+        // Sebastian Szklanko
 
         [Fact]
         public async Task CreateMeeting_Post_NullTitle_UsesDefaultTitle()
@@ -226,6 +226,8 @@ namespace OnboardingXUnitTests.Unit.Controllers
             meeting.Title.Should().Be("Spotkanie");
         }
 
+        // Sebastian Szklanko
+
         [Fact]
         public async Task CreateMeeting_Post_WithMultipleParticipants_AddsAllParticipants()
         {
@@ -247,6 +249,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             meeting.Participants.Should().HaveCount(2);
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task CreateMeeting_Post_WithoutParticipants_CreatesMeeting()
         {
@@ -269,6 +272,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             meeting.Participants.Should().BeEmpty();
         }
 
+        // Sebastian Szklanko
 
         [Fact]
         public async Task GetEvents_WhenNoDatabaseMeetings_ReturnsExampleEvents()
@@ -283,6 +287,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             events.Cast<object>().Should().HaveCount(3);
         }
 
+        // Sebastian Szklanko
 
         [Fact]
         public async Task CreateMeeting_Get_UserTextIsFormattedCorrectly()
@@ -297,6 +302,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             model.AllUsers.First().Text.Should().Be("Other User (other@user.com)");
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task CreateMeeting_Post_SetsOrganizerIdToCurrentUser()
         {
@@ -318,7 +324,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             meeting.OrganizerId.Should().Be(_currentUser.Id);
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task CreateMeeting_Post_SavesStartAndEndCorrectly()
         {
@@ -344,7 +350,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             meeting.End.Should().Be(end);
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task CreateMeeting_Post_SavesCorrectMeetingType()
         {
@@ -366,7 +372,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             meeting.Type.Should().Be(MeetingType.BuddyCheckIn);
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task CreateMeeting_Get_SetsMeetingTypeCorrectly()
         {
@@ -380,7 +386,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             model.Type.Should().Be(MeetingType.General);
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task GetEvents_ReturnsJsonResult()
         {

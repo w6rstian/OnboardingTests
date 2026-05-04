@@ -26,6 +26,7 @@ namespace OnboardingXUnitTests.E2E
             });
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task Login_Should_Work()
         {
@@ -45,6 +46,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.True(await _page.IsVisibleAsync("#logout"));
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task Login_Should_Not_Work()
         {
@@ -64,6 +66,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.Contains("Login", _page.Url);
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task Admin_Can_Add_New_Course_And_Delete()
         {
@@ -115,6 +118,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.False(courseStillVisible, "Kurs powinien zostać usunięty z listy.");
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task Admin_Can_View_Statistics_And_Report()
         {
@@ -144,6 +148,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.Contains("Nowy1 Nowak", reportHeader);
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task Admin_Cannot_Add_Task_Without_Name()
         {
@@ -162,6 +167,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.Equal("The Title field is required.", errorMessage.Trim());
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task Admin_Cannot_Add_Task_Without_Name_Mock()
         {
@@ -205,6 +211,7 @@ namespace OnboardingXUnitTests.E2E
             await Expect(error).ToContainTextAsync("The Title field is required.");
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task RegularUser_Cannot_Access_AdminPanel()
         {
@@ -230,6 +237,7 @@ namespace OnboardingXUnitTests.E2E
                 "Elementy panelu administratora nie powinny być widoczne.");
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task RegularUser_Cannot_Access_AdminPanel_Mock()
         {
@@ -275,6 +283,7 @@ namespace OnboardingXUnitTests.E2E
                 "Panel admina nie powinien być widoczny.");
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task RegularUser_Cannot_RateBuddy_When_NotAssigned()
         {
@@ -297,6 +306,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.Equal("Brak przypisanego Buddy'ego.", messageText.Trim());
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task RegularUser_Cannot_RateBuddy_When_NotAssigned_Mock()
         {
@@ -340,6 +350,7 @@ namespace OnboardingXUnitTests.E2E
             await Expect(message).ToHaveTextAsync("Brak przypisanego Buddy'ego.");
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task RegularUser_Course_List_Is_Empty()
         {

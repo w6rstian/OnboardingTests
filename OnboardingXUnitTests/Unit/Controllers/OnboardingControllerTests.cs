@@ -1,15 +1,12 @@
-using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Onboarding.Controllers;
 using Onboarding.Data;
-using Onboarding.Interfaces;
 using Onboarding.Models;
 using Onboarding.ViewModels;
 using System.Security.Claims;
-using Xunit;
 using Task = System.Threading.Tasks.Task;
 
 namespace OnboardingXUnitTests.Unit.Controllers
@@ -45,19 +42,19 @@ namespace OnboardingXUnitTests.Unit.Controllers
         [Fact]
         public void Create_ReturnsViewResult()
         {
-             
+
             var result = _controller.Create();
 
-             
+
             result.Should().BeOfType<ViewResult>();
         }
         [Fact]
         public async Task CreatePost_ModelIsNull_ReturnsViewWithModelError()
         {
-             
+
             var result = await _controller.Create(null);
 
-             
+
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
             _controller.ModelState.ErrorCount.Should().BeGreaterThan(0);
         }
@@ -65,16 +62,16 @@ namespace OnboardingXUnitTests.Unit.Controllers
         [Fact]
         public async Task CreatePost_CourseNameEmpty_ReturnsViewWithMentorsData()
         {
-             
+
             _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Testowy" });
             await _context.SaveChangesAsync();
 
             var viewModel = new CreateOnboardingViewModel { CourseName = "" };
 
-             
+
             var result = await _controller.Create(viewModel);
 
-             
+
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
             _controller.ModelState.IsValid.Should().BeFalse();
             viewResult.ViewData.ContainsKey("Mentors").Should().BeTrue();
@@ -88,58 +85,59 @@ namespace OnboardingXUnitTests.Unit.Controllers
 
 
 
-        // S
+        // Sebastian Szklanko
 
         [Fact]
         public void Create_WhenNoMentors_AddsModelError()
         {
-             
+
             var result = _controller.Create();
 
-             
+
             result.Should().BeOfType<ViewResult>();
             _controller.ModelState.IsValid.Should().BeFalse();
         }
 
+        // Sebastian Szklanko
         [Fact]
         public void Create_WhenMentorsExist_ReturnsViewWithMentors()
         {
-             
+
             _context.Users.Add(new User { Id = 1, Name = "Anna", Surname = "Nowak" });
             _context.SaveChanges();
 
-             
+
             var result = _controller.Create();
 
-             
+
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
             viewResult.ViewData.ContainsKey("Mentors").Should().BeTrue();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task CreatePost_InvalidMentorId_AddsModelError()
         {
-             
+
             var vm = new CreateOnboardingViewModel
             {
                 CourseName = "Test Course",
                 MentorId = 99
             };
 
-             
+
             var result = await _controller.Create(vm);
 
-             
+
             result.Should().BeOfType<ViewResult>();
             _controller.ModelState.IsValid.Should().BeFalse();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task CreatePost_TaskWithoutTitle_AddsModelError()
         {
-             
+
             _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
             await _context.SaveChangesAsync();
 
@@ -148,31 +146,31 @@ namespace OnboardingXUnitTests.Unit.Controllers
                 CourseName = "Course",
                 MentorId = 1,
                 Tasks = new List<TaskViewModel>
-        {
-            new TaskViewModel
             {
-                Title = "",
-                Description = "desc",
-                MentorId = 1,
-                ArticleContent = "article",
-                Links = "link"
+                new TaskViewModel
+                {
+                    Title = "",
+                    Description = "desc",
+                    MentorId = 1,
+                    ArticleContent = "article",
+                    Links = "link"
+                }
             }
-        }
-            };
+                };
 
-             
+
             var result = await _controller.Create(vm);
 
-             
+
             result.Should().BeOfType<ViewResult>();
             _controller.ModelState.IsValid.Should().BeFalse();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task CreatePost_TaskMentorDoesNotExist_ReturnsError()
         {
-             
+
             _context.Users.Add(new User { Id = 1, Name = "Jan", Surname = "Mentor" });
             await _context.SaveChangesAsync();
 
@@ -193,14 +191,15 @@ namespace OnboardingXUnitTests.Unit.Controllers
         }
             };
 
-             
+
             var result = await _controller.Create(vm);
 
-             
+
             result.Should().BeOfType<ViewResult>();
             _controller.ModelState.IsValid.Should().BeFalse();
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task CreatePost_ReturnsActionResult()
         {
@@ -211,6 +210,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().BeAssignableTo<IActionResult>();
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task CreatePost_InvalidModel_ReturnsView()
         {
@@ -223,18 +223,18 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().BeOfType<ViewResult>();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public void CreateGet_ReturnsView()
         {
-             
+
             var result = _controller.Create();
 
-             
+
             result.Should().BeOfType<ViewResult>();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task CreatePost_ReturnType_IsValid()
         {
@@ -245,7 +245,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().NotBeNull();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task CreatePost_DoesNotThrowException()
         {

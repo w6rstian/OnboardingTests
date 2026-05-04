@@ -63,7 +63,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
         }
 
 
-        // S
+        // Sebastian Szklanko
 
         [Fact]
         public async Task Index_ReturnsUserCoursesList()
@@ -80,6 +80,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             view.Model.Should().NotBeNull();
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task Details_NullId_ReturnsNotFound()
         {
@@ -90,6 +91,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().BeOfType<NotFoundResult>();
         }
 
+        // Sebastian Szklanko
         [Fact]
         public async Task Details_NonExistingId_ReturnsNotFound()
         {
@@ -100,7 +102,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().BeOfType<NotFoundResult>();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task Details_ExistingId_ReturnsView()
         {
@@ -127,7 +129,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().BeOfType<ViewResult>();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task Create_Post_ValidData_SavesUserCourse()
         {
@@ -139,7 +141,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             _context.UserCourses.Should().HaveCount(1);
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task Edit_Get_NullId_ReturnsNotFound()
         {
@@ -150,7 +152,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().BeOfType<NotFoundResult>();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task Edit_Get_NonExistingId_ReturnsNotFound()
         {
@@ -161,7 +163,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().BeOfType<NotFoundResult>();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task Delete_Get_ExistingId_ReturnsView()
         {
@@ -188,7 +190,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().BeOfType<ViewResult>();
         }
 
-
+        // Sebastian Szklanko
         [Fact]
         public async Task DeleteConfirmed_RemovesUserCourse()
         {
