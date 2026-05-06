@@ -46,7 +46,7 @@ namespace OnboardingXUnitTests.E2E
 
             var options = await _page.Locator("select[name='SelectedUsersIds'] option").AllInnerTextsAsync();
             Assert.DoesNotContain("Admin User (admin@mail.com)", options);
-            Assert.Contains("Nowy1 Nowak (nowy1@mail.com)", options);
+            Assert.Contains("Buddy1 Chad (buddy1@mail.com)", options);
         }
 
         [Fact]
@@ -64,11 +64,11 @@ namespace OnboardingXUnitTests.E2E
             await _page.FillAsync("input[name='Start']", start);
             await _page.FillAsync("input[name='End']", end);
 
-            // Nowy1 i Nowy2
+            // dwóch użytkowników z listy
             await _page.SelectOptionAsync("select[name='SelectedUsersIds']", new[]
             {
-                new SelectOptionValue { Label = "Nowy1 Nowak (nowy1@mail.com)" },
-                new SelectOptionValue { Label = "Nowy2 Nowak (nowy2@mail.com)" }
+                new SelectOptionValue { Label = "Buddy1 Chad (buddy1@mail.com)" },
+                new SelectOptionValue { Label = "Buddy2 Guy (buddy2@mail.com)" }
             });
 
             await _page.ClickAsync("button[type='submit']:has-text('Zaplanuj spotkanie')");
@@ -91,8 +91,8 @@ namespace OnboardingXUnitTests.E2E
             var participants = createdMeeting.GetProperty("participants")
                 .EnumerateArray().Select(p => p.GetString())
                 .ToList();
-            Assert.Contains("Nowy1 Nowak (nowy1@mail.com)", participants);
-            Assert.Contains("Nowy2 Nowak (nowy2@mail.com)", participants);
+            Assert.Contains("Buddy1 Chad (buddy1@mail.com)", participants);
+            Assert.Contains("Buddy2 Guy (buddy2@mail.com)", participants);
         }
 
         [Fact]
