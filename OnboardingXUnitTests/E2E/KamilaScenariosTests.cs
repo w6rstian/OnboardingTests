@@ -37,6 +37,7 @@ namespace OnboardingXUnitTests.E2E
             await _page.WaitForSelectorAsync("#logout");
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task ID1_Meeting_Participant_Filtering()
         {
@@ -49,6 +50,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.Contains("Buddy1 Chad (buddy1@mail.com)", options);
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task ID2_Create_Meeting_Multiple_Participants()
         {
@@ -95,6 +97,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.Contains("Buddy2 Guy (buddy2@mail.com)", participants);
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task ID3_Filter_Calendar_Events_By_Type()
         {
@@ -116,6 +119,7 @@ namespace OnboardingXUnitTests.E2E
             }
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task ID4_Chat_Visibility_Isolation()
         {
@@ -149,6 +153,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.DoesNotContain(msg3To1, chatContent);
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task ID6_Chat_Empty_Message_Prevention()
         {
@@ -169,6 +174,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.Equal(initialCount, afterCount);
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task ID7_Edit_Course_With_Image()
         {
@@ -197,6 +203,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.Equal("image/jpeg", response.Headers["content-type"]);
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task ID8_Newbie_Cannot_Create_Course()
         {
@@ -210,6 +217,7 @@ namespace OnboardingXUnitTests.E2E
                         _page.Url.Contains("Login"));
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task ID9_Course_Details_Integrity()
         {
@@ -224,6 +232,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.DoesNotContain("NullReferenceException", body);
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task ID10_Chat_Message_Sorting()
         {
@@ -249,7 +258,7 @@ namespace OnboardingXUnitTests.E2E
             Assert.True(indexA < indexB);
         }
 
-        // mock testy
+        // Kamila Szymanowska
         [Fact]
         public async Task MOCK_RateMentor_Access_Granted()
         {
@@ -271,6 +280,7 @@ namespace OnboardingXUnitTests.E2E
             await Assertions.Expect(submitBtn).ToBeVisibleAsync();
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task MOCK_Statistics_Role_Filter()
         {
@@ -297,6 +307,7 @@ namespace OnboardingXUnitTests.E2E
             await Assertions.Expect(userItem).ToBeVisibleAsync();
         }
 
+        // Kamila Szymanowska
         [Fact]
         public async Task MOCK_Notification_Delete_Success()
         {
