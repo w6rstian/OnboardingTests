@@ -52,7 +52,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             A.CallTo(() => urlHelperFake.Action(A<UrlActionContext>.Ignored)).Returns("https://fakeurl.com");
             _controller.Url = urlHelperFake;
         }
-        /* ---- Autor Michał Kobyliński ---*/
+        
         [Fact]
         public void HRPanel_ReturnsViewResult()
         {
@@ -60,7 +60,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
 
             result.Should().BeOfType<ViewResult>();
         }
-
+        /* ---- Autor Michał Kobyliński ---*/
         [Fact]
         public void CreateEmployeeGet_ReturnsViewResult()
         {
@@ -81,7 +81,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().BeOfType<ViewResult>();
             _controller.ModelState.IsValid.Should().BeFalse();
         }
-
+        /* ---- Autor Michał Kobyliński ---*/
         [Fact]
         public async Task CreateEmployeePost_ValidData_CreatesUserSendsEmailAndRedirects()
         {
@@ -166,7 +166,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
 
             capturedUser.EmailConfirmed.Should().BeTrue();
         }
-
+        /* ---- Autor Michał Kobyliński ---*/
         [Fact]
         public async Task CreateEmployeePost_NullFields_ReturnsViewWithError()
         {
@@ -176,6 +176,6 @@ namespace OnboardingXUnitTests.Unit.Controllers
             _controller.ModelState.IsValid.Should().BeFalse();
             _controller.ModelState[string.Empty].Errors[0].ErrorMessage.Should().Be("All fields are required.");
         }
-        /*-------------------*/
+        
     }
 }

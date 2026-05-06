@@ -48,7 +48,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             
             _controller.TempData = new TempDataDictionary(httpContext, A.Fake<ITempDataProvider>());
         }
-        /* ---- Autor Michał Kobyliński ---*/
+        
 
         [Fact]
         public async Task Index_ReturnsViewResult()
@@ -57,7 +57,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
 
             result.Should().BeOfType<ViewResult>();
         }
-
+        /* ---- Autor Michał Kobyliński ---*/
         [Fact]
         public void CreateGet_ReturnsViewResult()
         {

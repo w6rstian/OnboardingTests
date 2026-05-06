@@ -41,7 +41,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             };
         }
 
-        /*---Autor Michał Kobyliński----*/
+        
         [Fact]
         public async Task Index_ReturnsViewResult()
         {
@@ -52,7 +52,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             result.Should().BeOfType<ViewResult>();
         }
 
-        
+        /*---Autor Michał Kobyliński----*/
         [Fact]
         public async Task Details_QuestionExists_ReturnsViewResultWithQuestion()
         {

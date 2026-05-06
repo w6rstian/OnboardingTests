@@ -38,7 +38,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
                 HttpContext = new DefaultHttpContext() { User = user }
             };
         }
-        /* ---- Autor Michał Kobyliński ---*/
+        
         [Fact]
         public void Create_ReturnsViewResult()
         {
@@ -48,6 +48,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
 
             result.Should().BeOfType<ViewResult>();
         }
+        /* ---- Autor Michał Kobyliński ---*/
         [Fact]
         public async Task CreatePost_ModelIsNull_ReturnsViewWithModelError()
         {
