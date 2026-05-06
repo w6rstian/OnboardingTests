@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -41,7 +41,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
                 HttpContext = new DefaultHttpContext { User = user }
             };
         }
-
+        /* ---- Autor Michał Kobyliński ---*/
         [Fact]
         public async Task Index_ReturnsViewResult()
         {
@@ -222,6 +222,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             var model = viewResult.Model.Should().BeAssignableTo<Onboarding.Models.Task>().Subject;
             model.Id.Should().Be(expectedTask.Id);
         }
+        /* --------------------------*/
         public void Dispose()
         {
             _context.Dispose();

@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +41,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             };
         }
 
-        
+        /*---Autor Michał Kobyliński----*/
         [Fact]
         public async Task Index_ReturnsViewResult()
         {
@@ -144,7 +144,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             var dbQuestion = await _context.Questions.FindAsync(1);
             dbQuestion.Should().BeNull();
         }
-
+        /*-----------------*/
         public void Dispose()
         {
             _context.Database.EnsureDeleted();

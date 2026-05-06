@@ -8,7 +8,7 @@ namespace OnboardingXUnitTests.E2E
 {
     public class MikeleScenariosTests : PageTest
     {
-       
+       /* ---- Autor Michał Kobyliński ---*/
         [Fact]
         public async Task RegisterShouldWork()
         {
@@ -264,7 +264,7 @@ namespace OnboardingXUnitTests.E2E
             await Expect(Page.Locator("p")).ToHaveTextAsync("Baza danych nie odpowiada.");
         }
 
-        //stan
+        /*-----------------*/
         
         
 

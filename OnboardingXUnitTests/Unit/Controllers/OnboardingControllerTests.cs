@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +38,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
                 HttpContext = new DefaultHttpContext() { User = user }
             };
         }
-
+        /* ---- Autor Michał Kobyliński ---*/
         [Fact]
         public void Create_ReturnsViewResult()
         {
@@ -76,13 +76,13 @@ namespace OnboardingXUnitTests.Unit.Controllers
             _controller.ModelState.IsValid.Should().BeFalse();
             viewResult.ViewData.ContainsKey("Mentors").Should().BeTrue();
         }
-
+        /*-----------------*/
         public void Dispose()
         {
             _context.Database.EnsureDeleted();
             _context.Dispose();
         }
-
+        
 
 
         // Sebastian Szklanko

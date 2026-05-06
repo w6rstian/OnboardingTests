@@ -1,4 +1,4 @@
-using Xunit;
+Ôªøusing Xunit;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -52,7 +52,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             A.CallTo(() => urlHelperFake.Action(A<UrlActionContext>.Ignored)).Returns("https://fakeurl.com");
             _controller.Url = urlHelperFake;
         }
-
+        /* ---- Autor Micha≈Ç Kobyli≈Ñski ---*/
         [Fact]
         public void HRPanel_ReturnsViewResult()
         {
@@ -130,8 +130,8 @@ namespace OnboardingXUnitTests.Unit.Controllers
         {
             var errors = new List<IdentityError>
             {
-                new IdentityError { Description = "Has≥o jest za krÛtkie." },
-                new IdentityError { Description = "Has≥o musi mieÊ znak specjalny." }
+                new IdentityError { Description = "Has≈Ço jest za kr√≥tkie." },
+                new IdentityError { Description = "Has≈Ço musi mieƒá znak specjalny." }
             };
 
             A.CallTo(() => _userManager.CreateAsync(A<User>.Ignored, A<string>.Ignored)).Returns(IdentityResult.Failed(errors.ToArray()));
@@ -142,8 +142,8 @@ namespace OnboardingXUnitTests.Unit.Controllers
             _controller.ModelState.IsValid.Should().BeFalse();
 
             _controller.ModelState[string.Empty].Errors.Should().HaveCount(2);
-            _controller.ModelState[string.Empty].Errors[0].ErrorMessage.Should().Be("Has≥o jest za krÛtkie.");
-            _controller.ModelState[string.Empty].Errors[1].ErrorMessage.Should().Be("Has≥o musi mieÊ znak specjalny.");
+            _controller.ModelState[string.Empty].Errors[0].ErrorMessage.Should().Be("Has≈Ço jest za kr√≥tkie.");
+            _controller.ModelState[string.Empty].Errors[1].ErrorMessage.Should().Be("Has≈Ço musi mieƒá znak specjalny.");
         }
 
         [Fact]
@@ -176,5 +176,6 @@ namespace OnboardingXUnitTests.Unit.Controllers
             _controller.ModelState.IsValid.Should().BeFalse();
             _controller.ModelState[string.Empty].Errors[0].ErrorMessage.Should().Be("All fields are required.");
         }
+        /*-------------------*/
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -48,6 +48,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             
             _controller.TempData = new TempDataDictionary(httpContext, A.Fake<ITempDataProvider>());
         }
+        /* ---- Autor Michał Kobyliński ---*/
 
         [Fact]
         public async Task Index_ReturnsViewResult()
@@ -250,7 +251,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             var test = new Test
             {
                 Id = 1,
-                Name = "Test kompetencji", // Brakowało nazwy testu
+                Name = "Test kompetencji", 
                 CourseId = 5,
                 Questions = new List<Question>
                 {
@@ -267,8 +268,8 @@ namespace OnboardingXUnitTests.Unit.Controllers
                 CourseId = 5,
                 Answers = new List<AnswerSubmissionModel>
                 {
-                    new AnswerSubmissionModel { QuestionId = 10, SelectedAnswer = "A" }, // Dobra odpowiedź
-                    new AnswerSubmissionModel { QuestionId = 11, SelectedAnswer = "C" }  // Zła odpowiedź
+                    new AnswerSubmissionModel { QuestionId = 10, SelectedAnswer = "A" }, 
+                    new AnswerSubmissionModel { QuestionId = 11, SelectedAnswer = "C" } 
                 }
             };
 
@@ -283,7 +284,7 @@ namespace OnboardingXUnitTests.Unit.Controllers
             testResult.Should().NotBeNull();
             testResult.CorrectAnswers.Should().Be(1);
         }
-
+        /*------------*/
         public void Dispose()
         {
             _context.Dispose();
